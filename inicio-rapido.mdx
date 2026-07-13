@@ -1,10 +1,10 @@
 ---
-title: "Inicio Rápido: Tu Primera Llamada a la API de MedCore"
+title: "Inicio Rápido: Tu Primera Llamada a la API de MedGo+"
 sidebarTitle: "Inicio Rápido"
 description: "Aprende a registrarte, obtener tu token de acceso y realizar tu primera llamada a la API de MedCore Global en menos de cinco minutos."
 ---
 
-Esta guía te lleva desde cero hasta tu primera cita agendada a través de la API de MedCore Global. Sigue los pasos en orden: en menos de 5 minutos tendrás una cuenta activa, un token de acceso válido y una cita médica registrada en el sistema.
+Esta guía te lleva desde cero hasta tu primera cita agendada a través de la API de MedGo\+. Sigue los pasos en orden: en menos de 5 minutos tendrás una cuenta activa, un token de acceso válido y una cita médica registrada en el sistema.
 
 <Steps>
   <Step title="Registrarse como paciente">
@@ -26,7 +26,7 @@ Esta guía te lleva desde cero hasta tu primera cita agendada a través de la AP
     ```
 
     | Campo | Tipo | Descripción |
-    |---|---|---|
+    | --- | --- | --- |
     | `Nombre` | string | Primer nombre del paciente |
     | `Apellido` | string | Apellido del paciente |
     | `Email` | string | Correo electrónico único, usado para iniciar sesión |
@@ -38,7 +38,6 @@ Esta guía te lleva desde cero hasta tu primera cita agendada a través de la AP
 
     Una respuesta `201 Created` confirma que la cuenta fue creada exitosamente.
   </Step>
-
   <Step title="Iniciar sesión y obtener el token">
     Autentica tus credenciales para recibir el token Bearer que deberás incluir en todas las solicitudes protegidas.
 
@@ -75,7 +74,6 @@ Esta guía te lleva desde cero hasta tu primera cita agendada a través de la AP
       Guarda el `access_token` en un lugar seguro, como una variable de entorno o un gestor de secretos. **Nunca lo incluyas directamente en el código fuente** ni lo compartas en repositorios públicos. El token es equivalente a tu contraseña para todos los efectos de la API.
     </Tip>
   </Step>
-
   <Step title="Realizar la primera llamada autenticada">
     Con el token en mano, consulta la lista de médicos disponibles. Este es un buen primer endpoint para verificar que tu autenticación funciona correctamente.
 
@@ -108,7 +106,6 @@ Esta guía te lleva desde cero hasta tu primera cita agendada a través de la AP
 
     Cada objeto incluye el `DoctorID` que necesitarás en el siguiente paso para agendar tu cita. El campo `Precio` representa el costo de la consulta en la moneda local configurada por la clínica.
   </Step>
-
   <Step title="Agendar una cita médica">
     Con el `DoctorID` obtenido en el paso anterior, ya puedes crear tu primera cita. Envía los datos de la consulta al endpoint correspondiente.
 
