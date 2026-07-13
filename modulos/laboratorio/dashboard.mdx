@@ -1,7 +1,7 @@
 ---
-title: "Dashboard de Laboratorio — Métricas MedCore Global"
+title: "Dashboard de Laboratorio — Métricas MedGo+"
 sidebarTitle: "Dashboard Lab"
-description: "Gestiona tu laboratorio en MedCore Global: monitorea órdenes activas, muestras en procesamiento, KPIs de ingresos y el catálogo de pruebas disponibles."
+description: "Gestiona tu laboratorio en MedGo+: monitorea órdenes activas, muestras en procesamiento, KPIs de ingresos y el catálogo de pruebas disponibles."
 ---
 
 El **Dashboard de Laboratorio** proporciona al personal y gestores del laboratorio una vista operativa completa de todas las actividades en curso. Desde este panel se monitorean las órdenes de análisis recibidas, el estado de procesamiento de muestras, los insumos críticos disponibles y los ingresos generados. También sirve como punto de acceso al catálogo de pruebas ofrecidas y a los indicadores de calidad del laboratorio.
@@ -34,7 +34,7 @@ GET /api/laboratorio/dashboard-metrics
 ```
 
 | Indicador | Descripción |
-|---|---|
+| --- | --- |
 | **Total Órdenes** | Número total de órdenes de laboratorio recibidas en el período activo. |
 | **En Procesamiento** | Órdenes con muestras actualmente en análisis. Este número refleja la carga operativa inmediata del laboratorio. |
 | **Reactivos Críticos** | Número de reactivos o insumos que se encuentran por debajo del nivel mínimo de inventario. Un valor mayor a `0` requiere atención inmediata para evitar interrupciones en el servicio. |
@@ -47,7 +47,7 @@ GET /api/laboratorio/dashboard-metrics
 La pestaña de **Órdenes y Muestras** muestra una tabla en tiempo real con el estado de las órdenes activas en el laboratorio. Permite al personal de laboratorio rastrear el avance de cada muestra desde su recepción hasta la entrega de resultados.
 
 | Columna | Descripción |
-|---|---|
+| --- | --- |
 | **ID Orden** | Identificador único de la orden de laboratorio. |
 | **Paciente** | Nombre del paciente al que pertenece la muestra. |
 | **Exámenes Solicitados** | Lista de pruebas incluidas en la orden. |
@@ -109,7 +109,7 @@ El catálogo es público y es utilizado por el portal del paciente para mostrar 
 La sub-pestaña de **Auditoría de Calidad** del dashboard de laboratorio presenta indicadores de desempeño específicos para entidades de diagnóstico:
 
 | Indicador | Descripción |
-|---|---|
+| --- | --- |
 | **Tasa de Resultados a Tiempo** | Porcentaje de órdenes completadas dentro del tiempo de entrega estimado del catálogo. |
 | **Tasa de Repetición de Pruebas** | Frecuencia con la que se deben repetir análisis por errores en la muestra o procesamiento. |
 | **Muestras Rechazadas** | Número de muestras no procesadas por condiciones inadecuadas de recolección o transporte. |
