@@ -1,10 +1,10 @@
 ---
-title: "Agenda una cita médica en MedCore Global: guía completa"
+title: "Agenda una cita médica en MedGo+: guía completa"
 sidebarTitle: "Agendar Cita"
-description: "Reserva una cita con el médico de tu elección en MedCore Global. Selecciona especialidad, clínica, fecha y hora en pocos pasos desde el portal o la API."
+description: "Reserva una cita con el médico de tu elección en MedGo+. Selecciona especialidad, clínica, fecha y hora en pocos pasos desde el portal o la API."
 ---
 
-Agendar una cita en MedCore Global es rápido y sencillo, ya sea desde el portal web o mediante la API. Puedes buscar médicos por especialidad, ver su disponibilidad en tiempo real, seleccionar la clínica de tu preferencia y confirmar tu reserva en minutos. Esta guía explica cómo hacerlo paso a paso desde el portal, cómo usar la API para integraciones avanzadas y cómo gestionar reagendamientos y cancelaciones.
+Agendar una cita en MedGo\+ es rápido y sencillo, ya sea desde el portal web o mediante la API. Puedes buscar médicos por especialidad, ver su disponibilidad en tiempo real, seleccionar la clínica de tu preferencia y confirmar tu reserva en minutos. Esta guía explica cómo hacerlo paso a paso desde el portal, cómo usar la API para integraciones avanzadas y cómo gestionar reagendamientos y cancelaciones.
 
 ---
 
@@ -38,7 +38,7 @@ Agendar una cita en MedCore Global es rápido y sencillo, ya sea desde el portal
 
 Si estás integrando MedCore Global con otra aplicación o deseas automatizar el agendamiento, utiliza el siguiente endpoint:
 
-```
+```text
 POST /api/citas
 ```
 
@@ -64,23 +64,23 @@ POST /api/citas
 }
 ```
 
-| Campo                          | Tipo      | Requerido | Descripción                                                                      |
-|--------------------------------|-----------|-----------|----------------------------------------------------------------------------------|
-| `UsuarioID`                    | `integer` | ✅        | Tu identificador de usuario en la plataforma.                                    |
-| `doctor_id`                    | `integer` | ✅        | ID del médico con quien deseas la cita.                                          |
-| `entidad_id`                   | `integer` | ✅        | ID de la clínica u hospital donde se realizará la consulta.                      |
-| `fecha_hora`                   | `string`  | ✅        | Fecha y hora en formato `YYYY-MM-DD HH:MM:SS`.                                   |
-| `motivo`                       | `string`  | ✅        | Descripción breve del motivo de la consulta (máximo 255 caracteres).             |
-| `edad`                         | `integer` | ✅        | Edad del paciente en años cumplidos.                                             |
-| `genero`                       | `string`  | ✅        | Género del paciente: `"M"` para masculino, `"F"` para femenino.                  |
-| `sintomas`                     | `string`  | ❌        | Síntomas actuales, separados por comas.                                          |
-| `alergias`                     | `string`  | ❌        | Alergias conocidas a medicamentos u otras sustancias.                            |
-| `medicamentos_actuales`        | `string`  | ❌        | Medicamentos que el paciente está tomando actualmente.                           |
-| `aseguradora`                  | `string`  | ❌        | Nombre de la compañía aseguradora (máximo 100 caracteres).                       |
-| `numero_poliza`                | `string`  | ❌        | Número de póliza de seguro médico (máximo 50 caracteres).                        |
-| `nombre_contacto_emergencia`   | `string`  | ❌        | Nombre del contacto de emergencia (máximo 100 caracteres).                       |
-| `telefono_contacto_emergencia` | `string`  | ❌        | Teléfono del contacto de emergencia (máximo 20 caracteres).                      |
-| `cronicas_ids`                 | `array`   | ❌        | Lista de IDs de enfermedades crónicas del catálogo de la plataforma.             |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `UsuarioID` | `integer` | ✅ | Tu identificador de usuario en la plataforma. |
+| `doctor_id` | `integer` | ✅ | ID del médico con quien deseas la cita. |
+| `entidad_id` | `integer` | ✅ | ID de la clínica u hospital donde se realizará la consulta. |
+| `fecha_hora` | `string` | ✅ | Fecha y hora en formato `YYYY-MM-DD HH:MM:SS`. |
+| `motivo` | `string` | ✅ | Descripción breve del motivo de la consulta (máximo 255 caracteres). |
+| `edad` | `integer` | ✅ | Edad del paciente en años cumplidos. |
+| `genero` | `string` | ✅ | Género del paciente: `"M"` para masculino, `"F"` para femenino. |
+| `sintomas` | `string` | ❌ | Síntomas actuales, separados por comas. |
+| `alergias` | `string` | ❌ | Alergias conocidas a medicamentos u otras sustancias. |
+| `medicamentos_actuales` | `string` | ❌ | Medicamentos que el paciente está tomando actualmente. |
+| `aseguradora` | `string` | ❌ | Nombre de la compañía aseguradora (máximo 100 caracteres). |
+| `numero_poliza` | `string` | ❌ | Número de póliza de seguro médico (máximo 50 caracteres). |
+| `nombre_contacto_emergencia` | `string` | ❌ | Nombre del contacto de emergencia (máximo 100 caracteres). |
+| `telefono_contacto_emergencia` | `string` | ❌ | Teléfono del contacto de emergencia (máximo 20 caracteres). |
+| `cronicas_ids` | `array` | ❌ | Lista de IDs de enfermedades crónicas del catálogo de la plataforma. |
 
 ### Respuesta exitosa
 
@@ -101,7 +101,7 @@ POST /api/citas
 
 Si necesitas cambiar la fecha u hora de una cita existente, usa el siguiente endpoint:
 
-```
+```text
 PUT /api/citas/{id}/reprogramar
 ```
 
@@ -123,7 +123,7 @@ El médico deberá aprobar nuevamente la nueva fecha propuesta. El estado de la 
 
 Para cancelar una cita, realiza la siguiente solicitud:
 
-```
+```text
 DELETE /api/citas/{id}
 ```
 
@@ -144,7 +144,7 @@ Reemplaza `{id}` con el identificador de la cita a cancelar. Si la cita ya fue a
 
 Para consultar el historial completo de tus citas (pasadas, pendientes y confirmadas), usa el siguiente endpoint:
 
-```
+```text
 GET /api/citas/historial/{usuarioId}
 ```
 
