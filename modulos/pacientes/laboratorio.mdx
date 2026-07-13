@@ -1,13 +1,13 @@
 ---
 title: "Órdenes y Resultados de Laboratorio para Pacientes"
 sidebarTitle: "Laboratorio"
-description: "Consulta tus órdenes de laboratorio y resultados de exámenes en MedCore Global. Accede a tus estudios desde el portal o la API en cualquier momento."
+description: "Consulta tus órdenes de laboratorio y resultados de exámenes en MedGo+. Accede a tus estudios desde el portal o la API en cualquier momento."
 ---
 
-Cuando tu médico solicita análisis de laboratorio, MedCore Global genera una orden digital que puedes presentar directamente en cualquier laboratorio afiliado a la plataforma. Una vez que los resultados estén listos, los encontrarás disponibles en tu perfil sin necesidad de regresar a la clínica. Esta guía explica cómo consultar tus órdenes, ver tus resultados y explorar el catálogo de exámenes disponibles.
+Cuando tu médico solicita análisis de laboratorio, MedGo\+ genera una orden digital que puedes presentar directamente en cualquier laboratorio afiliado a la plataforma. Una vez que los resultados estén listos, los encontrarás disponibles en tu perfil sin necesidad de regresar a la clínica. Esta guía explica cómo consultar tus órdenes, ver tus resultados y explorar el catálogo de exámenes disponibles.
 
 <Note>
-  Las órdenes de laboratorio son creadas por tu médico durante o después de una consulta registrada en MedCore Global. Si necesitas un análisis y aún no tienes una orden, contáctate con tu médico tratante a través de la sección **Mensajes** del portal.
+  Las órdenes de laboratorio son creadas por tu médico durante o después de una consulta registrada en MedGo\+l. Si necesitas un análisis y aún no tienes una orden, contáctate con tu médico tratante a través de la sección **Mensajes** del portal.
 </Note>
 
 ---
@@ -16,7 +16,7 @@ Cuando tu médico solicita análisis de laboratorio, MedCore Global genera una o
 
 Para obtener la lista de todas las órdenes de laboratorio emitidas para tu perfil, usa el siguiente endpoint:
 
-```
+```text
 GET /api/laboratorio/paciente/{pacienteId}/ordenes
 ```
 
@@ -61,7 +61,7 @@ Reemplaza `{pacienteId}` con tu `patient_id`. La respuesta incluye para cada ord
 
 Una vez que el laboratorio haya procesado tus muestras y cargado los resultados en la plataforma, podrás consultarlos con el siguiente endpoint:
 
-```
+```text
 GET /api/laboratorio/orden/{ordenId}/resultados
 ```
 
@@ -94,7 +94,7 @@ Cada examen muestra el nombre del estudio y el resultado obtenido. Para análisi
 
 Para consultar todos los estudios de laboratorio que pueden ser solicitados a través de MedCore Global, usa el siguiente endpoint:
 
-```
+```text
 GET /api/laboratorio/catalogo
 ```
 
@@ -127,12 +127,15 @@ Desde el portal de laboratorio puedes:
   <Card title="Buscar laboratorios afiliados" icon="microscope">
     Localiza los laboratorios cercanos a ti que están integrados con MedCore Global para presentar tus órdenes digitalmente, sin necesidad de imprimirlas.
   </Card>
+
   <Card title="Filtrar por categoría de examen" icon="filter">
     Explora el catálogo completo de estudios disponibles filtrados por categoría: hematología, química sanguínea, hormonas, microbiología, imágenes y más.
   </Card>
+
   <Card title="Ver historial de resultados" icon="chart-line">
     Consulta todos tus resultados anteriores en una línea de tiempo cronológica. Para ciertos indicadores (glucosa, presión arterial, colesterol), se muestran gráficas de tendencia para facilitar el seguimiento.
   </Card>
+
   <Card title="Solicitar exámenes" icon="file-medical">
     En clínicas donde el flujo lo permite, puedes solicitar exámenes de seguimiento directamente desde el portal. Tu médico recibirá la solicitud para aprobarla antes de generar la orden oficial.
   </Card>
