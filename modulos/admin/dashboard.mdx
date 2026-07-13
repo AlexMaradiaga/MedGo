@@ -1,10 +1,10 @@
 ---
-title: "Dashboard Administrativo Global — MedCore Global"
+title: "Dashboard Administrativo Global — MedGo+"
 sidebarTitle: "Dashboard Admin"
 description: "El dashboard administrativo centraliza KPIs operativos, auditoría de calidad, gestión de usuarios y reportes ejecutivos para la toma de decisiones."
 ---
 
-El **Dashboard Administrativo Global** es el centro de comando de MedCore Global. Desde aquí, los administradores de la plataforma obtienen visibilidad completa sobre el estado operativo de todas las entidades registradas —clínicas, laboratorios y farmacias— en tiempo real. Consolida indicadores clave de rendimiento, herramientas de auditoría, aprobación de personal médico y la generación de reportes ejecutivos para la toma de decisiones estratégicas.
+El **Dashboard Administrativo Global** es el centro de comando de MedGo\+. Desde aquí, los administradores de la plataforma obtienen visibilidad completa sobre el estado operativo de todas las entidades registradas —clínicas, laboratorios y farmacias— en tiempo real. Consolida indicadores clave de rendimiento, herramientas de auditoría, aprobación de personal médico y la generación de reportes ejecutivos para la toma de decisiones estratégicas.
 
 ---
 
@@ -13,7 +13,7 @@ El **Dashboard Administrativo Global** es el centro de comando de MedCore Global
 La sección superior del dashboard presenta cuatro tarjetas de KPI que ofrecen una fotografía instantánea del estado global de la plataforma:
 
 | Indicador | Descripción |
-|---|---|
+| --- | --- |
 | **Total Pacientes** | Número acumulado de pacientes activos registrados en todas las entidades de la plataforma. |
 | **Total Citas** | Volumen total de citas médicas agendadas en el período seleccionado. |
 | **Tasa de Cancelación** | Porcentaje de citas canceladas sobre el total agendado. Un valor elevado puede indicar problemas operativos en una entidad específica. |
@@ -30,7 +30,7 @@ GET /api/admin/reports/analytics
 La respuesta incluye cinco conjuntos de datos que alimentan las visualizaciones del panel:
 
 | Conjunto | Descripción |
-|---|---|
+| --- | --- |
 | `funnel` | Distribución de pacientes por estado de atención (activos, en espera, dados de alta). Alimenta el gráfico de embudo o dona, útil para identificar cuellos de botella en el flujo de atención. |
 | `profesionales` | Métricas de actividad del personal médico por entidad: citas atendidas, tasa de ocupación y especialidades más demandadas. |
 | `pacientes` | Perfil agregado de la base de pacientes: distribución demográfica, frecuencia de visitas y patologías más recurrentes. |
@@ -70,7 +70,7 @@ Devuelve el conjunto completo de indicadores de las tres categorías, filtrable 
 MedCore Global permite exportar reportes para análisis fuera de la plataforma, auditorías externas o presentaciones a directivos. Los tipos de reporte disponibles son:
 
 | Tipo (`tipo`) | Descripción |
-|---|---|
+| --- | --- |
 | `general` | Resumen integral de actividad: citas, pacientes, ingresos y personal en todas las entidades. |
 | `por-plan` | Desglose de ingresos por plan de suscripción, incluyendo MRR y proyecciones de renovación. |
 
@@ -102,12 +102,15 @@ Para gestionar el proceso completo de revisión y aprobación de médicos, consu
   <Card title="Clínicas" icon="hospital" href="/modulos/admin/clinicas">
     Crea, edita y desactiva entidades clínicas. Gestiona las especialidades disponibles por clínica.
   </Card>
+
   <Card title="Usuarios" icon="users" href="/modulos/admin/usuarios">
     Visualiza pacientes y médicos, aprueba credenciales y controla el estado de las cuentas.
   </Card>
+
   <Card title="Suscripciones" icon="credit-card" href="/modulos/admin/suscripciones">
     Administra planes SaaS, revisa el MRR y exporta reportes de facturación por entidad.
   </Card>
+
   <Card title="Auditoría de Calidad" icon="shield-check" href="#auditoría-de-calidad">
     Accede directamente a los indicadores de seguridad, eficiencia y relación con pacientes.
   </Card>
