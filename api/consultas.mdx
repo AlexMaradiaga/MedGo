@@ -1,5 +1,5 @@
 ---
-title: "API de Consultas Médicas y Diagnósticos en MedCore Global"
+title: "API de Consultas Médicas y Diagnósticos en MedGo+"
 sidebarTitle: "Consultas"
 description: "Endpoints para finalizar consultas, registrar signos vitales, diagnósticos CIE-11 y prescripciones. Accede al historial clínico completo del paciente."
 ---
@@ -10,7 +10,9 @@ Los endpoints de consultas médicas permiten a los médicos registrar el resulta
 
 ## POST /api/doctor/consulta/finalizar
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Finaliza una consulta médica asociada a una cita `Confirmada`. Registra de forma integral los signos vitales, el diagnóstico, el examen por sistemas y los medicamentos prescritos. Al completarse, la cita asociada pasa al estado `Completada`.
 
@@ -47,9 +49,11 @@ Finaliza una consulta médica asociada a una cita `Confirmada`. Registra de form
     <ParamField body="NombreMedicamento" type="string" required>
       Nombre comercial o genérico del medicamento.
     </ParamField>
+
     <ParamField body="Dosis" type="string" required>
       Dosis y frecuencia de administración. Ejemplo: `"500mg cada 8 horas"`.
     </ParamField>
+
     <ParamField body="Indicaciones" type="string" required>
       Instrucciones adicionales para el paciente sobre el uso del medicamento.
     </ParamField>
@@ -108,9 +112,11 @@ curl -X POST https://tu-instancia.com/api/doctor/consulta/finalizar \
 
 ---
 
-## GET /api/doctor/paciente/\{pacienteId\}/historial-completo
+## GET /api/doctor/paciente/{pacienteId}/historial-completo
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Devuelve el historial clínico completo del paciente, incluyendo consultas previas, exámenes por sistemas, datos comparativos de signos vitales, información basal y el estado de autorización del médico solicitante. Este endpoint requiere que el paciente haya otorgado autorización previa al médico.
 
@@ -191,7 +197,9 @@ Devuelve el historial clínico completo del paciente, incluyendo consultas previ
 
 ## GET /api/doctor/consulta/detalle
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Devuelve el detalle completo de una consulta específica para visualización en modal o vista de detalle. Incluye sistemas examinados, hallazgos y signos vitales registrados.
 
@@ -234,7 +242,9 @@ Devuelve el detalle completo de una consulta específica para visualización en 
 
 ## GET /api/medico/consulta/receta
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Obtiene la receta médica asociada a una consulta específica. Devuelve la lista de medicamentos prescritos con dosis e indicaciones.
 
@@ -279,12 +289,15 @@ Obtiene la receta médica asociada a una consulta específica. Devuelve la lista
     <ResponseField name="NombreMedicamento" type="string">
       Nombre comercial o genérico del medicamento prescrito.
     </ResponseField>
+
     <ResponseField name="Dosis" type="string">
       Dosis y frecuencia de administración indicada por el médico.
     </ResponseField>
+
     <ResponseField name="Indicaciones" type="string">
       Instrucciones adicionales para el paciente sobre el uso correcto del medicamento.
     </ResponseField>
+
     <ResponseField name="CodigoCanje" type="string">
       Código único de canje de la receta, utilizado para verificación en farmacia.
     </ResponseField>
@@ -295,7 +308,9 @@ Obtiene la receta médica asociada a una consulta específica. Devuelve la lista
 
 ## GET /api/doctor/diagnosticos/buscar
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Busca diagnósticos en la clasificación CIE-11 de la Organización Mundial de la Salud (OMS). Devuelve coincidencias con código oficial y descripción para que el médico seleccione el diagnóstico correcto al finalizar una consulta.
 
@@ -341,7 +356,9 @@ curl -X GET "https://tu-instancia.com/api/doctor/diagnosticos/buscar?q=cefalea" 
 
 ## POST /api/doctor/paciente/conceder-autorizacion
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Registra en el sistema que un paciente otorgó autorización a un médico específico para acceder a su historial clínico completo. La autorización tiene vigencia de **1 año** a partir de la fecha de registro.
 
