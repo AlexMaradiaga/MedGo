@@ -1,10 +1,10 @@
 ---
-title: "Descarga y canjea tus recetas médicas en MedCore Global"
+title: "Descarga y canjea tus recetas médicas en MedGo+"
 sidebarTitle: "Recetas"
 description: "Descarga tus recetas médicas en PDF con código QR de canje. Compártelas fácilmente con farmacias o guárdalas para futuras referencias."
 ---
 
-MedCore Global elimina la receta en papel. Al finalizar tu consulta, el médico emite tu receta directamente desde la plataforma y tú la recibes al instante en formato digital. Cada receta incluye un código QR único que la farmacia puede escanear para verificar su autenticidad y registrar el canje. Desde el portal o la API puedes descargar, compartir y consultar todas tus recetas en cualquier momento.
+MedGo\+ elimina la receta en papel. Al finalizar tu consulta, el médico emite tu receta directamente desde la plataforma y tú la recibes al instante en formato digital. Cada receta incluye un código QR único que la farmacia puede escanear para verificar su autenticidad y registrar el canje. Desde el portal o la API puedes descargar, compartir y consultar todas tus recetas en cualquier momento.
 
 ---
 
@@ -12,7 +12,7 @@ MedCore Global elimina la receta en papel. Al finalizar tu consulta, el médico 
 
 El proceso es completamente automático y ocurre en cuatro pasos:
 
-1. **El médico finaliza la consulta** y emite la prescripción desde su panel en MedCore Global, indicando el medicamento, la dosis, la posología y la duración del tratamiento.
+1. **El médico finaliza la consulta** y emite la prescripción desde su panel en MedGo\+, indicando el medicamento, la dosis, la posología y la duración del tratamiento.
 2. **El sistema genera un PDF** que incluye los datos del médico, del paciente, los medicamentos recetados y un código QR de canje único e intransferible.
 3. **Recibes una notificación** por correo electrónico y dentro de la plataforma con el enlace directo para descargar tu receta.
 4. **Presentas el PDF o el código QR** en la farmacia de tu elección. El farmacéutico escanea el código QR para verificar la receta y registrar el canje en el sistema.
@@ -23,7 +23,7 @@ El proceso es completamente automático y ocurre en cuatro pasos:
 
 Para descargar una receta en formato PDF, realiza la siguiente solicitud:
 
-```
+```text
 GET /api/recetas/pdf/{recetaId}
 ```
 
@@ -51,12 +51,15 @@ Cada receta digital generada por MedCore Global incluye la siguiente informació
   <Card title="Datos del médico" icon="user-doctor">
     Nombre completo, número de colegiación médica, especialidad y firma del profesional que emite la prescripción.
   </Card>
+
   <Card title="Datos del paciente" icon="user">
     Nombre completo, DNI y edad del paciente.
   </Card>
+
   <Card title="Prescripción" icon="pills">
     Nombre del medicamento, dosis, forma farmacéutica (tableta, jarabe, inyección, etc.), frecuencia e instrucciones de administración.
   </Card>
+
   <Card title="Validez y seguridad" icon="qrcode">
     Fecha de emisión, código QR único de canje y sello de autenticidad de MedCore Global.
   </Card>
@@ -85,7 +88,7 @@ Este mecanismo garantiza que cada receta solo pueda utilizarse una vez, previnie
 
 Para consultar el listado completo de recetas asociadas a tu expediente:
 
-```
+```text
 GET /api/historial/recetas/{usuarioId}
 ```
 
