@@ -1,5 +1,5 @@
 ---
-title: "Ciclo de Vida de una Cita Médica en MedCore Global"
+title: "Ciclo de Vida de una Cita Médica en MedGo+"
 sidebarTitle: "Flujo de Cita"
 description: "Entiende el ciclo completo de una cita médica en MedCore Global: desde la reserva del paciente hasta la consulta, diagnóstico, receta y pago."
 ---
@@ -27,7 +27,6 @@ Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al 
 
     La cita se crea con estado **Pendiente**, a la espera de confirmación por parte del médico.
   </Step>
-
   <Step title="El médico revisa y aprueba la cita">
     El médico recibe la solicitud en su panel de agenda y la confirma. En ese momento el estado de la cita cambia a **Confirmada** y el paciente recibe una notificación.
 
@@ -42,7 +41,6 @@ Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al 
     }
     ```
   </Step>
-
   <Step title="El médico atiende la consulta">
     En el día y hora acordados, el médico abre el perfil del paciente desde su panel y da inicio a la consulta médica. El sistema despliega el formulario SOAP (Subjetivo, Objetivo, Evaluación y Plan) donde el médico puede:
 
@@ -51,7 +49,6 @@ Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al 
     - Revisar el **historial clínico previo** del paciente en esa entidad.
     - Agregar notas de evaluación y plan de tratamiento.
   </Step>
-
   <Step title="Se finaliza la consulta">
     Al concluir la atención, el médico guarda y cierra la consulta. Este paso registra de forma permanente el diagnóstico, los medicamentos recetados y cualquier orden de laboratorio emitida.
 
@@ -78,7 +75,6 @@ Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al 
 
     La cita pasa al estado **Completada** automáticamente.
   </Step>
-
   <Step title="El paciente descarga su receta">
     Una vez finalizada la consulta, el paciente puede descargar su receta en formato PDF desde su perfil. El documento incluye los datos del médico, la entidad, los medicamentos indicados y el código QR de canje.
 
@@ -88,7 +84,6 @@ Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al 
 
     La respuesta devuelve el archivo PDF listo para descarga o impresión.
   </Step>
-
   <Step title="Se registra el pago">
     Finalmente, se procesa el cobro de la consulta según la tarifa establecida por la entidad y el plan del paciente. El comprobante queda disponible en el historial de transacciones.
 
@@ -113,12 +108,12 @@ Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al 
 
 A lo largo de su ciclo de vida, una cita puede encontrarse en uno de los siguientes estados:
 
-| Estado       | Descripción                                                                                     |
-|--------------|-------------------------------------------------------------------------------------------------|
-| **Pendiente**    | La cita fue agendada por el paciente y está esperando confirmación por parte del médico.        |
-| **Confirmada**   | El médico aprobó la cita. El paciente debe presentarse en el horario acordado.                  |
-| **Completada**   | La consulta fue atendida y finalizada por el médico. El expediente ya está disponible.          |
-| **Cancelada**    | La cita fue cancelada por el paciente o por el médico antes de que se llevara a cabo.           |
+| Estado | Descripción |
+| --- | --- |
+| **Pendiente** | La cita fue agendada por el paciente y está esperando confirmación por parte del médico. |
+| **Confirmada** | El médico aprobó la cita. El paciente debe presentarse en el horario acordado. |
+| **Completada** | La consulta fue atendida y finalizada por el médico. El expediente ya está disponible. |
+| **Cancelada** | La cita fue cancelada por el paciente o por el médico antes de que se llevara a cabo. |
 
 ---
 
