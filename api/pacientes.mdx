@@ -1,14 +1,14 @@
 ---
-title: "API de Pacientes en MedCore Global: Perfiles e Historial"
+title: "API de Pacientes en MedGo+: Perfiles e Historial"
 sidebarTitle: "Pacientes"
 description: "Endpoints de la API para gestionar perfiles de pacientes, consultar historial clínico, recetas y exámenes. Requiere rol Paciente o Administrador."
 ---
 
-Los endpoints de pacientes permiten acceder y gestionar la información clínica y demográfica de los pacientes registrados en MedCore Global. Esto incluye el perfil del paciente, su historial de consultas, recetas médicas y exámenes físicos. Todos los endpoints requieren autenticación con Bearer token; algunos están restringidos al rol **Administrador**.
+Los endpoints de pacientes permiten acceder y gestionar la información clínica y demográfica de los pacientes registrados en MedGo\+. Esto incluye el perfil del paciente, su historial de consultas, recetas médicas y exámenes físicos. Todos los endpoints requieren autenticación con Bearer token; algunos están restringidos al rol **Administrador**.
 
 ---
 
-## GET /api/pacientes/usuario/\{id\}
+## GET /api/pacientes/usuario/{id}
 
 Obtiene el perfil completo de un paciente a partir de su **ID de usuario** (no del ID de paciente). Útil para cargar la información demográfica y de cobertura médica en interfaces de gestión.
 
@@ -100,7 +100,7 @@ curl --request GET \
 
 ---
 
-## GET /api/historial/consultas/\{usuarioId\}
+## GET /api/historial/consultas/{usuarioId}
 
 Devuelve el historial completo de consultas médicas asociadas a un paciente, ordenadas de más reciente a más antigua.
 
@@ -174,7 +174,7 @@ curl --request GET \
 
 ---
 
-## GET /api/historial/recetas/\{usuarioId\}
+## GET /api/historial/recetas/{usuarioId}
 
 Devuelve el historial de recetas médicas emitidas para un paciente, incluyendo el medicamento, dosis y el médico prescriptor.
 
@@ -258,7 +258,7 @@ curl --request GET \
 
 ---
 
-## GET /api/historial/examenes/\{usuarioId\}
+## GET /api/historial/examenes/{usuarioId}
 
 Devuelve el historial de exámenes físicos del paciente, organizados por sistema corporal evaluado (cardiovascular, respiratorio, etc.).
 
@@ -325,7 +325,7 @@ curl --request GET \
 
 ---
 
-## GET /api/recetas/pdf/\{recetaId\}
+## GET /api/recetas/pdf/{recetaId}
 
 Descarga el archivo PDF oficial de una receta médica específica. El archivo está firmado digitalmente con los datos del médico y del paciente.
 
@@ -356,7 +356,7 @@ La respuesta es un archivo binario en formato **PDF**. La cabecera `Content-Type
 
 ---
 
-## POST /api/pacientes/\{id\}/emancipar
+## POST /api/pacientes/{id}/emancipar
 
 Promueve a un paciente **dependiente** (vinculado a un tutor) a la condición de paciente **autónomo**, creando una cuenta de usuario independiente para él. Este proceso es irreversible y se utiliza cuando un paciente menor de edad alcanza la mayoría de edad o cuando un tutor ya no ejerce la tutela.
 
