@@ -1,10 +1,10 @@
 ---
-title: "Gestiona tus Pacientes Atendidos en MedCore Global"
+title: "Gestiona tus Pacientes Atendidos en MedGo+"
 sidebarTitle: "Mis Pacientes"
 description: "Consulta el listado de pacientes atendidos, busca por nombre y accede al historial clínico completo de cada paciente desde tu portal médico."
 ---
 
-El módulo **Mis Pacientes** centraliza el registro de todos los individuos que has atendido a lo largo de tu actividad en MedCore Global. Desde este espacio puedes buscar un paciente por nombre, revisar cuántas veces lo has atendido y acceder a su historial clínico completo, siempre dentro del marco de privacidad y autorización que la plataforma establece.
+El módulo **Mis Pacientes** centraliza el registro de todos los individuos que has atendido a lo largo de tu actividad en MedGo\+. Desde este espacio puedes buscar un paciente por nombre, revisar cuántas veces lo has atendido y acceder a su historial clínico completo, siempre dentro del marco de privacidad y autorización que la plataforma establece.
 
 ---
 
@@ -63,10 +63,10 @@ POST /api/doctor/paciente/conceder-autorizacion
 }
 ```
 
-| Campo              | Tipo      | Requerido | Descripción                                                                 |
-|--------------------|-----------|-----------|-----------------------------------------------------------------------------|
-| `paciente_id`      | `integer` | ✅        | Identificador del paciente que otorga la autorización.                      |
-| `pin_autorizacion` | `string`  | ✅        | Código de autorización que el paciente te dicta en el momento de la consulta. |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `paciente_id` | `integer` | ✅ | Identificador del paciente que otorga la autorización. |
+| `pin_autorizacion` | `string` | ✅ | Código de autorización que el paciente te dicta en el momento de la consulta. |
 
 El paciente genera o consulta su código de autorización desde la sección **Mi Perfil → Privacidad y Accesos** en su propio portal. Este registro queda guardado en el expediente y puede ser revocado por el paciente en cualquier momento desde esa misma sección. Te recomendamos solicitar esta autorización durante la primera consulta, una vez que el paciente haya dado su consentimiento verbal.
 
@@ -77,7 +77,7 @@ El paciente genera o consulta su código de autorización desde la sección **Mi
 Al hacer clic en cualquier paciente de tu lista, accedes a su perfil de vista rápida, que reúne la información más relevante para la consulta:
 
 | Campo | Descripción |
-|---|---|
+| --- | --- |
 | **Edad y género** | Calculado automáticamente desde la fecha de nacimiento registrada |
 | **Teléfono de contacto** | Número principal para coordinación de citas y urgencias |
 | **Alergias** | Listado de alergias conocidas y reacciones adversas documentadas |
