@@ -1,10 +1,10 @@
 ---
-title: "Autenticación con Token Bearer en MedCore Global API"
+title: "Autenticación con Token Bearer en MedGo+ API"
 sidebarTitle: "Autenticación"
-description: "MedCore Global usa tokens Bearer para autenticar solicitudes. Aprende a obtener tu token, enviarlo en cada petición y manejar errores de acceso."
+description: "Medgo+ usa tokens Bearer para autenticar solicitudes. Aprende a obtener tu token, enviarlo en cada petición y manejar errores de acceso."
 ---
 
-La API de MedCore Global utiliza autenticación basada en **tokens Bearer** gestionados por [Laravel Sanctum](https://laravel.com/docs/sanctum). Cada vez que un usuario inicia sesión, el sistema genera un token personal de acceso que debe incluirse en el encabezado `Authorization` de todas las solicitudes que requieran autenticación. Los tokens no tienen una fecha de expiración fija, pero pueden ser revocados explícitamente al cerrar sesión.
+La API de Medgo\+ utiliza autenticación basada en **tokens Bearer** gestionados por [Laravel Sanctum](https://laravel.com/docs/sanctum). Cada vez que un usuario inicia sesión, el sistema genera un token personal de acceso que debe incluirse en el encabezado `Authorization` de todas las solicitudes que requieran autenticación. Los tokens no tienen una fecha de expiración fija, pero pueden ser revocados explícitamente al cerrar sesión.
 
 ## Obtener tu token
 
@@ -128,7 +128,7 @@ curl -X PUT https://api.medcoreglobal.com/api/auth/password \
 ```
 
 | Campo | Tipo | Descripción |
-|---|---|---|
+| --- | --- | --- |
 | `usuario_id` | integer | ID del usuario autenticado (campo `data.id` devuelto al iniciar sesión) |
 | `old_password` | string | Contraseña actualmente en uso |
 | `new_password` | string | Nueva contraseña deseada (mínimo 8 caracteres) |
@@ -150,7 +150,7 @@ Si la contraseña actual no coincide o la confirmación de la nueva contraseña 
 La API devuelve códigos de estado HTTP estándar para indicar el tipo de error de acceso. Consulta la tabla a continuación para manejar correctamente cada caso en tu integración:
 
 | Código HTTP | Nombre | Causa probable | Acción recomendada |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `401 Unauthorized` | Token inválido o ausente | El encabezado `Authorization` no fue enviado, el token está mal formado o ya fue revocado (logout previo). | Solicitar al usuario que inicie sesión nuevamente para obtener un token válido. |
 | `403 Forbidden` | Rol incorrecto o cuenta inactiva | El usuario no tiene el rol necesario para acceder al recurso solicitado, o su cuenta ha sido desactivada por un administrador. | Verificar que el usuario tenga los permisos correspondientes. Si la cuenta fue desactivada, contactar al administrador de la clínica. |
 | `422 Unprocessable Entity` | Validación fallida | Los datos enviados en el cuerpo de la solicitud no cumplen las reglas de validación (campos requeridos ausentes, formato incorrecto, contraseña que no coincide, etc.). | Revisar el campo `errors` en el cuerpo de la respuesta para identificar y corregir cada campo con error. |
