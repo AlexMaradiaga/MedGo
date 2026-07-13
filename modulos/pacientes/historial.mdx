@@ -1,10 +1,10 @@
 ---
-title: "Accede a tu historial clínico completo en MedCore Global"
+title: "Accede a tu historial clínico completo en MedGo+"
 sidebarTitle: "Historial"
 description: "Accede a tu historial clínico completo: consultas, diagnósticos, exámenes físicos, recetas y estudios de laboratorio, todo en un solo lugar."
 ---
 
-MedCore Global centraliza toda tu información clínica en un único expediente digital seguro. Desde el portal o la API puedes consultar el registro de tus consultas pasadas, los diagnósticos emitidos por tus médicos, tus exámenes físicos, las recetas que te han sido expedidas y tus órdenes de laboratorio. Tu historial está disponible las 24 horas del día y puedes autorizar a cualquier médico registrado en la plataforma para que acceda a él cuando lo necesites.
+MedGo\+ centraliza toda tu información clínica en un único expediente digital seguro. Desde el portal o la API puedes consultar el registro de tus consultas pasadas, los diagnósticos emitidos por tus médicos, tus exámenes físicos, las recetas que te han sido expedidas y tus órdenes de laboratorio. Tu historial está disponible las 24 horas del día y puedes autorizar a cualquier médico registrado en la plataforma para que acceda a él cuando lo necesites.
 
 ---
 
@@ -12,7 +12,7 @@ MedCore Global centraliza toda tu información clínica en un único expediente 
 
 Para obtener la lista completa de consultas médicas registradas en tu expediente, realiza la siguiente solicitud:
 
-```
+```text
 GET /api/historial/consultas/{usuarioId}
 ```
 
@@ -51,7 +51,7 @@ Reemplaza `{usuarioId}` con tu identificador de usuario. La respuesta incluye, p
 
 Para ver todas las recetas médicas asociadas a tu expediente:
 
-```
+```text
 GET /api/historial/recetas/{usuarioId}
 ```
 
@@ -63,7 +63,7 @@ Reemplaza `{usuarioId}` con tu identificador de usuario. El listado incluye la f
 
 Los resultados de los exámenes físicos realizados durante tus consultas (peso, talla, presión arterial, frecuencia cardíaca, temperatura, entre otros) se almacenan automáticamente en tu expediente. Para consultarlos:
 
-```
+```text
 GET /api/historial/examenes/{usuarioId}
 ```
 
@@ -73,7 +73,7 @@ Reemplaza `{usuarioId}` con tu identificador de usuario. Cada registro incluye l
 
 ## Autorizar a un médico para ver mi historial
 
-Por defecto, tu historial clínico completo solo es visible para ti y para los médicos que te han atendido directamente a través de MedCore Global. Sin embargo, puedes **autorizar explícitamente** a cualquier médico registrado en la plataforma para que acceda a tu expediente completo. Esto es especialmente útil cuando:
+Por defecto, tu historial clínico completo solo es visible para ti y para los médicos que te han atendido directamente a través de MedGo\+. Sin embargo, puedes **autorizar explícitamente** a cualquier médico registrado en la plataforma para que acceda a tu expediente completo. Esto es especialmente útil cuando:
 
 - Cambias de médico de cabecera y deseas que tu nuevo proveedor conozca tu historial completo.
 - Buscas una segunda opinión médica.
@@ -91,7 +91,7 @@ Para otorgar acceso, dirígete a **Mi Perfil → Privacidad y Accesos → Autori
 
 Para obtener la información completa de tu perfil de paciente, incluyendo tus datos personales, información de seguro médico y las relaciones de tutela registradas (tutores a cargo tuyo o dependientes bajo tu custodia), usa el siguiente endpoint:
 
-```
+```text
 GET /api/pacientes/usuario/{id}
 ```
 
