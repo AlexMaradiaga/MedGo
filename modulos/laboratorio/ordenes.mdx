@@ -1,13 +1,13 @@
 ---
-title: "Órdenes de Laboratorio: Gestión y Resultados — MedCore"
+title: "Órdenes de Laboratorio: Gestión y Resultados — MedGo+"
 sidebarTitle: "Órdenes Lab"
-description: "Consulta y gestiona las órdenes de laboratorio en MedCore Global. Visualiza muestras, procesa resultados y notifica a médicos y pacientes."
+description: "Consulta y gestiona las órdenes de laboratorio en MedGo+. Visualiza muestras, procesa resultados y notifica a médicos y pacientes."
 ---
 
 El módulo de Órdenes de Laboratorio gestiona el ciclo completo de cada solicitud de análisis clínico: desde la recepción de la muestra hasta la entrega de resultados al paciente y al médico solicitante. A través de los endpoints documentados aquí, el personal de laboratorio puede consultar el historial de órdenes por paciente, acceder a los resultados cargados y administrar el catálogo de exámenes disponibles. Los pacientes, por su parte, pueden buscar laboratorios, solicitar exámenes y consultar sus resultados desde el portal dedicado.
 
 <Tip>
-  Los resultados de laboratorio también son accesibles desde el **Portal de Historial del Paciente** dentro de MedCore Global. Los médicos pueden revisar el historial completo de resultados de un paciente —incluyendo órdenes de laboratorio anteriores y sus archivos adjuntos— directamente desde el expediente clínico, sin necesidad de ingresar al módulo de laboratorio.
+  Los resultados de laboratorio también son accesibles desde el **Portal de Historial del Paciente** dentro de MedGo\+. Los médicos pueden revisar el historial completo de resultados de un paciente —incluyendo órdenes de laboratorio anteriores y sus archivos adjuntos— directamente desde el expediente clínico, sin necesidad de ingresar al módulo de laboratorio.
 </Tip>
 
 ---
@@ -23,7 +23,7 @@ GET /api/laboratorio/paciente/{pacienteId}/ordenes
 **Parámetros de ruta:**
 
 | Parámetro | Tipo | Descripción |
-|---|---|---|
+| --- | --- | --- |
 | `pacienteId` | `integer` | Identificador único del paciente en la plataforma. |
 
 **Respuesta de ejemplo:**
@@ -58,7 +58,7 @@ GET /api/laboratorio/orden/{ordenId}/resultados
 **Parámetros de ruta:**
 
 | Parámetro | Tipo | Descripción |
-|---|---|---|
+| --- | --- | --- |
 | `ordenId` | `integer` | Identificador único de la orden de laboratorio. |
 
 **Respuesta de ejemplo:**
@@ -81,14 +81,14 @@ GET /api/laboratorio/orden/{ordenId}/resultados
 ```
 
 | Campo | Descripción |
-|---|---|
+| --- | --- |
 | `OrdenID` | Identificador de la orden. |
 | `PacienteID` | Identificador del paciente al que pertenece la orden. |
 | `Estado` | Estado global de la orden: `Pendiente`, `En Procesamiento`, `Completado` o `Cancelado`. |
 | `FechaOrden` | Fecha en que se generó la solicitud. |
 | `examenes` | Arreglo con cada examen de la orden, su nombre, la ruta al archivo PDF de resultados y la fecha de carga. |
 
-El campo `RutaArchivo` contiene la ruta relativa al almacenamiento de la plataforma. Para generar una URL descargable, combínala con el dominio base de almacenamiento configurado para tu instancia de MedCore Global.
+El campo `RutaArchivo` contiene la ruta relativa al almacenamiento de la plataforma. Para generar una URL descargable, combínala con el dominio base de almacenamiento configurado para tu instancia de MedGo\+.
 
 ---
 
@@ -106,18 +106,23 @@ GET /api/laboratorio/catalogo
   <Accordion title="Hematología">
     Análisis de componentes sanguíneos: biometría hemática completa, recuento diferencial, tiempo de coagulación, índices eritrocitarios y velocidad de sedimentación globular (VSG).
   </Accordion>
+
   <Accordion title="Bioquímica">
     Pruebas de función metabólica: glucosa, perfil lipídico (colesterol total, HDL, LDL, triglicéridos), función hepática (ALT, AST, bilirrubinas), función renal (creatinina, BUN, ácido úrico) y electrolitos.
   </Accordion>
+
   <Accordion title="Microbiología">
     Cultivos y antibiogramas: urocultivo, hemocultivo, coprocultivo, cultivo de secreciones y pruebas de sensibilidad antimicrobiana.
   </Accordion>
+
   <Accordion title="Inmunología y Serología">
     Pruebas de detección de anticuerpos y antígenos: VIH, hepatitis B y C, dengue, tipificación de grupos sanguíneos, proteína C reactiva (PCR) y factor reumatoide.
   </Accordion>
+
   <Accordion title="Hormonología y Endocrinología">
     Perfil tiroideo (TSH, T3, T4), cortisol, insulina, perfil hormonal femenino y masculino, y marcadores tumorales.
   </Accordion>
+
   <Accordion title="Uroanálisis y Coprología">
     Examen general de orina (EGO), microalbuminuria, examen coproparasitoscópico y sangre oculta en heces.
   </Accordion>
@@ -127,13 +132,13 @@ GET /api/laboratorio/catalogo
 
 ## Portal del paciente para laboratorio
 
-MedCore Global incluye un portal de laboratorio orientado al paciente que le permite interactuar directamente con los servicios de diagnóstico disponibles en la plataforma, sin necesidad de intermediarios.
+MedGo\+ incluye un portal de laboratorio orientado al paciente que le permite interactuar directamente con los servicios de diagnóstico disponibles en la plataforma, sin necesidad de intermediarios.
 
 ### Funcionalidades del portal
 
 <Steps>
   <Step title="Búsqueda de laboratorios por ubicación">
-    El paciente puede buscar laboratorios registrados en MedCore Global filtrando por ciudad, colonia o proximidad geográfica. Cada resultado muestra el nombre del laboratorio, dirección, horario de atención y valoración.
+    El paciente puede buscar laboratorios registrados en MedGo\+ filtrando por ciudad, colonia o proximidad geográfica. Cada resultado muestra el nombre del laboratorio, dirección, horario de atención y valoración.
   </Step>
   <Step title="Filtro por categoría de examen">
     Desde el directorio de laboratorios, el paciente puede filtrar por categoría de examen (hematología, bioquímica, microbiología, etc.) para encontrar laboratorios que ofrezcan la prueba específica que necesita.
