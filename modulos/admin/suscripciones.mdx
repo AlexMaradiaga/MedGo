@@ -1,10 +1,10 @@
 ---
-title: "Planes SaaS y Suscripciones — MedCore Global Admin"
+title: "Planes SaaS y Suscripciones — MedGo+ Admin"
 sidebarTitle: "Suscripciones"
-description: "Administra los planes de suscripción SaaS de MedCore Global. Revisa el MRR, activa y actualiza planes por entidad, y exporta reportes de facturación."
+description: "Administra los planes de suscripción SaaS de MedGo+. Revisa el MRR, activa y actualiza planes por entidad, y exporta reportes de facturación."
 ---
 
-MedCore Global opera bajo un modelo de Software as a Service (SaaS) en el que cada entidad —clínica, laboratorio o farmacia— contrata un plan de acceso que define los límites y capacidades de la plataforma para su operación. Como administrador, tienes visibilidad completa sobre el estado de todas las suscripciones activas, las entidades próximas a vencer y los ingresos recurrentes mensuales generados por la plataforma.
+MedGo\+ opera bajo un modelo de Software as a Service (SaaS) en el que cada entidad —clínica, laboratorio o farmacia— contrata un plan de acceso que define los límites y capacidades de la plataforma para su operación. Como administrador, tienes visibilidad completa sobre el estado de todas las suscripciones activas, las entidades próximas a vencer y los ingresos recurrentes mensuales generados por la plataforma.
 
 <Info>
   El **Plan Gratuito** impone un límite de **10 pacientes activos** para la entidad suscrita. Una vez alcanzado este límite, el sistema bloqueará el registro de nuevos pacientes hasta que la entidad actualice su plan. Para eliminar esta restricción, actualiza la entidad al Plan Premium.
@@ -25,6 +25,7 @@ MedCore Global ofrece dos niveles de suscripción para entidades:
     - Sin costo mensual
     - Soporte vía documentación y comunidad
   </Card>
+
   <Card title="Plan Premium" icon="star">
     **Ideal para:** Clínicas y laboratorios en operación con demanda creciente.
 
@@ -77,7 +78,7 @@ GET /api/admin/saas/monitoreo
 ```
 
 | Campo | Descripción |
-|---|---|
+| --- | --- |
 | `MRR` | Monthly Recurring Revenue: ingreso recurrente mensual total generado por todos los planes activos. |
 | `PremiumActivos` | Número de entidades con plan Premium vigente. |
 | `PlanesGratis` | Número de entidades activas en el plan gratuito. |
@@ -106,7 +107,7 @@ POST /api/admin/saas/actualizar-plan
 ```
 
 | Campo | Tipo | Requerido | Descripción |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `tipo_plan` | `string` | ✅ | Nombre del plan a asignar. Valores aceptados: `Gratuito`, `Premium`. |
 | `dias_vigencia` | `integer` | ✅ | Duración de la suscripción en días a partir de la fecha de activación. |
 | `token_pasarela` | `string` | ✅ | Token de transacción emitido por la pasarela de pago al procesar el cobro. |
@@ -136,7 +137,7 @@ POST /api/admin/servicios/tarifa
 ```
 
 | Campo | Tipo | Requerido | Descripción |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `servicio_id` | `integer` | ❌ | Identificador del servicio existente a actualizar. Omitir para crear un nuevo servicio. |
 | `doctor_id` | `integer` | ✅ | Identificador del doctor al que aplica la tarifa. |
 | `nombre_servicio` | `string` | ✅ | Nombre descriptivo del servicio o tipo de consulta (máximo 100 caracteres). |
@@ -158,7 +159,7 @@ GET /api/admin/reportes/exportar?tipo={tipo}
 Los tipos de reporte disponibles son:
 
 | Tipo (`tipo`) | Descripción |
-|---|---|
+| --- | --- |
 | `general` | Resumen integral de actividad de todas las entidades: citas, pacientes, ingresos y personal. |
 | `por-plan` | Desglose de entidades agrupadas por plan de suscripción, con MRR y detalle de facturación por categoría de plan. |
 
