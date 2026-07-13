@@ -1,27 +1,29 @@
 ---
-title: "API de Citas Médicas en MedCore Global: Agenda y Gestión"
+title: "API de Citas Médicas en MedGo+: Agenda y Gestión"
 sidebarTitle: "Citas"
-description: "Endpoints para agendar, consultar, aprobar, rechazar, reagendar y cancelar citas médicas en MedCore Global. Roles: Paciente y Médico."
+description: "Endpoints para agendar, consultar, aprobar, rechazar, reagendar y cancelar citas médicas en MedGo+. Roles: Paciente y Médico."
 ---
 
-Los endpoints de citas médicas permiten gestionar el ciclo de vida completo de una cita en MedCore Global: desde el agendamiento por parte del paciente, la aprobación o rechazo por parte del médico, la reprogramación y la cancelación. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization`.
+Los endpoints de citas médicas permiten gestionar el ciclo de vida completo de una cita en MedGo\+: desde el agendamiento por parte del paciente, la aprobación o rechazo por parte del médico, la reprogramación y la cancelación. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization`.
 
 ---
 
 ## Estados de una cita
 
-| Estado       | Descripción                                                  | Transición posible              |
-|--------------|--------------------------------------------------------------|---------------------------------|
-| `Pendiente`  | La cita fue agendada por el paciente y aguarda confirmación. | → `Confirmada` / `Cancelada`    |
-| `Confirmada` | El médico aprobó la cita.                                    | → `Completada` / `Cancelada`    |
-| `Completada` | La consulta se realizó y fue finalizada por el médico.       | — (estado final)                |
-| `Cancelada`  | La cita fue cancelada por el paciente o el médico.           | — (estado final)                |
+| Estado | Descripción | Transición posible |
+| --- | --- | --- |
+| `Pendiente` | La cita fue agendada por el paciente y aguarda confirmación. | → `Confirmada` / `Cancelada` |
+| `Confirmada` | El médico aprobó la cita. | → `Completada` / `Cancelada` |
+| `Completada` | La consulta se realizó y fue finalizada por el médico. | — (estado final) |
+| `Cancelada` | La cita fue cancelada por el paciente o el médico. | — (estado final) |
 
 ---
 
 ## POST /api/citas
 
-<Note>Rol requerido: **Paciente**</Note>
+<Note>
+  Rol requerido: **Paciente**
+</Note>
 
 Agenda una nueva cita médica. El sistema crea la cita en estado `Pendiente` hasta que el médico la apruebe o rechace.
 
@@ -98,9 +100,11 @@ curl -X POST https://tu-instancia.com/api/citas \
 
 ---
 
-## GET /api/citas/historial/\{usuarioId\}
+## GET /api/citas/historial/{usuarioId}
 
-<Note>Rol requerido: **Paciente**</Note>
+<Note>
+  Rol requerido: **Paciente**
+</Note>
 
 Devuelve el historial completo de citas médicas de un paciente específico, ordenadas de más reciente a más antigua.
 
@@ -161,9 +165,11 @@ Devuelve el historial completo de citas médicas de un paciente específico, ord
 
 ---
 
-## PUT /api/citas/\{id\}/reprogramar
+## PUT /api/citas/{id}/reprogramar
 
-<Note>Rol requerido: **Paciente**</Note>
+<Note>
+  Rol requerido: **Paciente**
+</Note>
 
 Reprograma una cita existente a una nueva fecha y hora. Solo se pueden reprogramar citas en estado `Pendiente` o `Confirmada`.
 
@@ -205,9 +211,11 @@ curl -X PUT https://tu-instancia.com/api/citas/487/reprogramar \
 
 ---
 
-## DELETE /api/citas/\{id\}
+## DELETE /api/citas/{id}
 
-<Note>Roles requeridos: **Paciente** o **Médico**</Note>
+<Note>
+  Roles requeridos: **Paciente** o **Médico**
+</Note>
 
 Cancela una cita médica. La cita pasa al estado `Cancelada` y no puede reactivarse. Solo se pueden cancelar citas en estado `Pendiente` o `Confirmada`.
 
@@ -236,9 +244,11 @@ curl -X DELETE https://tu-instancia.com/api/citas/487 \
 
 ---
 
-## POST /api/doctor/cita/aprobar/\{id\}
+## POST /api/doctor/cita/aprobar/{id}
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Aprueba una cita que se encuentra en estado `Pendiente`. El estado de la cita cambia a `Confirmada` y el paciente recibe una notificación.
 
@@ -267,9 +277,11 @@ curl -X POST https://tu-instancia.com/api/doctor/cita/aprobar/487 \
 
 ---
 
-## POST /api/doctor/cita/rechazar/\{id\}
+## POST /api/doctor/cita/rechazar/{id}
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Rechaza una cita pendiente indicando el motivo. La cita pasa al estado `Cancelada` y el paciente es notificado con el motivo del rechazo.
 
@@ -310,9 +322,11 @@ curl -X POST https://tu-instancia.com/api/doctor/cita/rechazar/487 \
 
 ---
 
-## GET /api/citas/doctor/\{doctorId\}
+## GET /api/citas/doctor/{doctorId}
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Devuelve todas las citas en estado `Pendiente` asignadas a un médico específico. Útil para que el médico gestione su bandeja de solicitudes de aprobación.
 
@@ -339,9 +353,11 @@ Devuelve todas las citas en estado `Pendiente` asignadas a un médico específic
 
 ---
 
-## GET /api/doctor/citas/\{usuarioId\}
+## GET /api/doctor/citas/{usuarioId}
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Devuelve la agenda completa del médico — todas sus citas en todos los estados — incluyendo información del paciente. Se accede mediante el ID de usuario del médico (no el ID de doctor).
 
