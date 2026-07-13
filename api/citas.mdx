@@ -1,0 +1,403 @@
+---
+title: "API de Citas Médicas en MedCore Global"
+sidebarTitle: "Citas"
+description: "Endpoints para agendar, consultar, aprobar, rechazar, reagendar y cancelar citas médicas en MedCore Global. Roles: Paciente y Médico."
+---
+
+Los endpoints de citas médicas permiten gestionar el ciclo de vida completo de una cita en MedCore Global: desde el agendamiento por parte del paciente, la aprobación o rechazo por parte del médico, la reprogramación y la cancelación. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization`.
+
+---
+
+## Estados de una cita
+
+| Estado       | Descripción                                                  | Transición posible              |
+|--------------|--------------------------------------------------------------|---------------------------------|
+| `Pendiente`  | La cita fue agendada por el paciente y aguarda confirmación. | → `Confirmada` / `Cancelada`    |
+| `Confirmada` | El médico aprobó la cita.                                    | → `Completada` / `Cancelada`    |
+| `Completada` | La consulta se realizó y fue finalizada por el médico.       | — (estado final)                |
+| `Cancelada`  | La cita fue cancelada por el paciente o el médico.           | — (estado final)                |
+
+---
+
+## POST /api/citas
+
+<Note>Rol requerido: **Paciente**</Note>
+
+Agenda una nueva cita médica. El sistema crea la cita en estado `Pendiente` hasta que el médico la apruebe o rechace.
+
+### Parámetros del cuerpo
+
+<ParamField body="DoctorID" type="integer" required>
+  ID del médico con quien se desea agendar la cita.
+</ParamField>
+
+<ParamField body="PacienteID" type="integer" required>
+  ID del paciente que solicita la cita.
+</ParamField>
+
+<ParamField body="EntidadID" type="integer" required>
+  ID de la entidad o clínica en la que se realizará la cita.
+</ParamField>
+
+<ParamField body="FechaHora" type="string" required>
+  Fecha y hora deseada para la cita. Formato: `YYYY-MM-DDTHH:MM:SS`.
+
+  Ejemplo: `"2026-03-15T09:30:00"`
+</ParamField>
+
+<ParamField body="Motivo" type="string" required>
+  Descripción del motivo principal de la consulta.
+</ParamField>
+
+<ParamField body="Sintomas" type="string">
+  Descripción de los síntomas que presenta el paciente.
+</ParamField>
+
+<ParamField body="Alergias" type="string">
+  Alergias conocidas del paciente (medicamentos, alimentos, etc.).
+</ParamField>
+
+<ParamField body="MedicamentosActuales" type="string">
+  Medicamentos que el paciente está tomando actualmente.
+</ParamField>
+
+<ParamField body="EnfermedadesCronicas" type="array of integers">
+  Lista de IDs de enfermedades crónicas registradas en el sistema que padece el paciente.
+
+  Ejemplo: `[3, 7, 12]`
+</ParamField>
+
+### Respuesta exitosa `201 Created`
+
+```json
+{
+  "CitaID": 487,
+  "EstadoCita": "Pendiente",
+  "message": "Cita agendada exitosamente. En espera de confirmación del médico."
+}
+```
+
+### Ejemplo de solicitud
+
+```bash
+curl -X POST https://tu-instancia.com/api/citas \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "DoctorID": 14,
+    "PacienteID": 102,
+    "EntidadID": 3,
+    "FechaHora": "2026-03-15T09:30:00",
+    "Motivo": "Dolor de cabeza persistente y mareos ocasionales",
+    "Sintomas": "Cefalea intensa, visión borrosa",
+    "Alergias": "Penicilina",
+    "MedicamentosActuales": "Losartán 50mg",
+    "EnfermedadesCronicas": [3, 7]
+  }'
+```
+
+---
+
+## GET /api/citas/historial/\{usuarioId\}
+
+<Note>Rol requerido: **Paciente**</Note>
+
+Devuelve el historial completo de citas médicas de un paciente específico, ordenadas de más reciente a más antigua.
+
+### Parámetros de ruta
+
+<ParamField path="usuarioId" type="integer" required>
+  ID del usuario (paciente) cuyo historial se desea consultar.
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+[
+  {
+    "CitaID": 487,
+    "FechaHora": "2026-03-15T09:30:00",
+    "Motivo": "Dolor de cabeza persistente y mareos ocasionales",
+    "EstadoCita": "Confirmada",
+    "doctor_nombre": "Dr. Carlos Méndez",
+    "entidad_nombre": "Clínica Central MedCore"
+  },
+  {
+    "CitaID": 401,
+    "FechaHora": "2025-11-10T11:00:00",
+    "Motivo": "Control rutinario",
+    "EstadoCita": "Completada",
+    "doctor_nombre": "Dra. Ana Torres",
+    "entidad_nombre": "Sucursal Norte"
+  }
+]
+```
+
+### Campos de respuesta
+
+<ResponseField name="CitaID" type="integer">
+  Identificador único de la cita.
+</ResponseField>
+
+<ResponseField name="FechaHora" type="string">
+  Fecha y hora de la cita en formato ISO 8601.
+</ResponseField>
+
+<ResponseField name="Motivo" type="string">
+  Motivo principal registrado al agendar la cita.
+</ResponseField>
+
+<ResponseField name="EstadoCita" type="string">
+  Estado actual de la cita: `Pendiente`, `Confirmada`, `Completada` o `Cancelada`.
+</ResponseField>
+
+<ResponseField name="doctor_nombre" type="string">
+  Nombre completo del médico asignado a la cita.
+</ResponseField>
+
+<ResponseField name="entidad_nombre" type="string">
+  Nombre de la clínica o entidad donde se realizará o realizó la cita.
+</ResponseField>
+
+---
+
+## PUT /api/citas/\{id\}/reprogramar
+
+<Note>Rol requerido: **Paciente**</Note>
+
+Reprograma una cita existente a una nueva fecha y hora. Solo se pueden reprogramar citas en estado `Pendiente` o `Confirmada`.
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID de la cita que se desea reprogramar.
+</ParamField>
+
+### Parámetros del cuerpo
+
+<ParamField body="nueva_fecha" type="string" required>
+  Nueva fecha y hora para la cita. Formato: `YYYY-MM-DDTHH:MM:SS`.
+
+  Ejemplo: `"2026-03-01T14:00:00"`
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+{
+  "CitaID": 487,
+  "FechaHora": "2026-03-01T14:00:00",
+  "EstadoCita": "Pendiente",
+  "message": "Cita reprogramada exitosamente."
+}
+```
+
+### Ejemplo de solicitud
+
+```bash
+curl -X PUT https://tu-instancia.com/api/citas/487/reprogramar \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nueva_fecha": "2026-03-01T14:00:00"
+  }'
+```
+
+---
+
+## DELETE /api/citas/\{id\}
+
+<Note>Roles requeridos: **Paciente** o **Médico**</Note>
+
+Cancela una cita médica. La cita pasa al estado `Cancelada` y no puede reactivarse. Solo se pueden cancelar citas en estado `Pendiente` o `Confirmada`.
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID de la cita que se desea cancelar.
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+{
+  "message": "Cita cancelada exitosamente.",
+  "CitaID": 487,
+  "EstadoCita": "Cancelada"
+}
+```
+
+### Ejemplo de solicitud
+
+```bash
+curl -X DELETE https://tu-instancia.com/api/citas/487 \
+  -H "Authorization: Bearer {token}"
+```
+
+---
+
+## POST /api/doctor/cita/aprobar/\{id\}
+
+<Note>Rol requerido: **Médico**</Note>
+
+Aprueba una cita que se encuentra en estado `Pendiente`. El estado de la cita cambia a `Confirmada` y el paciente recibe una notificación.
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID de la cita pendiente que se desea aprobar.
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+{
+  "message": "Cita aprobada exitosamente.",
+  "CitaID": 487,
+  "EstadoCita": "Confirmada"
+}
+```
+
+### Ejemplo de solicitud
+
+```bash
+curl -X POST https://tu-instancia.com/api/doctor/cita/aprobar/487 \
+  -H "Authorization: Bearer {token}"
+```
+
+---
+
+## POST /api/doctor/cita/rechazar/\{id\}
+
+<Note>Rol requerido: **Médico**</Note>
+
+Rechaza una cita pendiente indicando el motivo. La cita pasa al estado `Cancelada` y el paciente es notificado con el motivo del rechazo.
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID de la cita pendiente que se desea rechazar.
+</ParamField>
+
+### Parámetros del cuerpo
+
+<ParamField body="Motivo" type="string" required>
+  Razón por la cual el médico rechaza la cita.
+
+  Ejemplo: `"No hay disponibilidad en ese horario. Por favor reagende para la tarde."`
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+{
+  "message": "Cita rechazada exitosamente.",
+  "CitaID": 487,
+  "EstadoCita": "Cancelada"
+}
+```
+
+### Ejemplo de solicitud
+
+```bash
+curl -X POST https://tu-instancia.com/api/doctor/cita/rechazar/487 \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Motivo": "No hay disponibilidad en ese horario. Por favor reagende para la tarde."
+  }'
+```
+
+---
+
+## GET /api/citas/doctor/\{doctorId\}
+
+<Note>Rol requerido: **Médico**</Note>
+
+Devuelve todas las citas en estado `Pendiente` asignadas a un médico específico. Útil para que el médico gestione su bandeja de solicitudes de aprobación.
+
+### Parámetros de ruta
+
+<ParamField path="doctorId" type="integer" required>
+  ID del médico cuyas citas pendientes se desean consultar.
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+[
+  {
+    "CitaID": 487,
+    "FechaHora": "2026-03-15T09:30:00",
+    "Motivo": "Dolor de cabeza persistente",
+    "EstadoCita": "Pendiente",
+    "paciente_nombre": "María López",
+    "entidad_nombre": "Clínica Central MedCore"
+  }
+]
+```
+
+---
+
+## GET /api/doctor/citas/\{usuarioId\}
+
+<Note>Rol requerido: **Médico**</Note>
+
+Devuelve la agenda completa del médico — todas sus citas en todos los estados — incluyendo información del paciente. Se accede mediante el ID de usuario del médico (no el ID de doctor).
+
+### Parámetros de ruta
+
+<ParamField path="usuarioId" type="integer" required>
+  ID de usuario del médico (campo `UsuarioID` del perfil del médico).
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+[
+  {
+    "CitaID": 487,
+    "FechaHora": "2026-03-15T09:30:00",
+    "Motivo": "Dolor de cabeza persistente",
+    "EstadoCita": "Confirmada",
+    "Sintomas": "Cefalea intensa, visión borrosa",
+    "paciente_nombre": "María López",
+    "paciente_email": "maria@correo.com",
+    "entidad_nombre": "Clínica Central MedCore"
+  }
+]
+```
+
+### Campos de respuesta
+
+<ResponseField name="CitaID" type="integer">
+  Identificador único de la cita.
+</ResponseField>
+
+<ResponseField name="FechaHora" type="string">
+  Fecha y hora de la cita en formato ISO 8601.
+</ResponseField>
+
+<ResponseField name="Motivo" type="string">
+  Motivo principal de la consulta registrado por el paciente.
+</ResponseField>
+
+<ResponseField name="EstadoCita" type="string">
+  Estado actual de la cita.
+</ResponseField>
+
+<ResponseField name="Sintomas" type="string">
+  Síntomas reportados por el paciente al agendar.
+</ResponseField>
+
+<ResponseField name="paciente_nombre" type="string">
+  Nombre completo del paciente.
+</ResponseField>
+
+<ResponseField name="paciente_email" type="string">
+  Correo electrónico de contacto del paciente.
+</ResponseField>
+
+<ResponseField name="entidad_nombre" type="string">
+  Nombre de la clínica o entidad donde se realizará la cita.
+</ResponseField>

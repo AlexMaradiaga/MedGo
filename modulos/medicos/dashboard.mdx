@@ -1,0 +1,112 @@
+---
+title: "Dashboard del Médico: Agenda y Estadísticas"
+sidebarTitle: "Dashboard"
+description: "El dashboard médico muestra tu agenda del día, citas pendientes de aprobación, estadísticas mensuales y acceso rápido a consultas activas."
+---
+
+El dashboard es el punto de entrada principal de tu portal médico en MedCore Global. Al iniciar sesión encontrarás un resumen completo de tu actividad del día: las citas que requieren tu respuesta inmediata, las consultas ya confirmadas listas para atender y métricas actualizadas de tu desempeño mensual.
+
+---
+
+## Agenda del día
+
+La vista principal del dashboard se organiza en dos áreas clave:
+
+**Cola de citas por aprobar** — En la parte superior aparecen todas las solicitudes de cita que los pacientes han enviado y que aún no tienen tu confirmación. Este panel actúa como una cola urgente: cada tarjeta muestra el nombre del paciente, la fecha y hora solicitada, y el tipo de consulta. Puedes aprobar o rechazar cada solicitud directamente desde aquí.
+
+**Citas confirmadas del día** — Debajo de la cola de pendientes se listan las citas que ya aprobaste para la jornada actual, ordenadas cronológicamente. Cada tarjeta incluye un botón **"Atender Ahora"** que abre de inmediato el perfil del paciente e inicia la consulta en el módulo SOAP.
+
+Al pie del dashboard encontrarás **tres tarjetas de estadísticas** que ofrecen un vistazo rápido a tu actividad:
+
+| Tarjeta | Descripción |
+|---|---|
+| Consultas del mes | Total de consultas finalizadas en el mes en curso |
+| Ingresos del mes | Monto acumulado por servicios prestados en el período |
+| Pacientes nuevos | Número de pacientes que te visitaron por primera vez este mes |
+
+---
+
+## Aprobar o rechazar citas
+
+Cuando un paciente solicita una cita contigo, debes aprobarla o rechazarla antes de que aparezca en tu agenda definitiva.
+
+**Aprobar una cita**
+
+```http
+POST /api/doctor/cita/aprobar/{id}
+```
+
+No requiere cuerpo en la solicitud. El sistema notifica automáticamente al paciente por correo electrónico cuando la cita es aprobada.
+
+**Rechazar una cita**
+
+```http
+POST /api/doctor/cita/rechazar/{id}
+```
+
+```json
+{
+  "Motivo": "No tengo disponibilidad en ese horario. Por favor agenda para la semana siguiente."
+}
+```
+
+El campo `Motivo` es obligatorio al rechazar una cita. El mensaje se incluye en la notificación que recibe el paciente para que pueda reagendar con contexto suficiente.
+
+---
+
+## Estadísticas
+
+Para consultar el resumen estadístico mensual de tu actividad, utiliza el siguiente endpoint:
+
+```http
+GET /api/doctor/stats/{usuarioId}
+```
+
+La respuesta incluye:
+
+- Total de consultas realizadas en el mes
+- Consultas por tipo (primera vez, control, urgencia)
+- Ingresos generados en el período
+- Comparativa con el mes anterior
+- Distribución de pacientes por género y rango etario
+
+Estos datos alimentan tanto las tarjetas del dashboard como el módulo de estadísticas de la página de agenda.
+
+---
+
+## Ver mis citas
+
+Puedes consultar tus citas programadas a través de dos endpoints complementarios:
+
+**Citas asociadas a tu usuario**
+
+```http
+GET /api/doctor/citas/{usuarioId}
+```
+
+Devuelve todas las citas vinculadas a tu cuenta de usuario, incluyendo estado (pendiente, aprobada, completada, cancelada) y datos del paciente.
+
+**Citas por perfil de doctor**
+
+```http
+GET /api/citas/doctor/{doctorId}
+```
+
+Devuelve el listado de citas filtrado por tu identificador de perfil médico. Útil cuando tu sistema externo trabaja con el `doctorId` directamente en lugar del `usuarioId`.
+
+---
+
+## Dashboard mensual (odontología)
+
+Los médicos con especialidad en odontología disponen de un dashboard mensual adicional con métricas específicas para la práctica dental: procedimientos realizados por cuadrante, tratamientos en curso, piezas dentales más frecuentemente atendidas y evolución del odontograma por paciente. Este panel complementa la vista general del dashboard y es accesible desde el menú de especialidad.
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Consulta médica" icon="stethoscope" href="/modulos/medicos/consulta">
+    Aprende a iniciar y finalizar consultas SOAP, registrar signos vitales, diagnosticar con CIE-11 y generar recetas automáticamente.
+  </Card>
+  <Card title="Agenda" icon="calendar" href="/modulos/medicos/agenda">
+    Visualiza tu calendario semanal, gestiona citas pendientes y revisa tus KPIs desde la vista de agenda.
+  </Card>
+</CardGroup>

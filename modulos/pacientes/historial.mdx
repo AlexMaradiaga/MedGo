@@ -1,0 +1,125 @@
+---
+title: "Tu historial médico en MedCore Global"
+sidebarTitle: "Historial"
+description: "Accede a tu historial clínico completo: consultas, diagnósticos, exámenes físicos, recetas y estudios de laboratorio, todo en un solo lugar."
+---
+
+MedCore Global centraliza toda tu información clínica en un único expediente digital seguro. Desde el portal o la API puedes consultar el registro de tus consultas pasadas, los diagnósticos emitidos por tus médicos, tus exámenes físicos, las recetas que te han sido expedidas y tus órdenes de laboratorio. Tu historial está disponible las 24 horas del día y puedes autorizar a cualquier médico registrado en la plataforma para que acceda a él cuando lo necesites.
+
+---
+
+## Mis consultas
+
+Para obtener la lista completa de consultas médicas registradas en tu expediente, realiza la siguiente solicitud:
+
+```
+GET /api/historial/consultas/{usuarioId}
+```
+
+Reemplaza `{usuarioId}` con tu `user_id`. La respuesta incluye, para cada consulta:
+
+- **Fecha y hora** de la consulta.
+- **Nombre y especialidad** del médico que te atendió.
+- **Clínica u hospital** donde se realizó.
+- **Motivo de consulta** registrado al agendar.
+- **Diagnóstico principal** y diagnósticos secundarios emitidos.
+- **Notas clínicas** del médico (cuando estén disponibles).
+- **ID de la receta** generada durante esa consulta, si aplica.
+
+### Ejemplo de respuesta
+
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "consulta_id": 22,
+      "fecha": "2025-11-03T09:30:00",
+      "medico": "Dr. Roberto Amaya",
+      "especialidad": "Medicina General",
+      "clinica": "Clínica Central Tegucigalpa",
+      "diagnostico": "Hipertensión arterial leve",
+      "receta_id": 15
+    }
+  ]
+}
+```
+
+---
+
+## Mis recetas
+
+Para ver todas las recetas médicas asociadas a tu expediente:
+
+```
+GET /api/historial/recetas/{usuarioId}
+```
+
+Reemplaza `{usuarioId}` con tu `user_id`. El listado incluye la fecha de emisión, el médico que la emitió, los medicamentos recetados y el estado de canje de cada receta (`Pendiente`, `Canjeada`, `Vencida`). Desde esta vista también puedes acceder directamente a la descarga del PDF de cada receta. Para más detalles sobre cómo descargar y canjear recetas, consulta la sección [Recetas Médicas Digitales](/modulos/pacientes/recetas).
+
+---
+
+## Mis exámenes físicos
+
+Los resultados de los exámenes físicos realizados durante tus consultas (peso, talla, presión arterial, frecuencia cardíaca, temperatura, entre otros) se almacenan automáticamente en tu expediente. Para consultarlos:
+
+```
+GET /api/historial/examenes/{usuarioId}
+```
+
+Reemplaza `{usuarioId}` con tu `user_id`. Cada registro incluye la fecha del examen, el médico que lo realizó y los valores medidos. Esto te permite llevar un seguimiento cronológico de tus indicadores de salud a lo largo del tiempo.
+
+---
+
+## Autorizar a un médico para ver mi historial
+
+Por defecto, tu historial clínico completo solo es visible para ti y para los médicos que te han atendido directamente a través de MedCore Global. Sin embargo, puedes **autorizar explícitamente** a cualquier médico registrado en la plataforma para que acceda a tu expediente completo. Esto es especialmente útil cuando:
+
+- Cambias de médico de cabecera y deseas que tu nuevo proveedor conozca tu historial completo.
+- Buscas una segunda opinión médica.
+- Un especialista necesita contexto clínico previo antes de tu primera consulta con él.
+
+Para otorgar acceso, dirígete a **Mi Perfil → Privacidad y Accesos → Autorizar Médico** en el portal web, e ingresa el nombre o código del médico que deseas autorizar. También puedes revocar el acceso en cualquier momento desde esa misma sección.
+
+<Note>
+  El historial clínico completo —incluyendo diagnósticos, notas clínicas detalladas y resultados de laboratorio— **solo es accesible para los médicos que hayas autorizado expresamente** o que te hayan atendido previamente en la plataforma. Ningún otro usuario de MedCore Global puede ver tu información clínica sin tu consentimiento.
+</Note>
+
+---
+
+## Perfil del paciente
+
+Para obtener la información completa de tu perfil de paciente, incluyendo tus datos personales, información de seguro médico y las relaciones de tutela registradas (tutores a cargo tuyo o dependientes bajo tu custodia), usa el siguiente endpoint:
+
+```
+GET /api/pacientes/usuario/{id}
+```
+
+Reemplaza `{id}` con tu `user_id`.
+
+### Ejemplo de respuesta
+
+```json
+{
+  "status": "success",
+  "data": {
+    "patient_id": 31,
+    "nombre": "María González",
+    "DNI": "0501-1985-67890",
+    "tipo_sangre": "A+",
+    "aseguradora": "Salud Total",
+    "numero_poliza": "ST-00456",
+    "dependientes": [
+      {
+        "patient_id": 55,
+        "nombre": "Sofía González",
+        "edad": 7,
+        "relacion": "Hija"
+      }
+    ],
+    "tutor": null
+  }
+}
+```
+
+Este endpoint es útil para verificar que toda tu información esté actualizada antes de agendar una cita o para gestionar las relaciones de tutela entre perfiles vinculados a tu cuenta. Si necesitas actualizar algún dato, dirígete a **Mi Perfil → Editar Información Personal** en el portal web.

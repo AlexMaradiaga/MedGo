@@ -1,0 +1,99 @@
+---
+title: "Roles y Permisos en MedCore Global"
+sidebarTitle: "Roles"
+description: "MedCore Global tiene tres roles principales: Paciente, Médico y Administrador. Cada rol tiene acceso a diferentes funciones y endpoints de la API."
+---
+
+MedCore Global utiliza un sistema de roles para garantizar que cada usuario acceda únicamente a las funciones que le corresponden. Al crear una cuenta o ser registrado en la plataforma, se te asigna un rol que determina qué puedes ver, hacer y gestionar dentro del sistema.
+
+## Roles principales
+
+<CardGroup cols={3}>
+  <Card title="Paciente" icon="user">
+    **rol\_id: 3**
+
+    Acceso orientado al autocuidado. El paciente puede registrarse de forma autónoma, gestionar sus citas y consultar todo su historial clínico personal.
+  </Card>
+  <Card title="Médico" icon="stethoscope">
+    **rol\_id: 2**
+
+    Acceso clínico completo. El médico atiende consultas, emite diagnósticos y recetas, y solicita estudios de laboratorio para sus pacientes.
+  </Card>
+  <Card title="Administrador" icon="shield-halved">
+    **rol\_id: 1**
+
+    Acceso total a la plataforma. El administrador gestiona usuarios, clínicas, planes SaaS y tiene visibilidad sobre todos los reportes del sistema.
+  </Card>
+</CardGroup>
+
+### Paciente (rol_id: 3)
+
+El paciente es el usuario final del sistema de atención médica. Sus capacidades incluyen:
+
+- **Registrarse** de forma autónoma en la plataforma.
+- **Buscar médicos** por especialidad y entidad.
+- **Agendar, reprogramar y cancelar** citas médicas.
+- **Ver su historial clínico**: consultas previas, diagnósticos y recetas.
+- **Descargar recetas en PDF** con código QR para canje en farmacia.
+- **Solicitar estudios de laboratorio** indicados por su médico.
+- **Consultar resultados de laboratorio** directamente en su perfil.
+
+### Médico (rol_id: 2)
+
+El médico opera dentro de una o más entidades (clínicas). Sus capacidades incluyen:
+
+- **Gestionar su agenda**: confirmar, reagendar o cancelar citas.
+- **Iniciar y conducir consultas** médicas en formato SOAP.
+- **Registrar diagnósticos**, signos vitales y notas clínicas.
+- **Emitir recetas digitales** con código QR para farmacia.
+- **Solicitar órdenes de laboratorio** y revisar resultados.
+- **Consultar el historial clínico** de sus pacientes en la entidad.
+
+### Administrador (rol_id: 1)
+
+El administrador tiene control total sobre la plataforma. Sus capacidades incluyen:
+
+- **Gestionar usuarios**: crear, editar y desactivar cuentas de pacientes, médicos y personal.
+- **Administrar clínicas y entidades**: configurar servicios, horarios y especialidades.
+- **Aprobar cuentas de médicos** antes de que puedan acceder al sistema.
+- **Ver reportes y dashboards globales** de uso, ingresos y actividad clínica.
+- **Gestionar planes SaaS**: asignar y modificar los planes de suscripción de cada entidad.
+- **Configurar especialidades** y parámetros generales del sistema.
+
+---
+
+## Permisos por módulo
+
+La siguiente tabla muestra qué rol tiene acceso a cada función principal de la plataforma:
+
+| Función                        | Paciente | Médico | Administrador |
+|-------------------------------|:--------:|:------:|:-------------:|
+| Agendar cita                  | ✓        |        |               |
+| Ver historial propio           | ✓        |        |               |
+| Descargar receta en PDF        | ✓        |        |               |
+| Ver resultados de laboratorio  | ✓        |        |               |
+| Iniciar consulta               |          | ✓      |               |
+| Emitir receta                  |          | ✓      |               |
+| Solicitar orden de laboratorio |          | ✓      |               |
+| Ver historial de pacientes     |          | ✓      |               |
+| Aprobar médico                 |          |        | ✓             |
+| Gestionar clínicas             |          |        | ✓             |
+| Ver dashboard global           |          |        | ✓             |
+| Gestionar planes SaaS          |          |        | ✓             |
+| Crear y editar especialidades  |          |        | ✓             |
+
+---
+
+## Cuentas médicas pendientes
+
+Cuando un médico completa su registro en MedCore Global, su cuenta queda en estado **Pendiente de aprobación**. Esto significa que:
+
+- El médico **no puede iniciar sesión** ni acceder a la plataforma hasta recibir aprobación.
+- Un **Administrador** debe revisar la solicitud, verificar los datos y credenciales, y activar la cuenta manualmente.
+- Una vez aprobada, el médico recibe una notificación y puede acceder al sistema con normalidad.
+
+Este proceso de verificación garantiza que todos los profesionales de la salud en la plataforma hayan sido validados por la entidad a la que pertenecen.
+
+<Info>
+  Existe un rol adicional para el personal de laboratorio: **Laboratorista** (`rol_id: 5`). Este rol permite al personal de un laboratorio afiliado recibir órdenes de análisis, cargar resultados y gestionar el estado de los estudios solicitados. Este rol es asignado directamente por el Administrador de la entidad de tipo laboratorio.
+</Info>

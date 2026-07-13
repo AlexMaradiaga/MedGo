@@ -1,0 +1,103 @@
+---
+title: "Entidades en MedCore Global: Clínicas y Laboratorios"
+sidebarTitle: "Entidades"
+description: "Las entidades son las organizaciones de salud registradas en MedCore Global: clínicas, laboratorios y farmacias. Cada entidad tiene sus propios médicos y servicios."
+---
+
+En MedCore Global, una **entidad** es cualquier organización del sector salud que opera dentro de la plataforma. Cada entidad gestiona su propio equipo de profesionales, catálogo de servicios y datos clínicos de manera independiente. Pacientes, médicos y administradores siempre interactúan dentro del contexto de una entidad específica.
+
+## ¿Qué es una Entidad?
+
+Una entidad representa una organización de salud registrada y verificada en MedCore Global. Puede tratarse de una clínica privada, un laboratorio clínico o una farmacia asociada. Al registrarse como paciente o médico, siempre lo haces en relación con una o más entidades.
+
+<CardGroup cols={3}>
+  <Card title="Clínica" icon="hospital">
+    Ofrece consultas médicas presenciales o en línea. Cuenta con médicos registrados por especialidad, agenda de citas y expedientes clínicos.
+  </Card>
+  <Card title="Laboratorio" icon="flask">
+    Gestiona órdenes de laboratorio emitidas por médicos. Los pacientes reciben sus resultados directamente en su perfil una vez procesados.
+  </Card>
+  <Card title="Farmacia" icon="pills">
+    Permite el canje de recetas digitales mediante un **Código de Canje** generado por QR. El farmacéutico escanea el código para validar y dispensar el medicamento.
+  </Card>
+</CardGroup>
+
+## Tipos de entidades
+
+### Clínica
+
+Una clínica agrupa a uno o más médicos bajo una misma organización. Desde la clínica se gestionan:
+
+- La **agenda** de citas por médico y especialidad.
+- Las **consultas médicas** y el expediente SOAP de cada paciente.
+- La emisión de **recetas digitales** y solicitudes de laboratorio.
+- El **historial clínico** completo del paciente dentro de esa clínica.
+
+### Laboratorio
+
+Un laboratorio recibe órdenes de análisis clínico enviadas por médicos durante una consulta. Su flujo de trabajo incluye:
+
+- Recepción de la orden de laboratorio con los estudios solicitados.
+- Procesamiento de muestras y carga de resultados en la plataforma.
+- Notificación automática al paciente y al médico cuando los resultados están listos.
+
+### Farmacia
+
+Una farmacia asociada a MedCore Global puede validar y dispensar medicamentos recetados digitalmente. El proceso utiliza un **Código de Canje QR** que:
+
+- Se genera automáticamente al finalizar una consulta.
+- Contiene la información cifrada de la receta.
+- Solo puede canjearse una vez, garantizando trazabilidad y seguridad.
+
+## Cómo interactúan los pacientes con las entidades
+
+Como paciente, puedes:
+
+1. **Buscar entidades** disponibles en tu ciudad o región desde el directorio de la plataforma.
+2. **Seleccionar una clínica** y elegir un médico según especialidad y disponibilidad.
+3. **Agendar tu cita** directamente en la agenda del médico dentro de esa entidad.
+4. **Recibir tus resultados de laboratorio** en tu perfil, vinculados a la consulta correspondiente.
+5. **Canjear tu receta** presentando el código QR en cualquier farmacia afiliada.
+
+## Consultar entidades disponibles
+
+Puedes obtener el listado completo de entidades registradas en la plataforma mediante la siguiente llamada a la API:
+
+```http
+GET /api/entidades
+```
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Clínica Santa María",
+      "tipo": "clinica",
+      "ciudad": "Ciudad de México",
+      "activa": true
+    },
+    {
+      "id": 2,
+      "nombre": "Laboratorio BioAnalítica",
+      "tipo": "laboratorio",
+      "ciudad": "Guadalajara",
+      "activa": true
+    },
+    {
+      "id": 3,
+      "nombre": "Farmacia MedPlus",
+      "tipo": "farmacia",
+      "ciudad": "Monterrey",
+      "activa": true
+    }
+  ]
+}
+```
+
+<Note>
+  Los médicos están asociados a una entidad específica. Toda la información clínica —citas, consultas, recetas y resultados— queda **vinculada a la entidad** en la que fue generada. Si un médico trabaja en más de una clínica, cada registro pertenece al contexto de la entidad correspondiente y no es visible desde otras entidades.
+</Note>

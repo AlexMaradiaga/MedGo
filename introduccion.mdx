@@ -1,0 +1,54 @@
+---
+title: "¿Qué es MedCore Global? Plataforma médica multi-entidad"
+sidebarTitle: "Introducción"
+description: "MedCore Global es una plataforma SaaS de gestión médica que centraliza clínicas, médicos, pacientes, citas, historiales y laboratorio en un solo sistema."
+---
+
+**MedCore Global** es una plataforma SaaS de gestión médica diseñada para digitalizar y centralizar las operaciones de clínicas, consultorios y laboratorios. Construida sobre una arquitectura moderna con una API REST en Laravel y una interfaz web en Vue 3, la plataforma conecta a todos los actores del ecosistema de salud —pacientes, médicos, administradores y entidades externas— en un entorno seguro, escalable y multitenancy.
+
+Ya sea que gestiones una clínica pequeña o una red de centros de salud, MedCore Global se adapta a tus necesidades con módulos especializados, roles diferenciados y planes SaaS flexibles.
+
+## Funcionalidades principales
+
+<CardGroup cols={2}>
+  <Card title="Gestión de Citas" icon="calendar">
+    Agendamiento en línea con control de disponibilidad por médico, clínica y especialidad. Confirmaciones automáticas y gestión de cancelaciones o reprogramaciones.
+  </Card>
+  <Card title="Historia Clínica" icon="notes-medical">
+    Registro digital completo del historial de cada paciente: diagnósticos, tratamientos, alergias, antecedentes y evolución clínica a lo largo del tiempo.
+  </Card>
+  <Card title="Recetas Digitales" icon="prescription">
+    Emisión, firma y descarga de recetas médicas en formato digital. Validación de medicamentos y trazabilidad completa desde la consulta hasta la farmacia.
+  </Card>
+  <Card title="Laboratorio" icon="flask">
+    Solicitud de exámenes clínicos, registro de resultados y visualización de reportes directamente en el expediente del paciente, con integración a laboratorios externos.
+  </Card>
+  <Card title="Odontología" icon="tooth">
+    Módulo especializado para clínicas dentales con odontograma digital, registro de tratamientos por pieza dental e historial de procedimientos estéticos y correctivos.
+  </Card>
+  <Card title="Planes SaaS" icon="layer-group">
+    Configuración de planes de suscripción por clínica con límites personalizados de usuarios, módulos habilitados y almacenamiento. Gestión de facturación integrada.
+  </Card>
+</CardGroup>
+
+## Roles en la plataforma
+
+MedCore Global implementa un sistema de control de acceso basado en roles (RBAC). Cada usuario opera bajo uno de los tres roles principales, con permisos y vistas adaptadas a su función dentro del sistema.
+
+| Rol | Descripción | Acceso principal |
+|---|---|---|
+| **Paciente** | Usuario final que recibe atención médica. Puede registrarse de forma autónoma a través de la API o el portal web. | Citas, historia clínica propia, recetas, resultados de laboratorio |
+| **Médico** | Profesional de salud asociado a una o más clínicas. Su cuenta debe ser aprobada por un administrador antes de poder iniciar sesión. | Agenda, expedientes de pacientes, prescripciones, solicitudes de laboratorio |
+| **Administrador** | Gestor de la clínica o red de salud. Tiene acceso total a la configuración de la plataforma, usuarios y reportes. | Gestión de usuarios, clínicas, planes SaaS, configuración del sistema |
+
+## Entidades soportadas
+
+MedCore Global está diseñado para operar en ecosistemas de salud complejos e integrar distintos tipos de organizaciones dentro de un mismo sistema:
+
+- **Clínicas y consultorios** — Entidad central de la plataforma. Cada clínica tiene su propio espacio de trabajo, usuarios y configuración independiente dentro del modelo multitenancy.
+- **Laboratorios** — Pueden recibir solicitudes de exámenes desde la plataforma, cargar resultados digitales y compartirlos directamente con médicos y pacientes.
+- **Farmacias** — Integración con el módulo de recetas digitales para la validación y dispensación de medicamentos prescritos por los médicos de la red.
+
+<Note>
+  MedCore Global soporta operación en **español e inglés**. El idioma de la interfaz se configura por usuario desde las preferencias del perfil. La documentación de la API utiliza español como idioma principal, con todos los nombres de campos y endpoints consistentes en ambos entornos.
+</Note>

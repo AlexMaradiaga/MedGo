@@ -1,0 +1,183 @@
+---
+title: "Gestión de Clínicas y Especialidades en MedCore Global"
+sidebarTitle: "Clínicas"
+description: "Administra las clínicas registradas en MedCore Global: crea, edita y desactiva entidades clínicas. Gestiona las especialidades disponibles por clínica."
+---
+
+La gestión de entidades clínicas es una de las funciones centrales del administrador de MedCore Global. Desde este módulo puedes registrar nuevas clínicas, laboratorios y farmacias en la plataforma, mantener actualizados sus datos de identificación y contacto, controlar su estado operativo y definir las especialidades médicas que cada entidad ofrece a sus pacientes. Todos los cambios se reflejan de inmediato en el directorio público y en los flujos de agendamiento de la plataforma.
+
+<Note>
+  El campo `TipoEntidad` determina el rol funcional de la entidad dentro de la plataforma y los módulos a los que tendrá acceso. Los valores válidos son:
+  - **`Clinica`** — Habilita módulos de citas, expedientes, médicos y facturación clínica.
+  - **`Laboratorio`** — Habilita módulos de órdenes, muestras, resultados y catálogo de pruebas.
+  - **`Farmacia`** — Habilita módulos de inventario, dispensación y recetas electrónicas.
+</Note>
+
+---
+
+## Listar clínicas
+
+Obtén el listado completo de todas las entidades registradas en la plataforma, incluyendo su tipo, estado y datos de contacto.
+
+```http
+GET /api/clinicas
+```
+
+**Respuesta de ejemplo:**
+
+```json
+[
+  {
+    "EntidadID": 1,
+    "NombreEntidad": "Clínica San Rafael",
+    "TipoEntidad": "Clinica",
+    "RTN": "08011234567890",
+    "Direccion": "Col. Kennedy, Tegucigalpa",
+    "Telefono": "+504 2222-0000",
+    "Estado": 1
+  },
+  {
+    "EntidadID": 2,
+    "NombreEntidad": "Laboratorio Central",
+    "TipoEntidad": "Laboratorio",
+    "RTN": "08019876543210",
+    "Direccion": "Av. Circunvalación, San Pedro Sula",
+    "Telefono": "+504 2556-1100",
+    "Estado": 1
+  }
+]
+```
+
+El campo `Estado` indica si la entidad está activa (`1`) o desactivada (`0`).
+
+---
+
+## Crear una clínica
+
+Registra una nueva entidad en la plataforma. Una vez creada, la entidad podrá configurar su personal, especialidades y plan de suscripción.
+
+```http
+POST /api/clinicas
+```
+
+**Cuerpo de la solicitud:**
+
+```json
+{
+  "NombreEntidad": "Clínica San Rafael",
+  "TipoEntidad": "Clinica",
+  "RTN": "08011234567890",
+  "Direccion": "Col. Kennedy, Tegucigalpa",
+  "Telefono": "+504 2222-0000"
+}
+```
+
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `NombreEntidad` | `string` | ✅ | Nombre comercial de la entidad. |
+| `TipoEntidad` | `string` | ✅ | Tipo de entidad: `Clinica`, `Laboratorio` o `Farmacia`. |
+| `RTN` | `string` | ✅ | Registro Tributario Nacional (14 dígitos). |
+| `Direccion` | `string` | ✅ | Dirección física completa de la entidad. |
+| `Telefono` | `string` | ✅ | Número de contacto principal con código de país. |
+
+**Respuesta exitosa:** `201 Created` con el objeto de la entidad creada, incluyendo el `EntidadID` asignado.
+
+---
+
+## Actualizar una clínica
+
+Modifica los datos de una entidad existente. Solo se actualizan los campos incluidos en el cuerpo de la solicitud.
+
+```http
+PUT /api/clinicas/{id}
+```
+
+**Parámetros de ruta:**
+
+| Parámetro | Descripción |
+|---|---|
+| `id` | `EntidadID` de la clínica a actualizar. |
+
+**Cuerpo de la solicitud (ejemplo parcial):**
+
+```json
+{
+  "Direccion": "Col. Lomas del Guijarro, Tegucigalpa",
+  "Telefono": "+504 2233-4455"
+}
+```
+
+**Respuesta exitosa:** `200 OK` con los datos actualizados de la entidad.
+
+---
+
+## Desactivar una clínica
+
+Desactiva una entidad clínica de la plataforma. La entidad deja de aparecer en el directorio público y sus usuarios no podrán iniciar nuevas sesiones. Los expedientes y datos históricos se conservan íntegramente.
+
+```http
+PUT /api/clinicas/{id}/desactivar
+```
+
+**Parámetros de ruta:**
+
+| Parámetro | Descripción |
+|---|---|
+| `id` | `EntidadID` de la clínica a desactivar. |
+
+**Respuesta exitosa:** `200 OK` con el mensaje de confirmación y el nuevo estado de la entidad.
+
+---
+
+## Gestión de especialidades
+
+Las especialidades definen los servicios médicos que una clínica ofrece y son utilizadas por los pacientes para filtrar y seleccionar médicos al momento de agendar una cita.
+
+### Listar especialidades
+
+```http
+GET /api/especialidades
+```
+
+Devuelve el catálogo global de especialidades disponibles en la plataforma.
+
+### Listar especialidades de una entidad
+
+```http
+GET /api/especialidades?EntidadID={id}
+```
+
+Filtra las especialidades asociadas a una clínica específica.
+
+### Crear una especialidad
+
+```http
+POST /api/especialidades
+```
+
+```json
+{
+  "NombreEspecialidad": "Cardiología",
+  "EntidadID": 1
+}
+```
+
+### Actualizar una especialidad
+
+```http
+PUT /api/especialidades/{id}
+```
+
+```json
+{
+  "NombreEspecialidad": "Cardiología Intervencionista"
+}
+```
+
+### Desactivar una especialidad
+
+```http
+PUT /api/especialidades/{id}/desactivar
+```
+
+Desactiva la especialidad indicada. Los médicos asociados a esa especialidad seguirán activos, pero la especialidad no aparecerá disponible para nuevos agendamientos.

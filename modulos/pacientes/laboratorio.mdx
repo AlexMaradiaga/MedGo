@@ -1,0 +1,143 @@
+---
+title: "Órdenes y Resultados de Laboratorio para Pacientes"
+sidebarTitle: "Laboratorio"
+description: "Consulta tus órdenes de laboratorio y resultados de exámenes en MedCore Global. Accede a tus estudios desde el portal o la API."
+---
+
+Cuando tu médico solicita análisis de laboratorio, MedCore Global genera una orden digital que puedes presentar directamente en cualquier laboratorio afiliado a la plataforma. Una vez que los resultados estén listos, los encontrarás disponibles en tu perfil sin necesidad de regresar a la clínica. Esta guía explica cómo consultar tus órdenes, ver tus resultados y explorar el catálogo de exámenes disponibles.
+
+<Note>
+  Las órdenes de laboratorio son creadas por tu médico durante o después de una consulta registrada en MedCore Global. Si necesitas un análisis y aún no tienes una orden, contáctate con tu médico tratante a través de la sección **Mensajes** del portal.
+</Note>
+
+---
+
+## Mis órdenes de laboratorio
+
+Para obtener la lista de todas las órdenes de laboratorio emitidas para tu perfil, usa el siguiente endpoint:
+
+```
+GET /api/laboratorio/paciente/{pacienteId}/ordenes
+```
+
+Reemplaza `{pacienteId}` con tu `patient_id`. La respuesta incluye para cada orden:
+
+- **OrdenID** — identificador único de la orden.
+- **FechaOrden** — fecha en que el médico emitió la orden.
+- **Estado** — puede ser `Pendiente`, `En proceso` o `Completado`.
+- **NotasClinicas** — instrucciones especiales para la toma de muestra (por ejemplo, ayuno previo).
+- **Médico solicitante** — nombre del médico que emitió la orden.
+- **Lista de exámenes** — estudios solicitados en esa orden.
+
+### Ejemplo de respuesta
+
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "OrdenID": 7,
+      "FechaOrden": "2026-01-10",
+      "Estado": "Completado",
+      "NotasClinicas": "Ayuno de 8 horas requerido",
+      "medico": "Dr. Roberto Amaya",
+      "examenes": ["Hemograma Completo", "Glucosa en Ayunas"]
+    },
+    {
+      "OrdenID": 11,
+      "FechaOrden": "2026-02-04",
+      "Estado": "Pendiente",
+      "NotasClinicas": "Muestra de primera orina de la mañana",
+      "medico": "Dra. Karla Mendoza",
+      "examenes": ["Examen General de Orina", "Urocultivo"]
+    }
+  ]
+}
+```
+
+---
+
+## Resultados de una orden
+
+Una vez que el laboratorio haya procesado tus muestras y cargado los resultados en la plataforma, podrás consultarlos con el siguiente endpoint:
+
+```
+GET /api/laboratorio/orden/{ordenId}/resultados
+```
+
+Reemplaza `{ordenId}` con el `OrdenID` de la orden cuyos resultados deseas ver.
+
+### Ejemplo de respuesta
+
+```json
+{
+  "OrdenID": 7,
+  "FechaOrden": "2026-01-10",
+  "Estado": "Completado",
+  "NotasClinicas": "Ayuno de 8 horas requerido",
+  "examenes": [
+    { "nombre": "Hemograma Completo", "resultado": "Normal" },
+    { "nombre": "Glucosa en Ayunas", "resultado": "95 mg/dL" }
+  ]
+}
+```
+
+Cada examen muestra el nombre del estudio y el resultado obtenido. Para análisis con valores de referencia (como glucosa, colesterol o hemoglobina), el resultado incluye la unidad de medida y los rangos normales para facilitar la interpretación.
+
+<Note>
+  Si el estado de tu orden es `Pendiente` o `En proceso`, el campo `examenes` puede estar vacío o mostrar resultados parciales. Recibirás una notificación en la plataforma y por correo electrónico cuando todos los resultados estén disponibles.
+</Note>
+
+---
+
+## Catálogo de exámenes disponibles
+
+Para consultar todos los estudios de laboratorio que pueden ser solicitados a través de MedCore Global, usa el siguiente endpoint:
+
+```
+GET /api/laboratorio/catalogo
+```
+
+Este endpoint no requiere parámetros y devuelve la lista completa de exámenes disponibles en la plataforma, organizados por categoría (hematología, química sanguínea, microbiología, uroanálisis, hormonas, entre otras). Esta información es útil si deseas consultar a tu médico sobre un estudio específico que te interesa realizar.
+
+### Ejemplo de respuesta
+
+```json
+{
+  "status": "success",
+  "data": [
+    { "examen_id": 1, "nombre": "Hemograma Completo", "categoria": "Hematología" },
+    { "examen_id": 2, "nombre": "Glucosa en Ayunas", "categoria": "Química Sanguínea" },
+    { "examen_id": 3, "nombre": "Perfil Lipídico", "categoria": "Química Sanguínea" },
+    { "examen_id": 4, "nombre": "TSH (Hormona Estimulante de Tiroides)", "categoria": "Hormonas" },
+    { "examen_id": 5, "nombre": "Examen General de Orina", "categoria": "Uroanálisis" }
+  ]
+}
+```
+
+---
+
+## Portal de laboratorio
+
+Además del acceso por API, MedCore Global ofrece un portal web dedicado para la gestión de tus estudios de laboratorio. Para acceder, dirígete a la sección **Laboratorio** en el menú principal del portal.
+
+Desde el portal de laboratorio puedes:
+
+<CardGroup cols={2}>
+  <Card title="Buscar laboratorios afiliados" icon="microscope">
+    Localiza los laboratorios cercanos a ti que están integrados con MedCore Global para presentar tus órdenes digitalmente, sin necesidad de imprimirlas.
+  </Card>
+  <Card title="Filtrar por categoría de examen" icon="filter">
+    Explora el catálogo completo de estudios disponibles filtrados por categoría: hematología, química sanguínea, hormonas, microbiología, imágenes y más.
+  </Card>
+  <Card title="Ver historial de resultados" icon="chart-line">
+    Consulta todos tus resultados anteriores en una línea de tiempo cronológica. Para ciertos indicadores (glucosa, presión arterial, colesterol), se muestran gráficas de tendencia para facilitar el seguimiento.
+  </Card>
+  <Card title="Solicitar exámenes" icon="file-medical">
+    En clínicas donde el flujo lo permite, puedes solicitar exámenes de seguimiento directamente desde el portal. Tu médico recibirá la solicitud para aprobarla antes de generar la orden oficial.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Antes de acudir al laboratorio, revisa las **notas clínicas** de tu orden (`NotasClinicas`). Estas incluyen instrucciones importantes como el tiempo de ayuno requerido, el tipo de muestra a recolectar o si debes suspender algún medicamento previo a la toma. Seguir estas indicaciones asegura que tus resultados sean precisos y evita tener que repetir los exámenes.
+</Tip>

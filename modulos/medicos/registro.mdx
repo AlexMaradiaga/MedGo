@@ -1,0 +1,74 @@
+---
+title: "Registro de Médico en MedCore Global: Verificación de Credenciales"
+sidebarTitle: "Registro Médico"
+description: "Regístrate como médico en MedCore Global. El proceso incluye la verificación de tus credenciales por un administrador antes de que puedas iniciar sesión."
+---
+
+Para ejercer en la plataforma MedCore Global, los médicos deben completar un proceso de registro con verificación de credenciales. Este mecanismo garantiza que todos los profesionales de la salud que operan en el sistema cuenten con la habilitación y documentación requerida, protegiendo tanto a los pacientes como a la institución.
+
+## Proceso de registro
+
+<Steps>
+  <Step title="Completa el formulario de registro">
+    Accede al portal web de MedCore Global y selecciona **"Registrarse como médico"**. Completa todos los campos del formulario: nombre, apellido, correo electrónico, contraseña, número de colegiado, especialidad y entidad a la que perteneces.
+
+    Si prefieres integrarte directamente por API, realiza una solicitud `POST /api/register-doctor` con los campos indicados en la sección siguiente.
+  </Step>
+  <Step title="Sube tus documentos de habilitación">
+    Adjunta los siguientes documentos en formato imagen o PDF:
+
+    - **Foto profesional** — fotografía de presentación en el directorio médico
+    - **Título médico** — documento que acredita tu grado de licenciatura en medicina
+    - **Título de especialista** — certificado de la especialidad que ejerces
+    - **Constancia del colegio médico** — documento vigente emitido por el Colegio Médico de Honduras (CMH) u organismo equivalente
+    - **DNI** — documento nacional de identidad vigente
+  </Step>
+  <Step title="Espera la verificación del administrador">
+    Una vez enviada la solicitud, tu cuenta queda en estado **pendiente** (`Estado = 0`). El equipo administrativo de MedCore Global revisará tus credenciales, comparará tus títulos con los registros del colegio médico y validará tu identidad. Este proceso puede tomar entre 24 y 72 horas hábiles.
+  </Step>
+  <Step title="Recibe la confirmación de activación">
+    Cuando el administrador apruebe tu cuenta, recibirás un correo electrónico de confirmación indicando que tu perfil ha sido activado (`Estado = 1`). A partir de ese momento podrás iniciar sesión y acceder a todas las funcionalidades del portal médico.
+  </Step>
+</Steps>
+
+---
+
+## Registrarse vía API
+
+Si tu institución o sistema externo necesita crear cuentas de médicos de forma programática, utiliza el siguiente endpoint:
+
+**`POST /api/register-doctor`**
+
+```json
+{
+  "Nombre": "Dr. Juan",
+  "Apellido": "Pérez",
+  "Email": "dr.juan@ejemplo.com",
+  "Password": "MiClave123!",
+  "NumeroColegiado": "CMH-00456",
+  "EspecialidadID": 2,
+  "EntidadID": 1,
+  "RutaFoto": "(archivo)",
+  "RutaTituloMedico": "(archivo)",
+  "RutaConstanciaColegio": "(archivo)",
+  "RutaDni": "(archivo)"
+}
+```
+
+Los campos de archivo (`RutaFoto`, `RutaTituloMedico`, `RutaConstanciaColegio`, `RutaDni`) deben enviarse como `multipart/form-data`. El resto de los campos pueden incluirse como parte del mismo formulario multipart o como campos de texto dentro del cuerpo de la solicitud.
+
+<Warning>
+  Toda cuenta registrada comienza con **`Estado = 0` (pendiente de verificación)** y no puede iniciar sesión hasta que un administrador cambie el estado a activo. Intentar autenticarse con una cuenta pendiente devolverá un error `403 Forbidden`. No compartas credenciales de acceso hasta recibir el correo de confirmación.
+</Warning>
+
+<Note>
+  Durante la revisión, el administrador examina cada documento en el panel de administración: compara el título médico con la base de datos del CMH, valida la constancia de colegio vigente y verifica la identidad con el DNI. Si algún documento está incompleto o ilegible, se te notificará por correo para que lo vuelvas a cargar antes de continuar el proceso.
+</Note>
+
+---
+
+## Catálogo de precios
+
+Una vez que tu cuenta esté verificada y activa, podrás definir el valor de tus servicios médicos desde el panel de administración. El catálogo de precios te permite establecer tarifas diferenciadas por tipo de consulta (primera vez, control, urgencia, teleconsulta, entre otras), las cuales serán visibles para los pacientes al momento de solicitar una cita contigo.
+
+Para gestionar tus precios, inicia sesión, dirígete a **Configuración → Catálogo de servicios** y establece o actualiza el valor de cada modalidad de atención.

@@ -1,0 +1,424 @@
+---
+title: "API de Pacientes en MedCore Global: Perfiles e Historial"
+sidebarTitle: "Pacientes"
+description: "Endpoints de la API para gestionar perfiles de pacientes, consultar historial clínico, recetas y exámenes. Requiere rol Paciente o Administrador."
+---
+
+Los endpoints de pacientes permiten acceder y gestionar la información clínica y demográfica de los pacientes registrados en MedCore Global. Esto incluye el perfil del paciente, su historial de consultas, recetas médicas y exámenes físicos. Todos los endpoints requieren autenticación con Bearer token; algunos están restringidos al rol **Administrador**.
+
+---
+
+## GET /api/pacientes/usuario/\{id\}
+
+Obtiene el perfil completo de un paciente a partir de su **ID de usuario** (no del ID de paciente). Útil para cargar la información demográfica y de cobertura médica en interfaces de gestión.
+
+**Autenticación:** Bearer token — Rol `paciente` o `administrador`
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID del usuario asociado al paciente. Corresponde al campo `id` devuelto en el login.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/pacientes/usuario/42 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "PacienteID": 18,
+  "Nombre": "Carlos",
+  "Apellido": "Mendoza",
+  "DNI": "0801199012345",
+  "Telefono": "+504 9999-8888",
+  "Edad": 34,
+  "Genero": "Masculino",
+  "TipoSangre": "O+",
+  "Aseguradora": "Seguros del País",
+  "NumeroPoliza": "POL-2024-00123",
+  "es_dependiente": false,
+  "tutor_info": null
+}
+```
+
+### Campos de la respuesta
+
+<ResponseField name="PacienteID" type="integer">
+  Identificador único del paciente en la tabla de pacientes.
+</ResponseField>
+
+<ResponseField name="Nombre" type="string">
+  Nombre(s) del paciente.
+</ResponseField>
+
+<ResponseField name="Apellido" type="string">
+  Apellido(s) del paciente.
+</ResponseField>
+
+<ResponseField name="DNI" type="string">
+  Documento Nacional de Identidad del paciente.
+</ResponseField>
+
+<ResponseField name="Telefono" type="string">
+  Número de teléfono de contacto registrado.
+</ResponseField>
+
+<ResponseField name="Edad" type="integer">
+  Edad del paciente en años cumplidos.
+</ResponseField>
+
+<ResponseField name="Genero" type="string">
+  Género del paciente: `Masculino`, `Femenino` u `Otro`.
+</ResponseField>
+
+<ResponseField name="TipoSangre" type="string">
+  Tipo de sangre del paciente. Puede ser `null` si no ha sido registrado.
+</ResponseField>
+
+<ResponseField name="Aseguradora" type="string">
+  Nombre de la aseguradora médica. Puede ser `null`.
+</ResponseField>
+
+<ResponseField name="NumeroPoliza" type="string">
+  Número de póliza de seguro médico. Puede ser `null`.
+</ResponseField>
+
+<ResponseField name="es_dependiente" type="boolean">
+  Indica si el paciente es un dependiente vinculado a un tutor. `true` para pacientes menores de edad o bajo tutela.
+</ResponseField>
+
+<ResponseField name="tutor_info" type="object | null">
+  Información del tutor cuando `es_dependiente` es `true`. Incluye `Nombre`, `Apellido` y `Telefono` del tutor. `null` para pacientes autónomos.
+</ResponseField>
+
+---
+
+## GET /api/historial/consultas/\{usuarioId\}
+
+Devuelve el historial completo de consultas médicas asociadas a un paciente, ordenadas de más reciente a más antigua.
+
+**Autenticación:** Bearer token — Rol `paciente` o `administrador`
+
+### Parámetros de ruta
+
+<ParamField path="usuarioId" type="integer" required>
+  ID del usuario cuyo historial de consultas se desea obtener.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/historial/consultas/42 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+[
+  {
+    "ConsultaID": 301,
+    "fecha": "2024-11-15",
+    "doctor": {
+      "Nombre": "Jorge",
+      "Apellido": "Rivas",
+      "Especialidad": "Cardiología"
+    },
+    "Diagnostico": "Hipertensión arterial leve. Se indica tratamiento farmacológico y dieta baja en sodio.",
+    "Tratamiento": "Losartán 50mg, una vez al día"
+  },
+  {
+    "ConsultaID": 289,
+    "fecha": "2024-09-03",
+    "doctor": {
+      "Nombre": "Ana",
+      "Apellido": "Torres",
+      "Especialidad": "Medicina General"
+    },
+    "Diagnostico": "Infección respiratoria aguda.",
+    "Tratamiento": "Amoxicilina 500mg cada 8 horas por 7 días"
+  }
+]
+```
+
+### Campos de la respuesta
+
+<ResponseField name="ConsultaID" type="integer">
+  Identificador único de la consulta médica.
+</ResponseField>
+
+<ResponseField name="fecha" type="string">
+  Fecha de la consulta en formato `YYYY-MM-DD`.
+</ResponseField>
+
+<ResponseField name="doctor" type="object">
+  Objeto con los datos del médico que atendió la consulta: `Nombre`, `Apellido` y `Especialidad`.
+</ResponseField>
+
+<ResponseField name="Diagnostico" type="string">
+  Diagnóstico emitido por el médico durante la consulta.
+</ResponseField>
+
+<ResponseField name="Tratamiento" type="string">
+  Tratamiento prescrito o indicaciones del médico.
+</ResponseField>
+
+---
+
+## GET /api/historial/recetas/\{usuarioId\}
+
+Devuelve el historial de recetas médicas emitidas para un paciente, incluyendo el medicamento, dosis y el médico prescriptor.
+
+**Autenticación:** Bearer token — Rol `paciente` o `administrador`
+
+### Parámetros de ruta
+
+<ParamField path="usuarioId" type="integer" required>
+  ID del usuario cuyo historial de recetas se desea obtener.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/historial/recetas/42 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+[
+  {
+    "RecetaID": 77,
+    "FechaEmision": "2024-11-15",
+    "NombreMedicamento": "Losartán",
+    "Dosis": "50mg",
+    "Frecuencia": "Una vez al día",
+    "Duracion": "30 días",
+    "doctor": {
+      "Nombre": "Jorge",
+      "Apellido": "Rivas"
+    }
+  },
+  {
+    "RecetaID": 65,
+    "FechaEmision": "2024-09-03",
+    "NombreMedicamento": "Amoxicilina",
+    "Dosis": "500mg",
+    "Frecuencia": "Cada 8 horas",
+    "Duracion": "7 días",
+    "doctor": {
+      "Nombre": "Ana",
+      "Apellido": "Torres"
+    }
+  }
+]
+```
+
+### Campos de la respuesta
+
+<ResponseField name="RecetaID" type="integer">
+  Identificador único de la receta médica.
+</ResponseField>
+
+<ResponseField name="FechaEmision" type="string">
+  Fecha de emisión de la receta en formato `YYYY-MM-DD`.
+</ResponseField>
+
+<ResponseField name="NombreMedicamento" type="string">
+  Nombre del medicamento prescrito.
+</ResponseField>
+
+<ResponseField name="Dosis" type="string">
+  Dosis indicada para el medicamento.
+</ResponseField>
+
+<ResponseField name="Frecuencia" type="string">
+  Frecuencia de administración del medicamento.
+</ResponseField>
+
+<ResponseField name="Duracion" type="string">
+  Duración del tratamiento indicada en la receta.
+</ResponseField>
+
+<ResponseField name="doctor" type="object">
+  Objeto con `Nombre` y `Apellido` del médico que emitió la receta.
+</ResponseField>
+
+---
+
+## GET /api/historial/examenes/\{usuarioId\}
+
+Devuelve el historial de exámenes físicos del paciente, organizados por sistema corporal evaluado (cardiovascular, respiratorio, etc.).
+
+**Autenticación:** Bearer token — Rol `paciente` o `administrador`
+
+### Parámetros de ruta
+
+<ParamField path="usuarioId" type="integer" required>
+  ID del usuario cuyo historial de exámenes físicos se desea obtener.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/historial/examenes/42 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+[
+  {
+    "ExamenID": 55,
+    "FechaExamen": "2024-11-15",
+    "ConsultaID": 301,
+    "sistemas": [
+      {
+        "Sistema": "Cardiovascular",
+        "Hallazgos": "Ruidos cardíacos rítmicos, sin soplos. Presión arterial 140/90 mmHg."
+      },
+      {
+        "Sistema": "Respiratorio",
+        "Hallazgos": "Murmullo vesicular conservado. Sin sibilancias."
+      },
+      {
+        "Sistema": "Abdomen",
+        "Hallazgos": "Blando, depresible, no doloroso. Sin visceromegalia."
+      }
+    ]
+  }
+]
+```
+
+### Campos de la respuesta
+
+<ResponseField name="ExamenID" type="integer">
+  Identificador único del registro de examen físico.
+</ResponseField>
+
+<ResponseField name="FechaExamen" type="string">
+  Fecha de realización del examen en formato `YYYY-MM-DD`.
+</ResponseField>
+
+<ResponseField name="ConsultaID" type="integer">
+  ID de la consulta médica a la que pertenece este examen.
+</ResponseField>
+
+<ResponseField name="sistemas" type="array">
+  Arreglo de objetos, uno por cada sistema corporal evaluado. Cada objeto contiene `Sistema` (nombre del sistema examinado) y `Hallazgos` (descripción clínica de los hallazgos del médico).
+</ResponseField>
+
+---
+
+## GET /api/recetas/pdf/\{recetaId\}
+
+Descarga el archivo PDF oficial de una receta médica específica. El archivo está firmado digitalmente con los datos del médico y del paciente.
+
+**Autenticación:** Bearer token — Rol `paciente` o `administrador`
+
+### Parámetros de ruta
+
+<ParamField path="recetaId" type="integer" required>
+  ID de la receta cuyo PDF se desea descargar.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/recetas/pdf/77 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --output receta_77.pdf
+```
+
+### Respuesta exitosa — 200 OK
+
+La respuesta es un archivo binario en formato **PDF**. La cabecera `Content-Type` de la respuesta será `application/pdf`.
+
+<Note>
+  **Guardar el archivo:** Cuando uses `curl`, incluye la opción `--output nombre_archivo.pdf` para guardar el PDF en disco. Sin esta opción, el contenido binario se imprimirá en la terminal. Si integras este endpoint en tu aplicación, lee el cuerpo de la respuesta como un flujo binario y escríbelo directamente al sistema de archivos o envíalo al navegador del usuario con las cabeceras `Content-Type: application/pdf` y `Content-Disposition: attachment`.
+</Note>
+
+---
+
+## POST /api/pacientes/\{id\}/emancipar
+
+Promueve a un paciente **dependiente** (vinculado a un tutor) a la condición de paciente **autónomo**, creando una cuenta de usuario independiente para él. Este proceso es irreversible y se utiliza cuando un paciente menor de edad alcanza la mayoría de edad o cuando un tutor ya no ejerce la tutela.
+
+**Autenticación:** Bearer token — Rol `administrador` exclusivamente
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID del paciente dependiente que será emancipado.
+</ParamField>
+
+### Parámetros del cuerpo
+
+<ParamField body="Email" type="string" required>
+  Correo electrónico para la nueva cuenta autónoma del paciente. Debe ser único en el sistema.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  Contraseña inicial para la nueva cuenta. El paciente podrá cambiarla en su primer inicio de sesión.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request POST \
+  --url https://tu-instancia.com/api/pacientes/18/emancipar \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
+  --data '{
+    "Email": "carlos.mendoza.nuevo@email.com",
+    "Password": "Autonomo2024!"
+  }'
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "message": "Paciente emancipado exitosamente. Se ha creado una cuenta autónoma.",
+  "nuevo_usuario": {
+    "user_id": 210,
+    "Email": "carlos.mendoza.nuevo@email.com",
+    "es_dependiente": false
+  }
+}
+```
+
+### Campos de la respuesta
+
+<ResponseField name="message" type="string">
+  Mensaje de confirmación de la operación.
+</ResponseField>
+
+<ResponseField name="nuevo_usuario.user_id" type="integer">
+  ID del nuevo usuario autónomo creado en el sistema.
+</ResponseField>
+
+<ResponseField name="nuevo_usuario.Email" type="string">
+  Correo electrónico asociado a la nueva cuenta autónoma.
+</ResponseField>
+
+<ResponseField name="nuevo_usuario.es_dependiente" type="boolean">
+  Siempre `false` tras la emancipación, confirmando el nuevo estado del paciente.
+</ResponseField>

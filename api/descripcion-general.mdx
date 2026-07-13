@@ -1,0 +1,94 @@
+---
+title: "Descripción General de la API de MedCore Global"
+sidebarTitle: "Descripción General"
+description: "La API REST de MedCore Global permite integrar funcionalidades de gestión médica: pacientes, citas, consultas, recetas y laboratorio. Autenticación por Bearer token."
+---
+
+La API REST de MedCore Global expone los recursos necesarios para integrar y automatizar la gestión médica de tu organización: administración de pacientes, agendamiento de citas, registro de consultas, emisión de recetas y resultados de laboratorio. Todas las solicitudes y respuestas se realizan en formato **JSON**, y el acceso está protegido mediante **Bearer token** en la cabecera de autorización.
+
+## URL base
+
+Todas las rutas de la API parten de la siguiente URL base. Reemplaza `tu-instancia` con el subdominio asignado a tu organización:
+
+```
+https://tu-instancia.com/api
+```
+
+## Formato de solicitudes
+
+Cada solicitud debe incluir las siguientes cabeceras HTTP:
+
+| Cabecera        | Valor                          | Descripción                              |
+|-----------------|--------------------------------|------------------------------------------|
+| `Content-Type`  | `application/json`             | Indica que el cuerpo está en JSON        |
+| `Authorization` | `Bearer {token}`               | Token de acceso obtenido en el login     |
+| `Accept`        | `application/json`             | Solicita respuesta en formato JSON       |
+
+Ejemplo de cabeceras en una solicitud típica:
+
+```http
+POST /api/pacientes HTTP/1.1
+Host: tu-instancia.com
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+```
+
+## Respuestas
+
+La API devuelve respuestas consistentes en formato JSON. A continuación se describen los códigos de estado HTTP utilizados:
+
+| Código | Estado                  | Descripción                                                                 |
+|--------|-------------------------|-----------------------------------------------------------------------------|
+| `200`  | OK                      | Solicitud procesada correctamente.                                          |
+| `201`  | Creado                  | Recurso creado exitosamente.                                                |
+| `401`  | No autorizado           | Token ausente, inválido o expirado.                                         |
+| `403`  | Prohibido               | El usuario no tiene el rol requerido o la cuenta se encuentra inactiva.     |
+| `404`  | No encontrado           | El recurso solicitado no existe.                                            |
+| `422`  | Error de validación     | Los datos enviados no superaron la validación. Revisa el campo `errors`.    |
+| `500`  | Error del servidor      | Error interno. Contacta al equipo de soporte si persiste.                  |
+
+## Ejemplo de error 422
+
+Cuando los datos de entrada no son válidos, la API responde con código `422` e incluye un objeto `errors` que detalla cada campo con problemas:
+
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "Email": ["El campo Email es obligatorio."]
+  }
+}
+```
+
+El objeto `errors` puede contener múltiples claves, una por cada campo que haya fallado la validación, y cada clave mapea a un arreglo de mensajes descriptivos.
+
+## Catálogos del sistema
+
+Los siguientes endpoints de catálogo están disponibles para **todos los usuarios autenticados**, independientemente de su rol. Devuelven listas de valores de referencia utilizados en otras partes de la API:
+
+| Método | Endpoint                        | Descripción                                       |
+|--------|---------------------------------|---------------------------------------------------|
+| `GET`  | `/api/enfermedades-cronicas`    | Lista de enfermedades crónicas registradas        |
+| `GET`  | `/api/catalogo-medicamentos`    | Catálogo completo de medicamentos disponibles     |
+| `GET`  | `/api/catalogo-alergias`        | Tipos de alergias registradas en el sistema       |
+| `GET`  | `/api/especialidades`           | Especialidades médicas disponibles                |
+| `GET`  | `/api/entidades`                | Entidades o clínicas registradas en la plataforma |
+| `GET`  | `/api/laboratorio/catalogo`     | Exámenes y pruebas de laboratorio disponibles     |
+
+Ejemplo de solicitud al catálogo de especialidades:
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/especialidades \
+  --header "Authorization: Bearer {token}" \
+  --header "Accept: application/json"
+```
+
+<Note>
+  **Paginación y límites de tasa:** Algunos endpoints que devuelven colecciones grandes pueden estar paginados. En esos casos, la respuesta incluirá los campos `current_page`, `last_page`, `per_page` y `total`, junto con los enlaces de navegación `next_page_url` y `prev_page_url`. Consulta la documentación de cada recurso para saber si aplica paginación. La plataforma aplica límites de tasa para proteger la estabilidad del servicio; si recibes un código `429 Too Many Requests`, espera unos segundos antes de reintentar.
+</Note>
+
+<Info>
+  **Idioma:** La API acepta y devuelve datos en **español por defecto**. Los mensajes de validación, errores y respuestas del sistema se presentan en español. Si tu integración requiere soporte para otro idioma, comunícate con el equipo de MedCore Global para evaluar la disponibilidad.
+</Info>

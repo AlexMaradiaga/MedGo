@@ -1,0 +1,112 @@
+---
+title: "Dashboard de Clínica en MedCore Global"
+sidebarTitle: "Dashboard Clínica"
+description: "El dashboard de clínica ofrece KPIs operativos, listado de citas recientes, gestión del personal médico y control de especialidades ofrecidas."
+---
+
+El **Dashboard de Clínica** es el punto de entrada operativo para los gestores y administradores de cada entidad clínica registrada en MedCore Global. Ofrece una vista unificada del estado actual de la clínica: volumen de citas, médicos activos, ingresos del período y el detalle de las consultas más recientes. Desde aquí también se administra el equipo médico y las especialidades disponibles para los pacientes.
+
+<Note>
+  La interfaz web de MedCore Global incluye un **modo de tema oscuro** disponible para el dashboard de clínica. Puedes activarlo desde el ícono de configuración en la barra superior derecha. El tema seleccionado se guarda por usuario y persiste entre sesiones.
+</Note>
+
+---
+
+## Resumen operativo
+
+La sección principal del dashboard presenta cuatro KPIs que reflejan el estado en tiempo real de la clínica:
+
+| Indicador | Descripción |
+|---|---|
+| **Total Citas** | Número total de citas registradas en la clínica para el período seleccionado (día, semana o mes). |
+| **Citas Pendientes** | Citas agendadas que aún no han sido atendidas ni canceladas. Refleja la carga de trabajo próxima. |
+| **Médicos Activos** | Cantidad de médicos con cuenta activa y aprobada que pertenecen a la entidad. |
+| **Ingresos** | Total de ingresos facturados en el período activo, calculado sobre los servicios completados. |
+
+### Tabla de citas recientes
+
+Bajo los KPIs, el dashboard despliega una tabla con las últimas citas registradas en la clínica, que incluye:
+
+| Columna | Descripción |
+|---|---|
+| **Paciente** | Nombre completo del paciente y su número de identificación. |
+| **Médico** | Nombre del médico asignado a la cita. |
+| **Especialidad** | Especialidad médica correspondiente a la consulta. |
+| **Fecha y Hora** | Fecha y hora programada de la cita. |
+| **Estado** | Estado actual: `Pendiente`, `Completada`, `Cancelada` o `No Asistió`. |
+
+---
+
+## Personal médico
+
+La pestaña de **Personal Médico** muestra el roster completo de doctores vinculados a la clínica. Desde esta vista el gestor puede:
+
+- Consultar el listado de médicos activos e inactivos de la entidad.
+- Ver el perfil de cada médico, incluyendo su especialidad, número de citas atendidas y estado de aprobación.
+- Iniciar el proceso de incorporación de nuevos médicos a la entidad.
+- Contactar directamente al administrador de la plataforma para gestionar aprobaciones pendientes.
+
+El personal médico se gestiona en coordinación con el módulo de [Usuarios del panel administrativo](/modulos/admin/usuarios), donde se procesan las verificaciones de credenciales.
+
+---
+
+## Especialidades
+
+La pestaña de **Especialidades** permite al gestor de la clínica administrar los servicios médicos que ofrece su entidad a los pacientes. Las especialidades activas son visibles en el directorio público de MedCore Global y son utilizadas por los pacientes para filtrar médicos al agendar citas.
+
+Desde esta pestaña puedes:
+
+- Visualizar las especialidades actualmente asociadas a tu clínica.
+- Solicitar la activación de nuevas especialidades al administrador de la plataforma.
+- Desactivar especialidades que ya no se ofrezcan, retirándolas del directorio público de inmediato.
+
+La gestión técnica de las especialidades —creación y desactivación a nivel de catálogo— se realiza desde el [módulo de Clínicas del panel administrativo](/modulos/admin/clinicas#gestión-de-especialidades).
+
+---
+
+## API del dashboard
+
+El dashboard consume los siguientes datos a través de un endpoint dedicado que ejecuta el procedimiento almacenado `sp_ObtenerDashboardClinica` en la base de datos.
+
+```http
+GET /api/clinica/dashboard?EntidadID={id}
+```
+
+**Parámetros de consulta:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `EntidadID` | `integer` | Identificador único de la entidad clínica. |
+
+**Respuesta de ejemplo:**
+
+```json
+{
+  "KPIs": {
+    "TotalCitas": 214,
+    "CitasPendientes": 38,
+    "MedicosActivos": 12,
+    "Ingresos": 87500.00
+  },
+  "CitasRecientes": [
+    {
+      "CitaID": 320,
+      "Paciente": "Luis Hernández",
+      "Medico": "Dra. Ana Martínez",
+      "Especialidad": "Cardiología",
+      "FechaCita": "2026-01-22T10:00:00Z",
+      "Estado": "Pendiente"
+    },
+    {
+      "CitaID": 318,
+      "Paciente": "María Estrada",
+      "Medico": "Dr. Jorge Padilla",
+      "Especialidad": "Medicina General",
+      "FechaCita": "2026-01-21T09:30:00Z",
+      "Estado": "Completada"
+    }
+  ]
+}
+```
+
+El procedimiento `sp_ObtenerDashboardClinica` calcula los KPIs en el servidor y devuelve los datos de citas recientes ordenados por fecha descendente. El número de citas recientes retornadas por defecto es **10**, configurable mediante el parámetro opcional `Limite`.

@@ -1,0 +1,214 @@
+---
+title: "Gestión de Usuarios y Aprobación de Médicos en MedCore Global"
+sidebarTitle: "Usuarios"
+description: "Gestiona todos los usuarios de MedCore Global: visualiza pacientes y médicos, aprueba credenciales de doctores pendientes y activa o suspende cuentas."
+---
+
+El módulo de Usuarios centraliza la administración de todas las cuentas registradas en MedCore Global, sin importar su rol o la entidad a la que pertenezcan. Desde aquí, el administrador de la plataforma puede consultar el directorio completo de pacientes y médicos, procesar solicitudes de verificación de credenciales para nuevos doctores y controlar el estado operativo de cualquier cuenta. Este control garantiza que únicamente usuarios verificados y autorizados operen dentro de la plataforma.
+
+<Warning>
+  Suspender una cuenta de usuario invalida de forma **inmediata e irrevocable** todos los tokens de sesión activos del usuario. Cualquier sesión abierta —incluyendo las de aplicaciones móviles o integraciones de terceros— se cerrará sin previo aviso. Utiliza esta acción con precaución y documenta siempre el motivo de la suspensión.
+</Warning>
+
+---
+
+## Ver todos los usuarios
+
+Obtén el listado completo de usuarios registrados en la plataforma, incluyendo su rol, estado y entidad de pertenencia.
+
+```http
+GET /api/admin/usuarios
+```
+
+**Respuesta de ejemplo:**
+
+```json
+[
+  {
+    "UsuarioID": 14,
+    "Nombre": "Ana Martínez",
+    "Correo": "ana.martinez@clinicasanrafael.hn",
+    "Rol": "Medico",
+    "EntidadID": 1,
+    "Estado": 1,
+    "Aprobado": true
+  },
+  {
+    "UsuarioID": 27,
+    "Nombre": "Carlos López",
+    "Correo": "carlos.lopez@gmail.com",
+    "Rol": "Paciente",
+    "EntidadID": null,
+    "Estado": 1,
+    "Aprobado": true
+  }
+]
+```
+
+El campo `Aprobado` es relevante únicamente para usuarios con rol `Medico`. Los pacientes quedan aprobados automáticamente al completar su registro.
+
+---
+
+## Usuarios agrupados por rol
+
+Obtén un resumen cuantitativo de los usuarios de la plataforma, organizados por su tipo de rol.
+
+```http
+GET /api/admin/usuarios/agrupados
+```
+
+**Respuesta de ejemplo:**
+
+```json
+[
+  { "Rol": "Paciente",      "Total": 1342 },
+  { "Rol": "Medico",        "Total": 87   },
+  { "Rol": "Administrador", "Total": 5    },
+  { "Rol": "Recepcionista", "Total": 23   }
+]
+```
+
+Este endpoint es útil para el resumen ejecutivo del dashboard y para detectar desequilibrios en la distribución de roles entre entidades.
+
+---
+
+## Médicos pendientes de aprobación
+
+Consulta la cola de médicos que han completado su registro pero aún no han sido verificados por un administrador.
+
+```http
+GET /api/admin/doctores-pendientes
+```
+
+**Respuesta de ejemplo:**
+
+```json
+[
+  {
+    "UsuarioID": 58,
+    "Nombre": "Dr. Roberto Ayala",
+    "Especialidad": "Medicina General",
+    "EntidadID": 3,
+    "FechaRegistro": "2026-01-20T14:32:00Z",
+    "DocumentosFotografia": "/storage/docs/doc_58_foto.jpg",
+    "TituloMedico": "/storage/docs/doc_58_titulo.pdf",
+    "TituloEspecialista": null,
+    "CertificadoCMH": "/storage/docs/doc_58_cmh.pdf",
+    "DNI": "/storage/docs/doc_58_dni.pdf"
+  }
+]
+```
+
+Cada entrada incluye enlaces directos a los documentos adjuntos por el médico durante su registro. El administrador debe revisar todos los documentos disponibles antes de emitir una decisión de aprobación.
+
+---
+
+## Aprobar un médico
+
+Una vez revisados los documentos del médico, el administrador puede aprobar su cuenta para habilitarlo en la plataforma.
+
+```http
+PUT /api/admin/doctores/{id}/aprobar
+```
+
+**Parámetros de ruta:**
+
+| Parámetro | Descripción |
+|---|---|
+| `id` | `UsuarioID` del médico a aprobar. |
+
+### Proceso de revisión de credenciales
+
+El dashboard presenta cada documento adjunto en una vista de revisión estructurada. El administrador debe verificar los siguientes elementos antes de aprobar:
+
+<Steps>
+  <Step title="Fotografía personal">
+    Verifica que la foto corresponda al solicitante, sea reciente y cumpla con los requisitos de calidad de imagen.
+  </Step>
+  <Step title="Título médico">
+    Confirma que el título esté emitido por una universidad reconocida, que el nombre coincida con el solicitante y que no presente alteraciones.
+  </Step>
+  <Step title="Título de especialista">
+    Si aplica, valida el título de especialización. Este campo puede estar vacío para médicos de medicina general.
+  </Step>
+  <Step title="Certificado CMH">
+    Verifica el certificado vigente emitido por el Colegio Médico de Honduras (CMH) que acredita al médico para ejercer en el país.
+  </Step>
+  <Step title="Documento de identidad (DNI)">
+    Confirma que el número de identidad coincida con los datos de registro y que el documento no esté vencido.
+  </Step>
+</Steps>
+
+Una vez aprobado, el médico recibirá una notificación por correo electrónico y podrá iniciar sesión en la plataforma de forma inmediata.
+
+**Respuesta exitosa:** `200 OK` con confirmación del cambio de estado.
+
+---
+
+## Activar o suspender una cuenta
+
+Cambia el estado de cualquier cuenta de usuario en la plataforma. Este mecanismo aplica tanto a médicos como a pacientes, recepcionistas y administradores subordinados.
+
+```http
+PUT /api/admin/usuarios/{id}/estado
+```
+
+**Parámetros de ruta:**
+
+| Parámetro | Descripción |
+|---|---|
+| `id` | `UsuarioID` del usuario cuyo estado se desea modificar. |
+
+**Cuerpo de la solicitud:**
+
+<CodeGroup>
+  ```json Activar cuenta
+  {
+    "Estado": 1
+  }
+  ```
+
+  ```json Suspender cuenta
+  {
+    "Estado": 0
+  }
+  ```
+</CodeGroup>
+
+| Valor de `Estado` | Efecto |
+|---|---|
+| `1` | La cuenta queda activa. El usuario puede iniciar sesión normalmente. |
+| `0` | La cuenta queda suspendida. Todos los tokens activos se invalidan de inmediato. |
+
+**Respuesta exitosa:** `200 OK` con el estado actualizado del usuario.
+
+---
+
+## Médicos por entidad
+
+Filtra el listado de médicos registrados que pertenecen a una entidad clínica específica. Útil para auditorías por clínica o para asignar médicos a entidades.
+
+```http
+GET /api/admin/doctores/entidad?EntidadID={id}
+```
+
+**Parámetros de consulta:**
+
+| Parámetro | Descripción |
+|---|---|
+| `EntidadID` | Identificador de la entidad clínica cuyo personal médico se desea consultar. |
+
+**Respuesta de ejemplo:**
+
+```json
+[
+  {
+    "UsuarioID": 14,
+    "Nombre": "Dra. Ana Martínez",
+    "Especialidad": "Cardiología",
+    "Estado": 1,
+    "Aprobado": true,
+    "TotalCitas": 128
+  }
+]
+```

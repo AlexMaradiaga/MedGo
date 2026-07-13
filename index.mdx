@@ -1,20 +1,59 @@
 ---
-title: "Introduction"
-description: "Welcome to your project"
+title: "MedCore Global: Plataforma SaaS de Gestión Médica"
+sidebarTitle: "Inicio"
+description: "MedCore Global conecta clínicas, médicos y pacientes en una sola plataforma. Gestiona citas, historiales clínicos, recetas y laboratorio."
 ---
 
-Write a short description of your product here. What it does, who it's for, and what they can accomplish with it.
+Bienvenido a **MedCore Global**, la plataforma SaaS de gestión médica que centraliza en un solo sistema todo lo que necesitan clínicas, médicos y pacientes. Desde el agendamiento de citas hasta la emisión de recetas digitales y resultados de laboratorio, MedCore Global moderniza la experiencia sanitaria para todos los actores del ecosistema de salud.
 
-<Tip>
-  Ready to make this your own? Start by editing this page. Update your `docs.json` file to customize your site. Then fill out the [Quickstart](/quickstart) page.
-</Tip>
+## ¿Por dónde empezar?
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  This card links to the quickstart page in your project.
-</Card>
-<Card title="Components" icon="puzzle-piece" href="https://mintlify.com/docs/components">
-  Add cards, callouts, steps, tabs, and more to design and structure your pages.
-</Card>
-<Card title="Settings" icon="gear" href="https://mintlify.com/docs/organize/settings">
-  Set your site name, branding, and navigation in the `docs.json` file.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Inicio Rápido" icon="rocket" href="/inicio-rapido">
+    Regístrate, obtén tu token y realiza tu primera llamada a la API en menos de 5 minutos.
+  </Card>
+  <Card title="Autenticación" icon="key" href="/autenticacion">
+    Aprende a obtener y enviar tu token Bearer en cada solicitud de la API.
+  </Card>
+  <Card title="Módulo Pacientes" icon="user" href="/modulos/pacientes/registro">
+    Gestiona el registro, perfil y historial clínico de pacientes en la plataforma.
+  </Card>
+  <Card title="Referencia API" icon="code" href="/api/descripcion-general">
+    Explora todos los endpoints disponibles, parámetros, cuerpos de solicitud y respuestas.
+  </Card>
+</CardGroup>
+
+## Flujo de incorporación
+
+Sigue estos cuatro pasos para comenzar a usar MedCore Global de extremo a extremo:
+
+<Steps>
+  <Step title="Registrarse en la plataforma">
+    Crea tu cuenta como paciente, médico o administrador. Los pacientes pueden registrarse directamente a través del endpoint `POST /api/register-patient`. Las cuentas de médicos son activadas por un administrador de clínica.
+  </Step>
+  <Step title="Obtener tu token de acceso">
+    Inicia sesión con tus credenciales en `POST /api/login`. La respuesta incluye un **token Bearer** que deberás incluir en el encabezado `Authorization` de todas tus solicitudes posteriores.
+  </Step>
+  <Step title="Crear tu primera cita">
+    Con el token activo, agenda una cita médica enviando los datos del paciente, médico, fecha y hora al endpoint `POST /api/citas`. Recibirás la confirmación con el identificador único de la cita.
+  </Step>
+  <Step title="Gestionar el historial clínico">
+    Accede y actualiza el historial clínico del paciente a través del módulo de Historia Clínica. Consulta diagnósticos anteriores, recetas emitidas y resultados de laboratorio desde un único panel.
+  </Step>
+</Steps>
+
+## Acceso por rol
+
+MedCore Global adapta la experiencia y los permisos según el rol de cada usuario. Elige tu perfil para conocer las funcionalidades disponibles:
+
+<CardGroup cols={3}>
+  <Card title="Paciente" icon="user">
+    Agenda citas, consulta tu historial clínico, descarga recetas digitales y visualiza resultados de laboratorio desde tu portal personal.
+  </Card>
+  <Card title="Médico" icon="stethoscope">
+    Gestiona tu agenda, registra diagnósticos, emite recetas digitales, solicita exámenes de laboratorio y accede al historial completo de tus pacientes.
+  </Card>
+  <Card title="Administrador" icon="shield-halved">
+    Administra clínicas, aprueba cuentas de médicos, configura planes SaaS, gestiona usuarios y supervisa la operación global de la plataforma.
+  </Card>
+</CardGroup>

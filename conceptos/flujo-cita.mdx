@@ -1,0 +1,157 @@
+---
+title: "Ciclo de vida de una cita en MedCore Global"
+sidebarTitle: "Flujo de Cita"
+description: "Entiende el ciclo completo de una cita médica en MedCore Global: desde la reserva del paciente hasta la consulta, diagnóstico, receta y pago."
+---
+
+Una cita médica en MedCore Global recorre un ciclo estructurado que conecta al paciente, al médico y, cuando corresponde, al laboratorio y la farmacia. Comprender este flujo te ayudará a saber en qué punto del proceso se encuentra tu atención en cada momento y qué acciones están disponibles para ti.
+
+## Ciclo completo de una cita
+
+<Steps>
+  <Step title="El paciente agenda la cita">
+    El paciente selecciona una clínica, un médico y un horario disponible, y confirma la reserva.
+
+    ```http
+    POST /api/citas
+    ```
+
+    ```json
+    {
+      "medico_id": 12,
+      "fecha": "2025-08-15",
+      "hora": "10:00",
+      "motivo": "Revisión general"
+    }
+    ```
+
+    La cita se crea con estado **Pendiente**, a la espera de confirmación por parte del médico.
+  </Step>
+
+  <Step title="El médico revisa y aprueba la cita">
+    El médico recibe la solicitud en su panel de agenda y la confirma. En ese momento el estado de la cita cambia a **Confirmada** y el paciente recibe una notificación.
+
+    ```http
+    POST /api/doctor/cita/aprobar/{id}
+    ```
+
+    ```json
+    {
+      "cita_id": 47,
+      "nota_confirmacion": "Te espero a las 10:00 am puntualmente."
+    }
+    ```
+  </Step>
+
+  <Step title="El médico atiende la consulta">
+    En el día y hora acordados, el médico abre el perfil del paciente desde su panel y da inicio a la consulta médica. El sistema despliega el formulario SOAP (Subjetivo, Objetivo, Evaluación y Plan) donde el médico puede:
+
+    - Registrar el **motivo de consulta** y síntomas descritos por el paciente.
+    - Anotar **signos vitales**: presión arterial, temperatura, peso, frecuencia cardíaca.
+    - Revisar el **historial clínico previo** del paciente en esa entidad.
+    - Agregar notas de evaluación y plan de tratamiento.
+  </Step>
+
+  <Step title="Se finaliza la consulta">
+    Al concluir la atención, el médico guarda y cierra la consulta. Este paso registra de forma permanente el diagnóstico, los medicamentos recetados y cualquier orden de laboratorio emitida.
+
+    ```http
+    POST /api/doctor/consulta/finalizar
+    ```
+
+    ```json
+    {
+      "consulta_id": 89,
+      "diagnostico": "Hipertensión arterial leve",
+      "plan_tratamiento": "Dieta baja en sodio, ejercicio moderado",
+      "medicamentos": [
+        {
+          "nombre": "Losartán",
+          "dosis": "50 mg",
+          "frecuencia": "Una vez al día",
+          "duracion": "30 días"
+        }
+      ],
+      "orden_laboratorio": ["Biometría hemática", "Química sanguínea"]
+    }
+    ```
+
+    La cita pasa al estado **Completada** automáticamente.
+  </Step>
+
+  <Step title="El paciente descarga su receta">
+    Una vez finalizada la consulta, el paciente puede descargar su receta en formato PDF desde su perfil. El documento incluye los datos del médico, la entidad, los medicamentos indicados y el código QR de canje.
+
+    ```http
+    GET /api/recetas/pdf/{recetaId}
+    ```
+
+    La respuesta devuelve el archivo PDF listo para descarga o impresión.
+  </Step>
+
+  <Step title="Se registra el pago">
+    Finalmente, se procesa el cobro de la consulta según la tarifa establecida por la entidad y el plan del paciente. El comprobante queda disponible en el historial de transacciones.
+
+    ```http
+    POST /api/pagos/procesar
+    ```
+
+    ```json
+    {
+      "cita_id": 47,
+      "metodo_pago": "tarjeta",
+      "monto": 450.00,
+      "moneda": "MXN"
+    }
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Estados de una cita
+
+A lo largo de su ciclo de vida, una cita puede encontrarse en uno de los siguientes estados:
+
+| Estado       | Descripción                                                                                     |
+|--------------|-------------------------------------------------------------------------------------------------|
+| **Pendiente**    | La cita fue agendada por el paciente y está esperando confirmación por parte del médico.        |
+| **Confirmada**   | El médico aprobó la cita. El paciente debe presentarse en el horario acordado.                  |
+| **Completada**   | La consulta fue atendida y finalizada por el médico. El expediente ya está disponible.          |
+| **Cancelada**    | La cita fue cancelada por el paciente o por el médico antes de que se llevara a cabo.           |
+
+---
+
+## Reagendar y cancelar
+
+### Reagendar una cita
+
+Si necesitas cambiar la fecha u hora de una cita **Pendiente** o **Confirmada**, puedes reprogramarla con el siguiente endpoint:
+
+```http
+PUT /api/citas/{id}/reprogramar
+```
+
+```json
+{
+  "nueva_fecha": "2025-08-20",
+  "nueva_hora": "11:30",
+  "motivo_cambio": "Conflicto de horario"
+}
+```
+
+El médico recibirá una notificación con el nuevo horario propuesto y deberá confirmarlo nuevamente.
+
+### Cancelar una cita
+
+Para cancelar una cita antes de que se realice, utiliza el siguiente endpoint:
+
+```http
+DELETE /api/citas/{id}
+```
+
+Tanto el paciente como el médico pueden iniciar una cancelación. Se recomienda cancelar con al menos 24 horas de anticipación para liberar el espacio en la agenda del médico.
+
+<Tip>
+  Al finalizar tu consulta, recibirás tu **receta en formato PDF** con un código QR único incorporado. Preséntalo en cualquier farmacia afiliada a MedCore Global para que el farmacéutico lo escanee y valide la dispensación de tus medicamentos. El código QR solo puede utilizarse **una vez**, lo que garantiza la seguridad y trazabilidad de cada prescripción.
+</Tip>

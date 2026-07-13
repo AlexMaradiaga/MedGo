@@ -1,0 +1,103 @@
+---
+title: "Gestiona tu Agenda de Citas como Médico en MedCore Global"
+sidebarTitle: "Agenda"
+description: "Visualiza y administra tu agenda semanal de citas en MedCore Global. Navega entre días y semanas, y gestiona citas pendientes desde un calendario interactivo."
+---
+
+La agenda médica de MedCore Global te ofrece una vista completa y estructurada de tu semana de trabajo. Desde un calendario interactivo puedes identificar de un vistazo tus citas confirmadas, las que aún esperan tu aprobación y los espacios disponibles en tu horario, todo sin salir de la pantalla.
+
+---
+
+## Vista de calendario
+
+El calendario semanal presenta una cuadrícula de **8 columnas**: la primera muestra la escala horaria (de 07:00 a 20:00 en intervalos de 30 minutos) y las 7 columnas restantes corresponden a cada día de la semana en curso, de lunes a domingo.
+
+Al cargar la agenda, el calendario realiza un **desplazamiento automático** hasta la hora actual del día, para que siempre comiences viendo el momento presente en lugar del inicio del día.
+
+Cada cita aparece como una **tarjeta interactiva** dentro de la celda del día y hora correspondiente. Las tarjetas muestran:
+
+- Nombre del paciente
+- Tipo de consulta (primera vez, control, urgencia, etc.)
+- Estado de la cita (pendiente, confirmada, completada)
+- Duración estimada
+
+Haz clic sobre cualquier tarjeta para ver el detalle completo de la cita y acceder a las opciones de gestión.
+
+Para navegar entre semanas utiliza los botones **"← Semana anterior"** y **"Semana siguiente →"** ubicados en la cabecera del calendario.
+
+---
+
+## Ver citas pendientes
+
+Consulta las citas que los pacientes han solicitado y que aún no has aprobado ni rechazado:
+
+```http
+GET /api/citas/doctor/{doctorId}
+```
+
+La respuesta devuelve el listado completo de citas asociadas a tu perfil, con su estado actual. Filtra por `Estado = pendiente` para trabajar únicamente con las solicitudes que requieren tu respuesta.
+
+---
+
+## Aprobar o rechazar desde la agenda
+
+Puedes gestionar citas pendientes directamente desde el calendario sin necesidad de regresar al dashboard. Al hacer clic en una tarjeta de cita pendiente se despliegan las opciones de acción:
+
+**Aprobar la cita**
+
+```http
+POST /api/doctor/cita/aprobar/{id}
+```
+
+La cita se mueve al bloque horario correspondiente en el calendario y el paciente recibe la notificación de confirmación.
+
+**Rechazar la cita**
+
+```http
+POST /api/doctor/cita/rechazar/{id}
+```
+
+```json
+{
+  "Motivo": "El horario solicitado se encuentra fuera de mi disponibilidad. Te invito a seleccionar otro turno."
+}
+```
+
+El campo `Motivo` es obligatorio. El mensaje queda visible para el paciente en su portal para que pueda reagendar con contexto.
+
+---
+
+## Reprogramar una cita
+
+La reprogramación es iniciada por el **paciente** desde su propio portal cuando necesita cambiar la fecha u hora de una cita ya confirmada. Al confirmar el cambio, el sistema:
+
+1. Actualiza la tarjeta de la cita en tu calendario a la nueva fecha y hora
+2. Cambia el estado de la cita a **pendiente** nuevamente para que la confirmes
+3. Envía una notificación en tu dashboard indicando que una cita fue reprogramada y requiere tu aprobación
+
+No existe acción manual requerida de tu parte para recibir la solicitud de reprogramación; la notificación aparece automáticamente en tu bandeja del dashboard.
+
+---
+
+## Mis estadísticas
+
+En la parte superior de la página de agenda encontrarás cuatro **tarjetas KPI** que resumen tu actividad clínica:
+
+```http
+GET /api/doctor/stats/{usuarioId}
+```
+
+| KPI | Descripción |
+|---|---|
+| Consultas del mes | Total de consultas finalizadas en el período actual |
+| Citas pendientes | Número de solicitudes en espera de tu aprobación |
+| Ingresos del mes | Monto total generado por consultas en el mes en curso |
+| Pacientes nuevos | Pacientes atendidos por primera vez en el período |
+
+Estas métricas se actualizan en tiempo real conforme avanza la jornada y el mes.
+
+---
+
+<Tip>
+  Utiliza la vista semanal al inicio de cada jornada para planificar tu día con anticipación. Identificar los bloques vacíos entre citas confirmadas te permite detectar oportunidades para agendar urgencias o consultas de seguimiento sin afectar los compromisos ya confirmados.
+</Tip>

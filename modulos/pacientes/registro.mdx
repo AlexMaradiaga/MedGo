@@ -1,0 +1,156 @@
+---
+title: "Cómo registrarte como paciente en MedCore Global"
+sidebarTitle: "Registro"
+description: "Crea tu cuenta de paciente en MedCore Global. Aprende a registrarte como adulto, como tutor de un menor o como dependiente en el sistema."
+---
+
+Bienvenido a MedCore Global. Antes de agendar citas, acceder a tu historial clínico o descargar recetas, necesitas crear tu cuenta de paciente. El proceso tarda menos de cinco minutos y solo requiere tu documento de identidad, un correo electrónico válido y tu información básica de salud. Esta guía cubre los tres escenarios de registro: paciente adulto autónomo, tutor que registra su propio perfil clínico y registro de un menor como dependiente.
+
+---
+
+## Registro de paciente adulto
+
+Si eres mayor de edad y deseas crear tu propia cuenta, realiza una solicitud `POST` al siguiente endpoint:
+
+```
+POST /api/register-patient
+```
+
+### Cuerpo de la solicitud
+
+```json
+{
+  "Nombre": "Carlos",
+  "Apellido": "López",
+  "Email": "carlos@ejemplo.com",
+  "Password": "MiClave123!",
+  "DNI": "0801-1990-12345",
+  "Telefono": "+504 9888-0000",
+  "Edad": 35,
+  "Genero": "M",
+  "TipoSangre": "O+",
+  "Aseguradora": "Seguros Honduras",
+  "NumeroPoliza": "SH-00123"
+}
+```
+
+| Campo               | Tipo     | Requerido | Descripción                                                      |
+|---------------------|----------|-----------|------------------------------------------------------------------|
+| `Nombre`            | `string` | ✅        | Primer nombre del paciente.                                      |
+| `Apellido`          | `string` | ✅        | Apellido del paciente.                                           |
+| `Email`             | `string` | ✅        | Correo electrónico único para inicio de sesión.                  |
+| `Password`          | `string` | ✅        | Contraseña (mínimo 8 caracteres, una mayúscula y un símbolo).    |
+| `DNI`               | `string` | ✅        | Documento Nacional de Identidad. Debe ser único en el sistema.   |
+| `Telefono`          | `string` | ✅        | Número de teléfono con código de país.                           |
+| `Edad`              | `integer`| ✅        | Edad en años completos.                                          |
+| `Genero`            | `string` | ✅        | `"M"` para masculino, `"F"` para femenino.                       |
+| `TipoSangre`        | `string` | ✅        | Grupo sanguíneo (`A+`, `A-`, `B+`, `B-`, `O+`, `O-`, `AB+`, `AB-`). |
+| `Aseguradora`       | `string` | ❌        | Nombre de la compañía aseguradora.                               |
+| `NumeroPoliza`      | `string` | ❌        | Número de póliza de seguro médico.                               |
+
+### Respuesta exitosa
+
+```json
+{
+  "status": "success",
+  "code": 201,
+  "data": {
+    "user_id": 48,
+    "patient_id": 31
+  },
+  "message": "Paciente registrado exitosamente."
+}
+```
+
+Guarda los valores `user_id` y `patient_id` — los necesitarás en otras llamadas a la API, como al agendar citas o consultar tu historial.
+
+<Note>
+  El campo `DNI` debe ser único en toda la plataforma. Si intentas registrarte con un DNI ya existente, recibirás un error `422 Unprocessable Entity`. Si crees que ya tienes una cuenta, usa la opción **¿Olvidaste tu contraseña?** en la pantalla de inicio de sesión.
+</Note>
+
+<Tip>
+  Completar los campos `Aseguradora` y `NumeroPoliza` durante el registro agiliza el proceso de agendamiento de citas. La plataforma precompletará automáticamente los datos de tu seguro cada vez que reserves una consulta, evitando que tengas que ingresarlos manualmente.
+</Tip>
+
+---
+
+## Registro como tutor
+
+Si eres el tutor legal de un menor y también deseas registrar tu propio perfil clínico en el sistema (por ejemplo, para tener acceso a tus propias consultas y recetas), utiliza el endpoint de auto-registro:
+
+```
+POST /api/pacientes/auto-registro
+```
+
+Este endpoint crea un perfil de paciente vinculado a tu cuenta de usuario existente. Es el paso necesario para que un usuario con rol de tutor también tenga un expediente médico propio dentro de la plataforma.
+
+### Cuerpo de la solicitud
+
+```json
+{
+  "Nombre": "María",
+  "Apellido": "González",
+  "DNI": "0501-1985-67890",
+  "Telefono": "+504 9777-1111",
+  "Edad": 40,
+  "Genero": "F",
+  "TipoSangre": "A+",
+  "Aseguradora": "Salud Total",
+  "NumeroPoliza": "ST-00456"
+}
+```
+
+Una vez completado, tendrás un `patient_id` propio asociado a tu cuenta de tutor, lo que te permitirá usar la plataforma tanto para gestionar la salud de tus dependientes como para la tuya propia.
+
+---
+
+## Dependientes
+
+Los menores de edad o personas bajo tutela legal pueden ser registrados dentro de la cuenta de su tutor como **dependientes**. Al crear o actualizar el perfil de un menor, incluye el parámetro `es_dependiente: true` y el campo `tutor_id` con el `patient_id` del tutor responsable.
+
+```json
+{
+  "Nombre": "Sofía",
+  "Apellido": "González",
+  "DNI": "0501-2018-11111",
+  "Edad": 7,
+  "Genero": "F",
+  "TipoSangre": "A+",
+  "es_dependiente": true,
+  "tutor_id": 31
+}
+```
+
+Los dependientes **no tienen credenciales de acceso propias**. El tutor gestiona sus citas, historial, recetas y órdenes de laboratorio desde su propia sesión. En el portal web, encontrarás la sección **Mis dependientes** en el menú de tu perfil para añadir, editar o consultar la información de cada uno.
+
+---
+
+## Emancipar un dependiente
+
+Cuando un dependiente alcanza la mayoría de edad o adquiere capacidad legal para gestionar su propia salud, el tutor puede promoverlo a usuario autónomo mediante el siguiente endpoint:
+
+```
+POST /api/pacientes/{id}/emancipar
+```
+
+Reemplaza `{id}` con el `patient_id` del dependiente que deseas emancipar.
+
+### Ejemplo de solicitud
+
+```bash
+curl -X POST https://tu-instancia.com/api/pacientes/55/emancipar \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json"
+```
+
+### Respuesta exitosa
+
+```json
+{
+  "status": "success",
+  "message": "El paciente ha sido emancipado y ahora puede gestionar su propia cuenta.",
+  "nuevo_email_temporal": "sofia.gonzalez.temp@medcore.app"
+}
+```
+
+Después de la emancipación, el sistema envía un correo al `Email` registrado para el dependiente (o genera uno temporal si no tenía) con instrucciones para que establezca su propia contraseña y tome control de su cuenta. El historial clínico previo se conserva íntegramente y queda asociado al nuevo perfil autónomo.

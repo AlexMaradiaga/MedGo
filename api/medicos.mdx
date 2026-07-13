@@ -1,0 +1,388 @@
+---
+title: "API de Médicos en MedCore Global: Directorio y Perfil"
+sidebarTitle: "Médicos"
+description: "Endpoints para listar, filtrar y gestionar médicos en MedCore Global. Busca por especialidad o entidad, y obtén precios de consulta."
+---
+
+Los endpoints de médicos permiten consultar el directorio de profesionales activos, filtrarlos por especialidad, nombre o entidad, y gestionar sus perfiles desde el panel administrativo. También exponen el catálogo de precios de servicios para el médico autenticado. Todos los endpoints requieren autenticación con Bearer token; las operaciones de escritura están restringidas al rol **Administrador**.
+
+---
+
+## GET /api/doctores
+
+Devuelve la lista de **médicos activos y verificados** registrados en la plataforma. Admite filtros opcionales por especialidad, nombre o entidad para facilitar la búsqueda en directorios y agendas.
+
+**Autenticación:** Bearer token — Cualquier rol autenticado
+
+### Parámetros de consulta (query string)
+
+<ParamField query="especialidad" type="string">
+  Filtra los médicos por nombre de especialidad. La búsqueda no distingue entre mayúsculas y minúsculas. Ejemplo: `Cardiología`.
+</ParamField>
+
+<ParamField query="nombre" type="string">
+  Filtra por nombre o apellido del médico. Realiza una búsqueda parcial (`LIKE %valor%`). Ejemplo: `Rivas`.
+</ParamField>
+
+<ParamField query="entidad_id" type="integer">
+  Filtra por el ID de la entidad o clínica a la que está adscrito el médico. Consulta `GET /api/entidades` para obtener los IDs disponibles.
+</ParamField>
+
+### Ejemplo de solicitud (filtro por especialidad)
+
+```bash
+curl --request GET \
+  --url "https://tu-instancia.com/api/doctores?especialidad=Cardiolog%C3%ADa" \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+[
+  {
+    "DoctorID": 18,
+    "Nombre": "Jorge",
+    "Apellido": "Rivas",
+    "EspecialidadID": 3,
+    "Especialidad": "Cardiología",
+    "NumeroColegiado": "CM-00456",
+    "EsVerificado": true,
+    "RutaFoto": "https://tu-instancia.com/storage/fotos/doctor_18.jpg",
+    "precio_consulta": 850.00
+  },
+  {
+    "DoctorID": 22,
+    "Nombre": "Lucía",
+    "Apellido": "Herrera",
+    "EspecialidadID": 3,
+    "Especialidad": "Cardiología",
+    "NumeroColegiado": "CM-00789",
+    "EsVerificado": true,
+    "RutaFoto": "https://tu-instancia.com/storage/fotos/doctor_22.jpg",
+    "precio_consulta": 950.00
+  }
+]
+```
+
+### Campos de la respuesta
+
+<ResponseField name="DoctorID" type="integer">
+  Identificador único del médico en la plataforma.
+</ResponseField>
+
+<ResponseField name="Nombre" type="string">
+  Nombre(s) del médico.
+</ResponseField>
+
+<ResponseField name="Apellido" type="string">
+  Apellido(s) del médico.
+</ResponseField>
+
+<ResponseField name="EspecialidadID" type="integer">
+  ID de la especialidad médica del doctor. Relacionado con el catálogo `GET /api/especialidades`.
+</ResponseField>
+
+<ResponseField name="Especialidad" type="string">
+  Nombre descriptivo de la especialidad médica.
+</ResponseField>
+
+<ResponseField name="NumeroColegiado" type="string">
+  Número de colegiación médica oficial del doctor.
+</ResponseField>
+
+<ResponseField name="EsVerificado" type="boolean">
+  Indica si el médico ha sido verificado y aprobado por un administrador. Solo los médicos con `EsVerificado: true` aparecen en este listado.
+</ResponseField>
+
+<ResponseField name="RutaFoto" type="string">
+  URL pública de la fotografía de perfil del médico. Puede ser `null` si no se ha subido foto.
+</ResponseField>
+
+<ResponseField name="precio_consulta" type="number">
+  Precio base de la consulta médica con este doctor, expresado en la moneda local de la instancia.
+</ResponseField>
+
+---
+
+## GET /api/doctores/entidad/\{id\}
+
+Devuelve todos los médicos activos adscritos a una entidad o clínica específica, incluyendo la información detallada de precios de consulta para cada especialidad disponible en dicha entidad.
+
+**Autenticación:** Bearer token — Cualquier rol autenticado
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID de la entidad o clínica. Consulta `GET /api/entidades` para obtener los IDs disponibles.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/doctores/entidad/1 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "entidad": {
+    "EntidadID": 1,
+    "NombreEntidad": "Clínica Central MedCore"
+  },
+  "doctores": [
+    {
+      "DoctorID": 18,
+      "Nombre": "Jorge",
+      "Apellido": "Rivas",
+      "Especialidad": "Cardiología",
+      "NumeroColegiado": "CM-00456",
+      "EsVerificado": true,
+      "RutaFoto": "https://tu-instancia.com/storage/fotos/doctor_18.jpg",
+      "precio_consulta": 850.00
+    }
+  ]
+}
+```
+
+### Campos de la respuesta
+
+<ResponseField name="entidad" type="object">
+  Información de la entidad consultada: `EntidadID` y `NombreEntidad`.
+</ResponseField>
+
+<ResponseField name="doctores" type="array">
+  Arreglo de médicos activos en la entidad. Cada elemento contiene los mismos campos descritos en `GET /api/doctores`, incluyendo `precio_consulta`.
+</ResponseField>
+
+---
+
+## POST /api/doctores
+
+Crea un nuevo perfil de médico directamente desde el panel administrativo. A diferencia del auto-registro (`POST /api/register-doctor`), este endpoint establece `EsVerificado = 1` de forma **automática**, permitiendo al médico iniciar sesión de inmediato.
+
+**Autenticación:** Bearer token — Rol `administrador` exclusivamente
+
+### Parámetros del cuerpo
+
+<ParamField body="Nombre" type="string" required>
+  Nombre(s) del médico.
+</ParamField>
+
+<ParamField body="Apellido" type="string" required>
+  Apellido(s) del médico.
+</ParamField>
+
+<ParamField body="Email" type="string" required>
+  Correo electrónico del médico. Debe ser único en el sistema.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  Contraseña inicial de acceso. Mínimo 8 caracteres.
+</ParamField>
+
+<ParamField body="NumeroColegiado" type="string" required>
+  Número de colegiación médica. Debe ser único.
+</ParamField>
+
+<ParamField body="EspecialidadID" type="integer" required>
+  ID de la especialidad médica. Consulta `GET /api/especialidades`.
+</ParamField>
+
+<ParamField body="EntidadID" type="integer" required>
+  ID de la entidad a la que será adscrito el médico. Consulta `GET /api/entidades`.
+</ParamField>
+
+<ParamField body="foto" type="file">
+  Fotografía del médico en formato JPG o PNG. Máximo 2 MB.
+</ParamField>
+
+<ParamField body="titulo_medico" type="file">
+  Título médico en formato PDF o imagen. Máximo 5 MB.
+</ParamField>
+
+<ParamField body="constancia_cmh" type="file">
+  Constancia del Colegio Médico. Máximo 5 MB.
+</ParamField>
+
+<ParamField body="dni" type="file">
+  Documento Nacional de Identidad. Máximo 2 MB.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request POST \
+  --url https://tu-instancia.com/api/doctores \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json" \
+  --form "Nombre=Sofía" \
+  --form "Apellido=Castillo" \
+  --form "Email=sofia.castillo@clinica.com" \
+  --form "Password=Doctor2024!" \
+  --form "NumeroColegiado=CM-01122" \
+  --form "EspecialidadID=5" \
+  --form "EntidadID=1" \
+  --form "foto=@/ruta/foto.jpg"
+```
+
+### Respuesta exitosa — 201 Creado
+
+```json
+{
+  "message": "Médico creado y verificado exitosamente.",
+  "DoctorID": 31,
+  "EsVerificado": true
+}
+```
+
+---
+
+## PUT /api/doctores/\{id\}
+
+Actualiza los datos de perfil de un médico existente. Solo se modifican los campos incluidos en el cuerpo de la solicitud; los campos omitidos conservan su valor actual.
+
+**Autenticación:** Bearer token — Rol `administrador` exclusivamente
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID del médico cuyo perfil se desea actualizar.
+</ParamField>
+
+### Parámetros del cuerpo
+
+<ParamField body="Nombre" type="string">
+  Nuevo nombre del médico.
+</ParamField>
+
+<ParamField body="Apellido" type="string">
+  Nuevo apellido del médico.
+</ParamField>
+
+<ParamField body="EspecialidadID" type="integer">
+  ID de la nueva especialidad médica. Consulta `GET /api/especialidades`.
+</ParamField>
+
+<ParamField body="EntidadID" type="integer">
+  ID de la nueva entidad a la que será adscrito. Consulta `GET /api/entidades`.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request PUT \
+  --url https://tu-instancia.com/api/doctores/18 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
+  --data '{
+    "EspecialidadID": 7,
+    "EntidadID": 2
+  }'
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "message": "Perfil del médico actualizado exitosamente.",
+  "DoctorID": 18
+}
+```
+
+---
+
+## DELETE /api/doctores/\{id\}
+
+Realiza una **desactivación lógica** (soft delete) del médico. El registro permanece en la base de datos pero el médico deja de aparecer en los listados públicos y no puede iniciar sesión. Este proceso es reversible por un administrador.
+
+**Autenticación:** Bearer token — Rol `administrador` exclusivamente
+
+### Parámetros de ruta
+
+<ParamField path="id" type="integer" required>
+  ID del médico que se desea desactivar.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request DELETE \
+  --url https://tu-instancia.com/api/doctores/18 \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "message": "Médico desactivado exitosamente. El registro ha sido conservado en el sistema."
+}
+```
+
+---
+
+## GET /api/doctor/catalogo-precios
+
+Devuelve el catálogo de servicios y precios configurado para el **médico autenticado**. Permite al médico consultar los precios de sus servicios registrados y su estado de disponibilidad.
+
+**Autenticación:** Bearer token — Rol `doctor` exclusivamente
+
+### Ejemplo de solicitud
+
+```bash
+curl --request GET \
+  --url https://tu-instancia.com/api/doctor/catalogo-precios \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+[
+  {
+    "ServicioID": 1,
+    "NombreServicio": "Consulta General",
+    "Precio": 850.00,
+    "Estado": "activo"
+  },
+  {
+    "ServicioID": 2,
+    "NombreServicio": "Electrocardiograma",
+    "Precio": 1200.00,
+    "Estado": "activo"
+  },
+  {
+    "ServicioID": 3,
+    "NombreServicio": "Ecocardiograma",
+    "Precio": 2500.00,
+    "Estado": "inactivo"
+  }
+]
+```
+
+### Campos de la respuesta
+
+<ResponseField name="ServicioID" type="integer">
+  Identificador único del servicio en el catálogo del médico.
+</ResponseField>
+
+<ResponseField name="NombreServicio" type="string">
+  Nombre descriptivo del servicio o tipo de consulta ofrecida.
+</ResponseField>
+
+<ResponseField name="Precio" type="number">
+  Precio del servicio en la moneda local configurada para la instancia.
+</ResponseField>
+
+<ResponseField name="Estado" type="string">
+  Estado de disponibilidad del servicio. Valores posibles: `activo` (disponible para agendar) o `inactivo` (no disponible temporalmente).
+</ResponseField>

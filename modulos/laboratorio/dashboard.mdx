@@ -1,0 +1,112 @@
+---
+title: "Dashboard de Laboratorio en MedCore Global"
+sidebarTitle: "Dashboard Lab"
+description: "Gestiona tu laboratorio en MedCore Global: monitorea órdenes activas, muestras en procesamiento, KPIs de ingresos y el catálogo de pruebas disponibles."
+---
+
+El **Dashboard de Laboratorio** proporciona al personal y gestores del laboratorio una vista operativa completa de todas las actividades en curso. Desde este panel se monitorean las órdenes de análisis recibidas, el estado de procesamiento de muestras, los insumos críticos disponibles y los ingresos generados. También sirve como punto de acceso al catálogo de pruebas ofrecidas y a los indicadores de calidad del laboratorio.
+
+---
+
+## KPIs del laboratorio
+
+El resumen superior del dashboard presenta cuatro indicadores clave actualizados en tiempo real:
+
+```http
+GET /api/laboratorio/dashboard-metrics
+```
+
+**Respuesta de ejemplo:**
+
+```json
+{
+  "TotalOrdenes": 342,
+  "EnProcesamiento": 27,
+  "ReactivosCriticos": 3,
+  "Ingresos": 52800.00
+}
+```
+
+| Indicador | Descripción |
+|---|---|
+| **Total Órdenes** | Número total de órdenes de laboratorio recibidas en el período activo. |
+| **En Procesamiento** | Órdenes con muestras actualmente en análisis. Este número refleja la carga operativa inmediata del laboratorio. |
+| **Reactivos Críticos** | Número de reactivos o insumos que se encuentran por debajo del nivel mínimo de inventario. Un valor mayor a `0` requiere atención inmediata para evitar interrupciones en el servicio. |
+| **Ingresos** | Total de ingresos facturados por órdenes completadas en el período seleccionado. |
+
+---
+
+## Órdenes y muestras
+
+La pestaña de **Órdenes y Muestras** muestra una tabla en tiempo real con el estado de las órdenes activas en el laboratorio. Permite al personal de laboratorio rastrear el avance de cada muestra desde su recepción hasta la entrega de resultados.
+
+| Columna | Descripción |
+|---|---|
+| **ID Orden** | Identificador único de la orden de laboratorio. |
+| **Paciente** | Nombre del paciente al que pertenece la muestra. |
+| **Exámenes Solicitados** | Lista de pruebas incluidas en la orden. |
+| **Fecha de Recepción** | Fecha y hora en que la muestra fue recibida en el laboratorio. |
+| **Estado** | Estado actual de la orden: `Pendiente`, `En Procesamiento`, `Completado` o `Cancelado`. |
+
+Desde esta tabla, el personal de laboratorio puede acceder al detalle de cada orden, actualizar el estado de las muestras y cargar los archivos de resultados en formato PDF.
+
+Para la gestión completa de órdenes, resultados y notificaciones, consulta la sección dedicada:
+
+<Card title="Órdenes de Laboratorio: Gestión y Resultados" icon="flask" href="/modulos/laboratorio/ordenes">
+  Consulta órdenes por paciente, procesa resultados, sube archivos y revisa el catálogo de exámenes disponibles.
+</Card>
+
+---
+
+## Catálogo de pruebas
+
+El catálogo define los exámenes y paneles de análisis que el laboratorio ofrece a médicos y pacientes. Cada prueba en el catálogo incluye nombre, categoría, tiempo de entrega estimado y precio.
+
+```http
+GET /api/laboratorio/catalogo
+```
+
+**Respuesta de ejemplo:**
+
+```json
+[
+  {
+    "ExamenID": 1,
+    "NombreEstudio": "Biometría Hemática Completa",
+    "Categoria": "Hematología",
+    "TiempoEntregaHoras": 4,
+    "Precio": 280.00
+  },
+  {
+    "ExamenID": 2,
+    "NombreEstudio": "Glucosa en Ayunas",
+    "Categoria": "Bioquímica",
+    "TiempoEntregaHoras": 2,
+    "Precio": 120.00
+  },
+  {
+    "ExamenID": 3,
+    "NombreEstudio": "Urocultivo",
+    "Categoria": "Microbiología",
+    "TiempoEntregaHoras": 48,
+    "Precio": 450.00
+  }
+]
+```
+
+El catálogo es público y es utilizado por el portal del paciente para mostrar los exámenes disponibles al buscar laboratorios en la plataforma.
+
+---
+
+## Auditoría de calidad
+
+La sub-pestaña de **Auditoría de Calidad** del dashboard de laboratorio presenta indicadores de desempeño específicos para entidades de diagnóstico:
+
+| Indicador | Descripción |
+|---|---|
+| **Tasa de Resultados a Tiempo** | Porcentaje de órdenes completadas dentro del tiempo de entrega estimado del catálogo. |
+| **Tasa de Repetición de Pruebas** | Frecuencia con la que se deben repetir análisis por errores en la muestra o procesamiento. |
+| **Muestras Rechazadas** | Número de muestras no procesadas por condiciones inadecuadas de recolección o transporte. |
+| **Tiempo Promedio de Entrega** | Tiempo medio real (en horas) desde la recepción de la muestra hasta la carga del resultado. |
+
+Estos indicadores permiten al gestor del laboratorio identificar áreas de mejora en los procesos internos y mantener estándares de calidad competitivos. Los datos de auditoría de calidad también son visibles para el administrador global de la plataforma desde el [Dashboard Administrativo](/modulos/admin/dashboard#auditoría-de-calidad).

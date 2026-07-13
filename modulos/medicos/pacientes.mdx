@@ -1,0 +1,102 @@
+---
+title: "Gestiona tus Pacientes Atendidos en MedCore Global"
+sidebarTitle: "Mis Pacientes"
+description: "Consulta el listado de todos los pacientes que has atendido, busca por nombre, y accede al historial clínico completo de cada paciente desde tu portal médico."
+---
+
+El módulo **Mis Pacientes** centraliza el registro de todos los individuos que has atendido a lo largo de tu actividad en MedCore Global. Desde este espacio puedes buscar un paciente por nombre, revisar cuántas veces lo has atendido y acceder a su historial clínico completo, siempre dentro del marco de privacidad y autorización que la plataforma establece.
+
+---
+
+## Lista de mis pacientes
+
+Para obtener el listado completo de pacientes que has atendido alguna vez:
+
+```http
+GET /api/doctor/mis-pacientes
+```
+
+La respuesta incluye, por cada paciente:
+
+- Nombre completo y datos de contacto
+- Número total de consultas realizadas contigo
+- Fecha de la primera y última consulta
+- Actividad mensual (consultas en el mes actual vs. meses anteriores)
+- Estado de autorización para visualizar su historial clínico
+
+Puedes utilizar el buscador del módulo para filtrar la lista por nombre, apellido o número de expediente sin necesidad de realizar una nueva llamada a la API.
+
+---
+
+## Historial clínico completo
+
+Para acceder al expediente integral de un paciente:
+
+```http
+GET /api/doctor/paciente/{pacienteId}/historial-completo
+```
+
+Este endpoint devuelve cinco conjuntos de datos que conforman el historial clínico:
+
+1. **Lista de consultas** — registro cronológico de todos los encuentros clínicos del paciente contigo, con diagnóstico, fecha y estado de cada consulta
+2. **Exámenes físicos por sistema** — hallazgos registrados durante el examen físico en cada consulta, organizados por sistema corporal (cardiovascular, respiratorio, neurológico, etc.)
+3. **Estadísticas comparativas** — gráficas de evolución de signos vitales a lo largo del tiempo (presión arterial, peso, saturación de oxígeno) que permiten identificar tendencias clínicas
+4. **Datos basales del paciente** — información de referencia fija: grupo sanguíneo, alergias conocidas, enfermedades crónicas, medicamentos de uso permanente y antecedentes familiares relevantes
+5. **Estado de autorización** — registro de si el paciente te ha concedido acceso a la totalidad de su historial, incluyendo consultas realizadas con otros médicos en la plataforma
+
+---
+
+## Autorización para ver historial
+
+MedCore Global protege la privacidad de los pacientes mediante un sistema de autorización explícita. Si un paciente llega por primera vez a tu consulta o no te ha otorgado acceso previamente, solo podrás ver las consultas que tú mismo hayas registrado.
+
+Para solicitar o registrar que el paciente te ha concedido acceso a su historial completo (incluyendo consultas con otros médicos), utiliza el siguiente endpoint:
+
+```http
+POST /api/doctor/paciente/conceder-autorizacion
+```
+
+```json
+{
+  "PacienteID": 142,
+  "DoctorID": 18,
+  "Autorizado": true
+}
+```
+
+Este registro queda guardado en el expediente y puede ser revocado por el paciente en cualquier momento desde su propio portal. Te recomendamos solicitar esta autorización durante la primera consulta, una vez que el paciente haya firmado el consentimiento informado correspondiente.
+
+---
+
+## Perfil del paciente
+
+Al hacer clic en cualquier paciente de tu lista, accedes a su perfil de vista rápida, que reúne la información más relevante para la consulta:
+
+| Campo | Descripción |
+|---|---|
+| **Edad y género** | Calculado automáticamente desde la fecha de nacimiento registrada |
+| **Teléfono de contacto** | Número principal para coordinación de citas y urgencias |
+| **Alergias** | Listado de alergias conocidas y reacciones adversas documentadas |
+| **Medicamentos actuales** | Fármacos en uso permanente o crónico al momento de la consulta |
+| **Enfermedades crónicas** | Diagnósticos de larga evolución previamente registrados en el expediente |
+| **Motivo de consulta** | Último motivo registrado en la consulta más reciente |
+
+Esta vista está disponible antes de iniciar una consulta para que puedas prepararte con la información clínica del paciente.
+
+---
+
+## Detalle de una consulta
+
+Para revisar el contenido completo de una consulta específica dentro del historial:
+
+```http
+GET /api/doctor/consulta/detalle?consultaId={id}
+```
+
+Este endpoint devuelve todos los datos registrados durante ese encuentro clínico: motivo de consulta, signos vitales, hallazgos del examen físico por sistema, diagnóstico CIE-11, medicamentos prescritos y notas médicas. El resultado se presenta en un **modal de detalle** dentro del historial del paciente, sin necesidad de abandonar la pantalla de gestión.
+
+---
+
+<Note>
+  Por política de privacidad de la plataforma, **solo puedes ver a los pacientes que te han autorizado explícitamente o a quienes hayas atendido directamente** en al menos una consulta previa en MedCore Global. No es posible buscar o acceder a expedientes de pacientes con los que no tienes relación clínica registrada en el sistema. Este control garantiza la confidencialidad del expediente médico de cada usuario de la plataforma.
+</Note>

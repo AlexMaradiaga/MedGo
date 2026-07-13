@@ -1,0 +1,139 @@
+---
+title: "Cómo realizar una consulta médica en MedCore Global"
+sidebarTitle: "Consulta"
+description: "Guía completa para médicos: inicia y finaliza consultas SOAP, registra signos vitales, diagnóstico CIE-11, medicamentos y genera recetas automáticamente."
+---
+
+El módulo de consulta de MedCore Global está estructurado bajo la metodología **SOAP** (Subjetivo, Objetivo, Evaluación, Plan), el estándar clínico internacional para la documentación de encuentros médicos. Cada consulta queda registrada en el expediente del paciente, vinculada a la cita correspondiente, y al finalizarla el sistema genera automáticamente la receta médica en formato PDF con código QR de validación.
+
+---
+
+## Iniciar una consulta
+
+Desde tu dashboard, localiza la cita confirmada en la lista de **citas del día** y haz clic en el botón **"Atender Ahora"**. El sistema abrirá de inmediato el perfil completo del paciente, donde podrás revisar sus datos demográficos, antecedentes, alergias y el historial de consultas previas contigo.
+
+Una vez revisado el perfil, selecciona **"Iniciar consulta"** para abrir el formulario SOAP. A partir de ese momento la consulta queda registrada como activa y el tiempo de atención comienza a contabilizarse.
+
+---
+
+## Formulario SOAP
+
+El formulario está organizado en cuatro pestañas secuenciales. Puedes navegar entre ellas libremente y guardar avances parciales en cualquier momento.
+
+### Subjetivo
+
+Registra la perspectiva del paciente sobre su estado de salud:
+
+- **Motivo de consulta** — descripción en palabras del paciente del problema principal que lo trae a la consulta
+- **Síntomas** — síntomas reportados, inicio, duración, intensidad y factores que los agravan o alivian
+- **Alergias conocidas** — medicamentos, alimentos u otras sustancias a las que el paciente es alérgico
+- **Medicamentos actuales** — fármacos que el paciente está tomando al momento de la consulta, incluyendo dosis y frecuencia
+- **Antecedentes de enfermedades crónicas** — historial de patologías de larga evolución como diabetes, hipertensión, asma, entre otras
+
+### Objetivo
+
+Registra los hallazgos clínicos medibles y observables:
+
+- **Signos vitales** — presión arterial, frecuencia cardíaca, frecuencia respiratoria, temperatura corporal y saturación de oxígeno
+- **Examen físico por sistemas** — exploración organizada por sistemas corporales (ver sección siguiente)
+
+### Evaluación
+
+Define el diagnóstico clínico del paciente utilizando la **Clasificación Internacional de Enfermedades versión 11 (CIE-11)** de la OMS. Escribe el término diagnóstico en el buscador y el sistema consultará el catálogo oficial en tiempo real:
+
+```http
+GET /api/doctor/diagnosticos/buscar?q=cefalea
+```
+
+Selecciona el código y descripción correctos de la lista de resultados. Puedes añadir más de un diagnóstico por consulta (diagnóstico principal y secundarios).
+
+### Plan
+
+Define el tratamiento y las indicaciones que seguirá el paciente:
+
+- **Medicamentos prescritos** — añade fármacos desde el catálogo con dosis, vía de administración e indicaciones específicas
+- **Indicaciones generales** — recomendaciones de reposo, dieta, actividad física o seguimiento
+- **Próxima cita** — si aplica, puedes sugerir la fecha de control directamente desde este campo
+
+---
+
+## Examen físico por sistemas
+
+El módulo de examen físico permite registrar hallazgos de forma estructurada por cada sistema corporal. Los sistemas disponibles son:
+
+| Sistema | Ejemplos de hallazgos registrables |
+|---|---|
+| **General** | Estado de conciencia, hidratación, orientación, aspecto general |
+| **Cardiovascular** | Ritmo cardíaco, soplos, pulsos periféricos, llenado capilar |
+| **Respiratorio** | Tipo de respiración, murmullo vesicular, ruidos adventicios |
+| **Abdomen** | Peristaltismo, dolor a la palpación, masas, hepatoesplenomegalia |
+| **Neurológico** | Reflejos osteotendinosos, pares craneales, coordinación, sensibilidad |
+
+Cada sistema cuenta con campos de texto libre para describir hallazgos normales o anormales, además de casillas de selección rápida para los hallazgos más frecuentes en la práctica clínica.
+
+---
+
+## Prescribir medicamentos
+
+Para añadir un medicamento al plan terapéutico, el sistema consulta el catálogo institucional de fármacos disponibles:
+
+```http
+GET /api/catalogo-medicamentos
+```
+
+Escribe el nombre del medicamento en el buscador del plan y selecciónalo de la lista. Para cada medicamento prescrito debes completar:
+
+- **Nombre del medicamento** — nombre genérico o comercial según el catálogo
+- **Dosis** — cantidad y unidad (p. ej. 400 mg, 500 mg/5 mL)
+- **Indicaciones** — frecuencia, vía de administración, duración del tratamiento y condiciones especiales (p. ej. "tomar con alimentos")
+
+Puedes añadir tantos medicamentos como requiera el plan terapéutico. Todos los fármacos prescritos aparecerán impresos en la receta PDF generada al finalizar.
+
+---
+
+## Finalizar consulta
+
+Cuando hayas completado todas las secciones del formulario SOAP, presiona **"Finalizar consulta"** para cerrar el encuentro clínico y registrarlo en el expediente del paciente.
+
+```http
+POST /api/doctor/consulta/finalizar
+```
+
+```json
+{
+  "CitaID": 25,
+  "Diagnostico": "Cefalea tensional",
+  "NotasMedicas": "Paciente refiere dolor desde 3 días. Se descarta origen secundario. Indicaciones de reposo y analgesia.",
+  "SignosVitales": {
+    "PresionArterial": "120/80",
+    "FrecuenciaCardiaca": 72,
+    "Temperatura": 36.5,
+    "SaturacionOxigeno": 98
+  },
+  "Medicamentos": [
+    {
+      "NombreMedicamento": "Ibuprofeno",
+      "Dosis": "400mg",
+      "Indicaciones": "1 tableta cada 8 horas por 5 días, tomar con alimentos"
+    }
+  ]
+}
+```
+
+El campo `CitaID` vincula la consulta a la cita de origen. `NotasMedicas` es de texto libre y debe contener el resumen clínico que quedará en el expediente del paciente.
+
+<Note>
+  Al finalizar la consulta, MedCore Global genera automáticamente la **receta médica en formato PDF** con todos los medicamentos prescritos, el diagnóstico CIE-11, los datos del médico tratante y un **código QR de validación** que permite a farmacias y pacientes verificar la autenticidad del documento. La receta queda disponible para descarga tanto en el portal del médico como en el del paciente.
+</Note>
+
+---
+
+## Módulo de odontología
+
+Los especialistas en odontología cuentan con un módulo adicional dentro de la consulta: el **odontograma interactivo**. Esta herramienta gráfica muestra la arcada dental completa (dientes temporales y permanentes) y permite registrar, pieza por pieza, el estado actual de cada diente: caries, obturaciones, extracciones, coronas, tratamientos de conducto y otras condiciones. El odontograma se actualiza con cada consulta y forma parte del expediente clínico odontológico del paciente, facilitando el seguimiento longitudinal de su salud bucal.
+
+---
+
+<Tip>
+  El buscador de diagnósticos utiliza la **Clasificación Internacional de Enfermedades versión 11 (CIE-11)** publicada por la Organización Mundial de la Salud. Puedes buscar por nombre clínico en español, por descripción del síntoma o directamente por código alfanumérico CIE-11. Usar la clasificación correcta es clave para la trazabilidad del expediente y para reportes estadísticos institucionales.
+</Tip>

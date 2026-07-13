@@ -1,0 +1,120 @@
+---
+title: "Recetas Médicas Digitales en MedCore Global"
+sidebarTitle: "Recetas"
+description: "Descarga tus recetas médicas en PDF con código QR de canje. Compártelas fácilmente con farmacias o guárdalas para futuras referencias."
+---
+
+MedCore Global elimina la receta en papel. Al finalizar tu consulta, el médico emite tu receta directamente desde la plataforma y tú la recibes al instante en formato digital. Cada receta incluye un código QR único que la farmacia puede escanear para verificar su autenticidad y registrar el canje. Desde el portal o la API puedes descargar, compartir y consultar todas tus recetas en cualquier momento.
+
+---
+
+## ¿Cómo funciona la receta digital?
+
+El proceso es completamente automático y ocurre en cuatro pasos:
+
+1. **El médico finaliza la consulta** y emite la prescripción desde su panel en MedCore Global, indicando el medicamento, la dosis, la posología y la duración del tratamiento.
+2. **El sistema genera un PDF firmado digitalmente** que incluye los datos del médico, del paciente, los medicamentos recetados y un código QR de canje único e intransferible.
+3. **Recibes una notificación** por correo electrónico y dentro de la plataforma con el enlace directo para descargar tu receta.
+4. **Presentas el PDF o el código QR** en la farmacia de tu elección. El farmacéutico escanea el código QR para verificar la receta y registrar el canje en el sistema.
+
+---
+
+## Descargar tu receta
+
+Para descargar una receta en formato PDF, realiza la siguiente solicitud:
+
+```
+GET /api/recetas/pdf/{recetaId}
+```
+
+Reemplaza `{recetaId}` con el ID de la receta que deseas descargar. El servidor responde con el archivo PDF listo para guardar o imprimir.
+
+### Ejemplo con cURL
+
+```bash
+curl -X GET https://tu-instancia.com/api/recetas/pdf/15 \
+  -H "Authorization: Bearer {tu_token}" \
+  --output receta.pdf
+```
+
+El archivo `receta.pdf` quedará guardado en el directorio donde ejecutes el comando. Asegúrate de reemplazar `{tu_token}` por el token de acceso de tu sesión activa.
+
+Desde el portal web, también puedes descargar cualquier receta directamente desde la sección **Mis Recetas** haciendo clic en el ícono de descarga junto a cada registro. No necesitas recordar el ID de la receta para este proceso.
+
+---
+
+## Contenido de la receta
+
+Cada receta digital generada por MedCore Global incluye la siguiente información:
+
+<CardGroup cols={2}>
+  <Card title="Datos del médico" icon="user-doctor">
+    Nombre completo, número de colegiación médica, especialidad y firma digital del profesional que emite la prescripción.
+  </Card>
+  <Card title="Datos del paciente" icon="user">
+    Nombre completo, DNI, edad, alergias conocidas y enfermedades crónicas relevantes registradas en el expediente.
+  </Card>
+  <Card title="Prescripción" icon="pills">
+    Nombre genérico y comercial del medicamento, dosis, forma farmacéutica (tableta, jarabe, inyección, etc.), frecuencia e instrucciones de administración.
+  </Card>
+  <Card title="Validez y seguridad" icon="qrcode">
+    Fecha de emisión, fecha de vencimiento de la receta, código QR único de canje y sello digital de autenticidad de MedCore Global.
+  </Card>
+</CardGroup>
+
+---
+
+## Canje en farmacia
+
+El código QR impreso en cada receta contiene un **código de canje único** generado por MedCore Global. Al presentarlo en la farmacia:
+
+1. El farmacéutico escanea el QR con la aplicación o lector de la farmacia.
+2. El sistema verifica en tiempo real que la receta sea auténtica, esté vigente y no haya sido canjeada previamente.
+3. Una vez validada, el canje queda registrado en la plataforma y el código QR **queda inhabilitado para usos futuros**.
+4. El estado de la receta en tu perfil cambia de `Pendiente` a `Canjeada`.
+
+Este mecanismo garantiza que cada receta solo pueda utilizarse una vez, previniendo el uso indebido de prescripciones médicas. Si necesitas un reabastecimiento, deberás solicitar una nueva receta a tu médico.
+
+<Note>
+  Si tu receta incluye más de un medicamento, el código QR cubre todos los medicamentos listados en esa prescripción. El canje se registra de forma completa; no es posible canjear medicamentos individuales de una misma receta en farmacéuticos distintos.
+</Note>
+
+---
+
+## Ver todas mis recetas
+
+Para consultar el listado completo de recetas asociadas a tu expediente:
+
+```
+GET /api/historial/recetas/{usuarioId}
+```
+
+Reemplaza `{usuarioId}` con tu `user_id`. La respuesta incluye, para cada receta, el `receta_id`, la fecha de emisión, el nombre del médico, los medicamentos prescritos y el estado actual (`Pendiente`, `Canjeada` o `Vencida`).
+
+### Ejemplo de respuesta
+
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "receta_id": 15,
+      "fecha_emision": "2025-11-03",
+      "medico": "Dr. Roberto Amaya",
+      "medicamentos": ["Losartán 50mg", "Amlodipino 5mg"],
+      "estado": "Canjeada"
+    },
+    {
+      "receta_id": 18,
+      "fecha_emision": "2025-12-10",
+      "medico": "Dra. Karla Mendoza",
+      "medicamentos": ["Amoxicilina 500mg"],
+      "estado": "Pendiente"
+    }
+  ]
+}
+```
+
+<Tip>
+  Puedes compartir tu receta directamente desde la app de MedCore Global sin necesidad de descargarla primero. En la vista de detalle de cualquier receta, encontrarás los botones **Compartir por WhatsApp** y **Enviar por correo electrónico**. Esto es ideal si necesitas enviar tu receta a un familiar que hará el retiro en la farmacia por ti, o si prefieres tenerla en tu correo como respaldo adicional.
+</Tip>

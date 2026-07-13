@@ -1,0 +1,306 @@
+---
+title: "Autenticación en la API REST de MedCore Global"
+sidebarTitle: "Autenticación"
+description: "Referencia de los endpoints de autenticación de MedCore Global: login, logout, registro y cambio de contraseña. Obtén y gestiona tu Bearer token."
+---
+
+La API de MedCore Global utiliza **Bearer tokens** para autenticar todas las solicitudes protegidas. El flujo estándar consiste en obtener un token a través del endpoint de login e incluirlo en la cabecera `Authorization` de cada solicitud subsiguiente. Los tokens se revocan explícitamente mediante el endpoint de logout o cuando el administrador desactiva la cuenta.
+
+---
+
+## POST /api/login
+
+Autentica a un usuario registrado y devuelve un **Bearer token** válido para las solicitudes subsiguientes. El token no tiene expiración automática; se invalida al hacer logout o al ser revocado por un administrador.
+
+### Parámetros del cuerpo
+
+<ParamField body="Email" type="string" required>
+  Dirección de correo electrónico del usuario registrado en MedCore Global.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  Contraseña asociada a la cuenta. Sensible a mayúsculas y minúsculas.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request POST \
+  --url https://tu-instancia.com/api/login \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
+  --data '{
+    "Email": "maria.garcia@clinica.com",
+    "Password": "MiContraseña123"
+  }'
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0...",
+  "token_type": "Bearer",
+  "user": {
+    "id": 42,
+    "Nombre": "María",
+    "Apellido": "García",
+    "Email": "maria.garcia@clinica.com",
+    "rol": "paciente",
+    "activo": true
+  }
+}
+```
+
+Guarda el valor del campo `token` y úsalo en la cabecera `Authorization: Bearer {token}` para todas las solicitudes autenticadas.
+
+### Respuestas de error
+
+| Código | Causa                                                              |
+|--------|--------------------------------------------------------------------|
+| `401`  | Credenciales inválidas: el correo o la contraseña no coinciden.   |
+| `403`  | Cuenta inactiva, o médico pendiente de verificación por el administrador. |
+
+---
+
+## POST /api/logout
+
+Revoca el token Bearer activo del usuario autenticado. Después de llamar a este endpoint, el token deja de ser válido y cualquier solicitud que lo use recibirá un error `401`.
+
+### Cabeceras requeridas
+
+| Cabecera        | Valor            |
+|-----------------|------------------|
+| `Authorization` | `Bearer {token}` |
+
+### Ejemplo de solicitud
+
+```bash
+curl --request POST \
+  --url https://tu-instancia.com/api/logout \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Accept: application/json"
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "message": "Sesión cerrada exitosamente"
+}
+```
+
+---
+
+## PUT /api/auth/password
+
+Cambia la contraseña del usuario actualmente autenticado. Es obligatorio proporcionar la contraseña actual para confirmar la identidad antes del cambio.
+
+### Parámetros del cuerpo
+
+<ParamField body="current_password" type="string" required>
+  Contraseña actual del usuario. Se verifica antes de aplicar el cambio.
+</ParamField>
+
+<ParamField body="new_password" type="string" required>
+  Nueva contraseña deseada. Debe cumplir los requisitos de seguridad de la plataforma (mínimo 8 caracteres).
+</ParamField>
+
+<ParamField body="new_password_confirmation" type="string" required>
+  Confirmación de la nueva contraseña. Debe coincidir exactamente con `new_password`.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request PUT \
+  --url https://tu-instancia.com/api/auth/password \
+  --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
+  --data '{
+    "current_password": "MiContraseña123",
+    "new_password": "NuevaContraseña456",
+    "new_password_confirmation": "NuevaContraseña456"
+  }'
+```
+
+### Respuesta exitosa — 200 OK
+
+```json
+{
+  "message": "Contraseña actualizada exitosamente"
+}
+```
+
+---
+
+## POST /api/register-patient
+
+Registra un nuevo paciente en la plataforma. Este endpoint es **público** y no requiere token de autenticación. El paciente podrá iniciar sesión inmediatamente después del registro.
+
+### Parámetros del cuerpo
+
+**Campos obligatorios:**
+
+<ParamField body="Nombre" type="string" required>
+  Nombre(s) del paciente.
+</ParamField>
+
+<ParamField body="Apellido" type="string" required>
+  Apellido(s) del paciente.
+</ParamField>
+
+<ParamField body="Email" type="string" required>
+  Correo electrónico único. Se usará como nombre de usuario para iniciar sesión.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  Contraseña de acceso. Mínimo 8 caracteres.
+</ParamField>
+
+<ParamField body="DNI" type="string" required>
+  Documento Nacional de Identidad del paciente. Debe ser único en el sistema.
+</ParamField>
+
+<ParamField body="Telefono" type="string" required>
+  Número de teléfono de contacto del paciente.
+</ParamField>
+
+<ParamField body="Edad" type="integer" required>
+  Edad del paciente en años cumplidos.
+</ParamField>
+
+<ParamField body="Genero" type="string" required>
+  Género del paciente. Valores aceptados: `Masculino`, `Femenino`, `Otro`.
+</ParamField>
+
+**Campos opcionales:**
+
+<ParamField body="TipoSangre" type="string">
+  Tipo de sangre del paciente. Ejemplo: `O+`, `A-`, `AB+`.
+</ParamField>
+
+<ParamField body="Aseguradora" type="string">
+  Nombre de la compañía aseguradora, si aplica.
+</ParamField>
+
+<ParamField body="NumeroPoliza" type="string">
+  Número de póliza de seguro médico, si aplica.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request POST \
+  --url https://tu-instancia.com/api/register-patient \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
+  --data '{
+    "Nombre": "Carlos",
+    "Apellido": "Mendoza",
+    "Email": "carlos.mendoza@email.com",
+    "Password": "Paciente2024!",
+    "DNI": "0801199012345",
+    "Telefono": "+504 9999-8888",
+    "Edad": 34,
+    "Genero": "Masculino",
+    "TipoSangre": "O+",
+    "Aseguradora": "Seguros del País",
+    "NumeroPoliza": "POL-2024-00123"
+  }'
+```
+
+### Respuesta exitosa — 201 Creado
+
+```json
+{
+  "message": "Paciente registrado exitosamente",
+  "user_id": 105
+}
+```
+
+---
+
+## POST /api/register-doctor
+
+Permite a un médico registrarse de forma autónoma en la plataforma. Este endpoint es **público** y no requiere token. La cuenta quedará en estado **pendiente de verificación** hasta que un administrador la apruebe.
+
+### Parámetros del cuerpo
+
+<ParamField body="Nombre" type="string" required>
+  Nombre(s) del médico.
+</ParamField>
+
+<ParamField body="Apellido" type="string" required>
+  Apellido(s) del médico.
+</ParamField>
+
+<ParamField body="Email" type="string" required>
+  Correo electrónico único. Será el usuario de acceso a la plataforma.
+</ParamField>
+
+<ParamField body="Password" type="string" required>
+  Contraseña de acceso. Mínimo 8 caracteres.
+</ParamField>
+
+<ParamField body="NumeroColegiado" type="string" required>
+  Número de colegiación médica. Debe ser único en el sistema.
+</ParamField>
+
+<ParamField body="EspecialidadID" type="integer" required>
+  ID de la especialidad médica. Consulta el catálogo en `GET /api/especialidades`.
+</ParamField>
+
+<ParamField body="EntidadID" type="integer" required>
+  ID de la entidad o clínica a la que estará adscrito el médico. Consulta `GET /api/entidades`.
+</ParamField>
+
+<ParamField body="foto" type="file" required>
+  Fotografía del médico en formato JPG o PNG. Máximo 2 MB.
+</ParamField>
+
+<ParamField body="titulo_medico" type="file" required>
+  Título médico oficial en formato PDF o imagen. Máximo 5 MB.
+</ParamField>
+
+<ParamField body="constancia_cmh" type="file" required>
+  Constancia del Colegio Médico de Honduras (CMH) en formato PDF o imagen. Máximo 5 MB.
+</ParamField>
+
+<ParamField body="dni" type="file" required>
+  Copia del Documento Nacional de Identidad en formato PDF o imagen. Máximo 2 MB.
+</ParamField>
+
+### Ejemplo de solicitud
+
+```bash
+curl --request POST \
+  --url https://tu-instancia.com/api/register-doctor \
+  --header "Accept: application/json" \
+  --form "Nombre=Jorge" \
+  --form "Apellido=Rivas" \
+  --form "Email=jorge.rivas@clinica.com" \
+  --form "Password=Doctor2024!" \
+  --form "NumeroColegiado=CM-00456" \
+  --form "EspecialidadID=3" \
+  --form "EntidadID=1" \
+  --form "foto=@/ruta/foto.jpg" \
+  --form "titulo_medico=@/ruta/titulo.pdf" \
+  --form "constancia_cmh=@/ruta/constancia.pdf" \
+  --form "dni=@/ruta/dni.pdf"
+```
+
+### Respuesta exitosa — 201 Creado
+
+```json
+{
+  "message": "Solicitud de registro recibida. Tu cuenta está pendiente de verificación por el administrador.",
+  "doctor_id": 18,
+  "estado": "pendiente"
+}
+```
+
+<Warning>
+  **Verificación obligatoria:** Las cuentas de médico creadas mediante este endpoint **no pueden iniciar sesión** hasta que un administrador revise la documentación adjunta y apruebe la cuenta. El médico recibirá una notificación por correo electrónico cuando su cuenta sea activada. Si necesitas crear una cuenta médica con acceso inmediato, utiliza el endpoint `POST /api/doctores` disponible para administradores.
+</Warning>

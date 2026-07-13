@@ -1,0 +1,144 @@
+---
+title: "Inicio Rápido con MedCore Global en 5 minutos"
+sidebarTitle: "Inicio Rápido"
+description: "Aprende a registrarte, obtener tu token de acceso y realizar tu primera llamada a la API de MedCore Global en menos de 5 minutos."
+---
+
+Esta guía te lleva desde cero hasta tu primera cita agendada a través de la API de MedCore Global. Sigue los pasos en orden: en menos de 5 minutos tendrás una cuenta activa, un token de acceso válido y una cita médica registrada en el sistema.
+
+<Steps>
+  <Step title="Registrarse como paciente">
+    Crea tu cuenta de paciente enviando una solicitud `POST` al endpoint de registro. No se requiere autenticación previa para este paso.
+
+    ```bash
+    curl -X POST https://api.medcoreglobal.com/api/register-patient \
+      -H "Content-Type: application/json" \
+      -d '{
+        "Nombre": "María",
+        "Apellido": "García",
+        "Email": "maria@ejemplo.com",
+        "Password": "TuContraseña123",
+        "DNI": "0801-1990-12345",
+        "Telefono": "+504 9999-0000",
+        "Edad": 30,
+        "Genero": "F"
+      }'
+    ```
+
+    | Campo | Tipo | Descripción |
+    |---|---|---|
+    | `Nombre` | string | Primer nombre del paciente |
+    | `Apellido` | string | Apellido del paciente |
+    | `Email` | string | Correo electrónico único, usado para iniciar sesión |
+    | `Password` | string | Contraseña (mínimo 8 caracteres) |
+    | `DNI` | string | Documento nacional de identidad |
+    | `Telefono` | string | Número de contacto con código de país |
+    | `Edad` | integer | Edad en años |
+    | `Genero` | string | `"M"` para masculino, `"F"` para femenino |
+
+    Una respuesta `201 Created` confirma que la cuenta fue creada exitosamente.
+  </Step>
+
+  <Step title="Iniciar sesión y obtener el token">
+    Autentica tus credenciales para recibir el token Bearer que deberás incluir en todas las solicitudes protegidas.
+
+    ```bash
+    curl -X POST https://api.medcoreglobal.com/api/login \
+      -H "Content-Type: application/json" \
+      -d '{
+        "Email": "maria@ejemplo.com",
+        "Password": "TuContraseña123"
+      }'
+    ```
+
+    **Respuesta exitosa (`200 OK`):**
+
+    ```json
+    {
+      "token": "1|abc123...",
+      "user": {
+        "UsuarioID": 42,
+        "Email": "maria@ejemplo.com",
+        "rol_id": 3
+      }
+    }
+    ```
+
+    El campo `token` contiene tu token de acceso personal. El campo `rol_id` identifica tu rol en la plataforma: `1` Administrador, `2` Médico, `3` Paciente.
+
+    <Tip>
+      Guarda el token en un lugar seguro, como una variable de entorno o un gestor de secretos. **Nunca lo incluyas directamente en el código fuente** ni lo compartas en repositorios públicos. El token es equivalente a tu contraseña para todos los efectos de la API.
+    </Tip>
+  </Step>
+
+  <Step title="Realizar la primera llamada autenticada">
+    Con el token en mano, consulta la lista de médicos disponibles. Este es un buen primer endpoint para verificar que tu autenticación funciona correctamente.
+
+    ```bash
+    curl -X GET https://api.medcoreglobal.com/api/doctores \
+      -H "Authorization: Bearer 1|abc123..." \
+      -H "Accept: application/json"
+    ```
+
+    **Respuesta exitosa (`200 OK`):**
+
+    ```json
+    [
+      {
+        "DoctorID": 7,
+        "Nombre": "Carlos",
+        "Apellido": "Mendoza",
+        "Especialidad": "Medicina General",
+        "Precio": 500.00
+      },
+      {
+        "DoctorID": 12,
+        "Nombre": "Laura",
+        "Apellido": "Reyes",
+        "Especialidad": "Pediatría",
+        "Precio": 650.00
+      }
+    ]
+    ```
+
+    Cada objeto incluye el `DoctorID` que necesitarás en el siguiente paso para agendar tu cita. El campo `Precio` representa el costo de la consulta en la moneda local configurada por la clínica.
+  </Step>
+
+  <Step title="Agendar una cita médica">
+    Con el `DoctorID` obtenido en el paso anterior, ya puedes crear tu primera cita. Envía los datos de la consulta al endpoint correspondiente.
+
+    ```bash
+    curl -X POST https://api.medcoreglobal.com/api/citas \
+      -H "Authorization: Bearer 1|abc123..." \
+      -H "Content-Type: application/json" \
+      -d '{
+        "DoctorID": 7,
+        "Fecha": "2025-02-15",
+        "Hora": "10:30",
+        "Motivo": "Consulta general de rutina",
+        "Modalidad": "presencial"
+      }'
+    ```
+
+    **Respuesta exitosa (`201 Created`):**
+
+    ```json
+    {
+      "CitaID": 318,
+      "PacienteID": 42,
+      "DoctorID": 7,
+      "Fecha": "2025-02-15",
+      "Hora": "10:30",
+      "Estado": "pendiente",
+      "Motivo": "Consulta general de rutina",
+      "Modalidad": "presencial"
+    }
+    ```
+
+    Guarda el `CitaID` devuelto. Lo necesitarás para consultar, modificar o cancelar la cita en el futuro. El campo `Estado` iniciará en `"pendiente"` hasta que el médico o el sistema confirme el agendamiento.
+  </Step>
+</Steps>
+
+<Note>
+  Esta guía cubre el flujo básico de un paciente. Para explorar todos los endpoints disponibles —incluyendo historia clínica, recetas, laboratorio y administración de clínicas— consulta la [Referencia completa de la API](/api/descripcion-general).
+</Note>

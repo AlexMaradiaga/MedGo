@@ -1,0 +1,144 @@
+{
+  "projectType": "saas",
+  "projectName": "MedCore Global",
+  "projectDescription": "Plataforma SaaS de gestión médica multi-entidad que conecta clínicas, médicos y pacientes con citas, historial clínico, recetas y laboratorio.",
+  "theme": "almond",
+  "primaryColor": "#fc4539",
+  "lightColor": "#fca9a2",
+  "darkColor": "#040404",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Introducción",
+        "groups": [
+          {
+            "group": "Primeros Pasos",
+            "pages": [
+              "introduccion",
+              "inicio-rapido",
+              "autenticacion"
+            ]
+          },
+          {
+            "group": "Conceptos Clave",
+            "pages": [
+              "conceptos/entidades",
+              "conceptos/roles",
+              "conceptos/flujo-cita"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Módulos",
+        "groups": [
+          {
+            "group": "Pacientes",
+            "pages": [
+              "modulos/pacientes/registro",
+              "modulos/pacientes/agendar-cita",
+              "modulos/pacientes/historial",
+              "modulos/pacientes/recetas",
+              "modulos/pacientes/laboratorio"
+            ]
+          },
+          {
+            "group": "Médicos",
+            "pages": [
+              "modulos/medicos/registro",
+              "modulos/medicos/dashboard",
+              "modulos/medicos/consulta",
+              "modulos/medicos/agenda",
+              "modulos/medicos/pacientes"
+            ]
+          },
+          {
+            "group": "Administración",
+            "pages": [
+              "modulos/admin/dashboard",
+              "modulos/admin/clinicas",
+              "modulos/admin/usuarios",
+              "modulos/admin/suscripciones"
+            ]
+          },
+          {
+            "group": "Clínica & Laboratorio",
+            "pages": [
+              "modulos/clinica/dashboard",
+              "modulos/laboratorio/dashboard",
+              "modulos/laboratorio/ordenes"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Referencia API",
+            "pages": [
+              "api/descripcion-general",
+              "api/autenticacion",
+              "api/pacientes",
+              "api/medicos",
+              "api/citas",
+              "api/consultas",
+              "api/laboratorio",
+              "api/pagos",
+              "api/reportes"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Registro y verificación de médicos con credenciales digitales",
+    "Gestión de citas con aprobación, rechazo y reprogramación",
+    "Historia clínica completa: signos vitales, examen físico por sistemas, diagnóstico CIE-11",
+    "Generación y descarga de recetas en PDF con código QR de canje",
+    "Módulo de odontología con odontograma interactivo",
+    "Órdenes y resultados de laboratorio",
+    "Autorización cruzada de médicos para acceso al historial del paciente",
+    "Gestión de dependientes y tutores",
+    "Dashboards analíticos con gráficas para admin, clínica y laboratorio",
+    "Planes SaaS con control de límites por suscripción",
+    "Exportación de reportes ejecutivos en PDF",
+    "Soporte multilenguaje (español e inglés)"
+  ],
+  "publicApiSurface": [
+    "POST /api/login",
+    "POST /api/logout",
+    "PUT /api/auth/password",
+    "POST /api/register-patient",
+    "POST /api/register-doctor",
+    "GET /api/doctores",
+    "GET /api/doctores/{id}",
+    "GET /api/especialidades",
+    "POST /api/citas",
+    "GET /api/citas/historial/{usuarioId}",
+    "PUT /api/citas/{id}/reprogramar",
+    "DELETE /api/citas/{id}",
+    "GET /api/pacientes/usuario/{id}",
+    "POST /api/pacientes/{id}/emancipar",
+    "GET /api/historial/consultas/{usuarioId}",
+    "GET /api/historial/recetas/{usuarioId}",
+    "GET /api/historial/examenes/{usuarioId}",
+    "GET /api/recetas/pdf/{recetaId}",
+    "GET /api/laboratorio/catalogo",
+    "GET /api/laboratorio/paciente/{pacienteId}/ordenes",
+    "GET /api/laboratorio/orden/{ordenId}/resultados",
+    "POST /api/doctor/consulta/finalizar",
+    "GET /api/doctor/paciente/{pacienteId}/historial-completo",
+    "POST /api/doctor/cita/aprobar/{id}",
+    "POST /api/doctor/cita/rechazar/{id}",
+    "GET /api/doctor/diagnosticos/buscar",
+    "POST /api/pagos/procesar",
+    "GET /api/reports/dashboard",
+    "GET /api/admin/reportes/exportar",
+    "GET /api/entidades",
+    "GET /api/catalogo-medicamentos",
+    "GET /api/catalogo-alergias",
+    "GET /api/enfermedades-cronicas"
+  ]
+}

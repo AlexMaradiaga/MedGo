@@ -1,72 +1,107 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
-  "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
-  },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "pages": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
+  "name": "MedCore Global",
+  "theme": "almond",
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "https://media.brand.dev/2adc9a2b-c4bd-442b-bb19-86c424078461.svg",
+    "dark": "https://media.brand.dev/2adc9a2b-c4bd-442b-bb19-86c424078461.svg"
+  },
+  "favicon": "https://media.brand.dev/84bd29db-d2ce-4fdc-9a80-935b0cbc697e.png",
+  "colors": {
+    "primary": "#fc4539",
+    "light": "#fca9a2",
+    "dark": "#040404"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
     "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "type": "github",
+      "href": "https://github.com/AlexMaradiaga/medcore-system"
     }
   },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Introducción",
+        "groups": [
+          {
+            "group": "Primeros Pasos",
+            "pages": [
+              "introduccion",
+              "inicio-rapido",
+              "autenticacion"
+            ]
+          },
+          {
+            "group": "Conceptos Clave",
+            "pages": [
+              "conceptos/entidades",
+              "conceptos/roles",
+              "conceptos/flujo-cita"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Módulos",
+        "groups": [
+          {
+            "group": "Pacientes",
+            "pages": [
+              "modulos/pacientes/registro",
+              "modulos/pacientes/agendar-cita",
+              "modulos/pacientes/historial",
+              "modulos/pacientes/recetas",
+              "modulos/pacientes/laboratorio"
+            ]
+          },
+          {
+            "group": "Médicos",
+            "pages": [
+              "modulos/medicos/registro",
+              "modulos/medicos/dashboard",
+              "modulos/medicos/consulta",
+              "modulos/medicos/agenda",
+              "modulos/medicos/pacientes"
+            ]
+          },
+          {
+            "group": "Administración",
+            "pages": [
+              "modulos/admin/dashboard",
+              "modulos/admin/clinicas",
+              "modulos/admin/usuarios",
+              "modulos/admin/suscripciones"
+            ]
+          },
+          {
+            "group": "Clínica & Laboratorio",
+            "pages": [
+              "modulos/clinica/dashboard",
+              "modulos/laboratorio/dashboard",
+              "modulos/laboratorio/ordenes"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Referencia API",
+            "pages": [
+              "api/descripcion-general",
+              "api/autenticacion",
+              "api/pacientes",
+              "api/medicos",
+              "api/citas",
+              "api/consultas",
+              "api/laboratorio",
+              "api/pagos",
+              "api/reportes"
+            ]
+          }
+        ]
+      }
     ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
   }
 }

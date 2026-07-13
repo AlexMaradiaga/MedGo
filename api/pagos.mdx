@@ -1,0 +1,244 @@
+---
+title: "API de Pagos en MedCore Global"
+sidebarTitle: "Pagos"
+description: "Procesa pagos de consultas médicas en MedCore Global. Registra pagos por app o en clínica y consulta el catálogo de precios del médico."
+---
+
+Los endpoints de pagos permiten al médico consultar su catálogo de precios de servicios, obtener el desglose de facturación de una consulta y registrar el pago correspondiente, ya sea a través de la aplicación (pago digital) o directamente en clínica. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization`.
+
+---
+
+## GET /api/doctor/catalogo-precios
+
+<Note>Rol requerido: **Médico**</Note>
+
+Devuelve el catálogo de servicios médicos y sus precios configurados para el médico autenticado. Este catálogo se usa como referencia al registrar los servicios prestados durante una consulta.
+
+### Respuesta exitosa `200 OK`
+
+```json
+[
+  {
+    "ServicioID": 1,
+    "NombreServicio": "Consulta General",
+    "Precio": 40.00,
+    "Estado": "Activo"
+  },
+  {
+    "ServicioID": 2,
+    "NombreServicio": "Consulta de Especialidad",
+    "Precio": 65.00,
+    "Estado": "Activo"
+  },
+  {
+    "ServicioID": 3,
+    "NombreServicio": "Electrocardiograma",
+    "Precio": 30.00,
+    "Estado": "Activo"
+  },
+  {
+    "ServicioID": 4,
+    "NombreServicio": "Ecografía Abdominal",
+    "Precio": 55.00,
+    "Estado": "Inactivo"
+  }
+]
+```
+
+### Campos de respuesta
+
+<ResponseField name="ServicioID" type="integer">
+  Identificador único del servicio médico en el catálogo.
+</ResponseField>
+
+<ResponseField name="NombreServicio" type="string">
+  Nombre descriptivo del servicio o procedimiento.
+</ResponseField>
+
+<ResponseField name="Precio" type="number">
+  Precio del servicio en la moneda configurada para la instancia.
+</ResponseField>
+
+<ResponseField name="Estado" type="string">
+  Estado del servicio en el catálogo: `Activo` (disponible para cobro) o `Inactivo` (no disponible).
+</ResponseField>
+
+### Ejemplo de solicitud
+
+```bash
+curl -X GET https://tu-instancia.com/api/doctor/catalogo-precios \
+  -H "Authorization: Bearer {token}"
+```
+
+---
+
+## POST /api/pagos/procesar
+
+<Note>Rol requerido: **Médico**</Note>
+
+Registra y procesa el pago de una consulta médica finalizada. Asocia los servicios prestados al pago y genera los registros de facturación correspondientes.
+
+<Note>
+  El procesamiento de pagos es **definitivo e irreversible** a través de la API. Una vez registrado un pago, no puede anularse ni modificarse por esta vía. Si se requiere una corrección, debe gestionarse directamente con el equipo de administración de la instancia.
+</Note>
+
+### Parámetros del cuerpo
+
+<ParamField body="ConsultaID" type="integer" required>
+  ID de la consulta médica finalizada a la que corresponde el pago.
+</ParamField>
+
+<ParamField body="MontoTotal" type="number" required>
+  Monto total cobrado al paciente. Debe coincidir con la suma de los servicios declarados en el campo `Servicios`.
+
+  Ejemplo: `95.00`
+</ParamField>
+
+<ParamField body="MetodoPago" type="string" required>
+  Método de pago utilizado. Valores permitidos:
+
+  - `"App"` — Pago digital procesado a través de la aplicación (QR o enlace de pago).
+  - `"Clinica"` — Pago recibido físicamente en la clínica.
+</ParamField>
+
+<ParamField body="ReferenciaPasarela" type="string">
+  Código de referencia o token generado por la pasarela de pago externa. Solo aplica para pagos con `MetodoPago: "App"`.
+
+  Ejemplo: `"TXN-20260315-00492"`
+</ParamField>
+
+<ParamField body="Servicios" type="array">
+  Lista de servicios cobrados en esta consulta. Cada ítem debe corresponder a un `ServicioID` del catálogo de precios del médico.
+
+  <Expandable title="Campos de cada servicio">
+    <ParamField body="ServicioID" type="integer" required>
+      ID del servicio prestado, obtenido del catálogo de precios.
+    </ParamField>
+    <ParamField body="Monto" type="number" required>
+      Monto cobrado por este servicio específico.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+{
+  "message": "Pago procesado exitosamente.",
+  "PagoID": 730,
+  "DetalleID": 1045,
+  "ConsultaID": 305,
+  "MontoTotal": 95.00,
+  "MetodoPago": "App"
+}
+```
+
+### Campos de respuesta
+
+<ResponseField name="PagoID" type="integer">
+  Identificador único del registro de pago generado.
+</ResponseField>
+
+<ResponseField name="DetalleID" type="integer">
+  Identificador del detalle de facturación asociado al pago.
+</ResponseField>
+
+### Ejemplo de solicitud
+
+```bash
+curl -X POST https://tu-instancia.com/api/pagos/procesar \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ConsultaID": 305,
+    "MontoTotal": 95.00,
+    "MetodoPago": "App",
+    "ReferenciaPasarela": "TXN-20260315-00492",
+    "Servicios": [
+      {
+        "ServicioID": 2,
+        "Monto": 65.00
+      },
+      {
+        "ServicioID": 3,
+        "Monto": 30.00
+      }
+    ]
+  }'
+```
+
+---
+
+## GET /api/doctor/consulta/facturacion-detalle
+
+<Note>Rol requerido: **Médico**</Note>
+
+Devuelve el desglose completo de facturación de una consulta antes de procesar el pago. Permite al médico revisar los servicios, montos y datos del paciente antes de confirmar el cobro.
+
+### Parámetros de consulta
+
+<ParamField query="consultaId" type="integer" required>
+  ID de la consulta cuyo detalle de facturación se desea obtener.
+</ParamField>
+
+### Respuesta exitosa `200 OK`
+
+```json
+{
+  "ConsultaID": 305,
+  "FechaConsulta": "2026-03-15T10:00:00",
+  "doctor": {
+    "DoctorID": 14,
+    "Nombre": "Dr. Carlos Méndez",
+    "Especialidad": "Medicina Interna"
+  },
+  "paciente": {
+    "PacienteID": 102,
+    "Nombre": "María López",
+    "Cedula": "1712345678"
+  },
+  "servicios": [
+    {
+      "ServicioID": 2,
+      "NombreServicio": "Consulta de Especialidad",
+      "Monto": 65.00
+    },
+    {
+      "ServicioID": 3,
+      "NombreServicio": "Electrocardiograma",
+      "Monto": 30.00
+    }
+  ],
+  "subtotal": 95.00,
+  "descuento": 0.00,
+  "total": 95.00
+}
+```
+
+### Ejemplo de solicitud
+
+```bash
+curl -X GET "https://tu-instancia.com/api/doctor/consulta/facturacion-detalle?consultaId=305" \
+  -H "Authorization: Bearer {token}"
+```
+
+---
+
+## Métodos de pago
+
+MedCore Global soporta dos métodos de pago para el registro de consultas, adaptados a los distintos flujos operativos de cada clínica:
+
+### App — Pago digital
+
+El paciente realiza el pago de forma remota o presencial a través de un **código QR** o un **enlace de pago** generado directamente en la aplicación MedCore. La pasarela de pago procesa la transacción y devuelve una `ReferenciaPasarela` que debe incluirse al llamar a `POST /api/pagos/procesar`.
+
+Este método es ideal para clínicas que desean reducir el manejo de efectivo y ofrecer una experiencia de pago digital al paciente.
+
+### Clínica — Pago presencial
+
+El paciente cancela el valor de la consulta directamente en la clínica, ya sea en efectivo, tarjeta u otro medio físico aceptado por la institución. El médico o personal administrativo registra el pago en el sistema indicando `MetodoPago: "Clinica"`. En este caso, la `ReferenciaPasarela` no es requerida.
+
+| Método    | `ReferenciaPasarela` | Procesamiento         |
+|-----------|----------------------|-----------------------|
+| `App`     | Requerida            | Pasarela digital      |
+| `Clinica` | No aplica            | Manual / presencial   |
