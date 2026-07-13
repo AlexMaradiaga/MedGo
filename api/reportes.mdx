@@ -1,7 +1,7 @@
 ---
-title: "API de Reportes y Analítica en MedCore Global: Dashboard"
+title: "API de Reportes y Analítica en MedGo+: Dashboard"
 sidebarTitle: "Reportes"
-description: "Endpoints de reportes y analítica en MedCore Global: dashboard global, indicadores de calidad y exportación de reportes ejecutivos en PDF."
+description: "Endpoints de reportes y analítica en MedGo+: dashboard global, indicadores de calidad y exportación de reportes ejecutivos en PDF."
 ---
 
 Los endpoints de reportes y dashboards proporcionan a los administradores de MedCore Global acceso a estadísticas operativas en tiempo real, analítica de inteligencia de negocio (BI), indicadores de calidad clínica y exportación de reportes ejecutivos en formato PDF. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization`. Salvo indicación contraria, se requiere rol de **Administrador**.
@@ -10,7 +10,9 @@ Los endpoints de reportes y dashboards proporcionan a los administradores de Med
 
 ## GET /api/reports/dashboard
 
-<Note>Rol requerido: **Administrador**</Note>
+<Note>
+  Rol requerido: **Administrador**
+</Note>
 
 Devuelve las estadísticas globales de la plataforma para el dashboard principal del administrador. Incluye métricas de pacientes, citas, tasas de cancelación, ingresos estimados y el índice de ausentismo por médico.
 
@@ -53,15 +55,19 @@ Devuelve las estadísticas globales de la plataforma para el dashboard principal
     <ResponseField name="total_pacientes" type="integer">
       Número total de pacientes registrados en la plataforma.
     </ResponseField>
+
     <ResponseField name="total_citas" type="integer">
       Número total de citas médicas registradas en el período activo.
     </ResponseField>
+
     <ResponseField name="tasa_cancelacion" type="number">
       Porcentaje de citas canceladas sobre el total de citas registradas en el período.
     </ResponseField>
+
     <ResponseField name="ingresos_estimados" type="number">
       Suma estimada de ingresos generados por consultas pagadas en el período.
     </ResponseField>
+
     <ResponseField name="no_shows_por_medico" type="array">
       Lista de médicos con el número de citas en las que el paciente no se presentó (no-show) en el período.
     </ResponseField>
@@ -79,7 +85,9 @@ curl -X GET https://tu-instancia.com/api/reports/dashboard \
 
 ## GET /api/reports/appointments
 
-<Note>Rol requerido: **Cualquier rol autenticado**</Note>
+<Note>
+  Rol requerido: **Cualquier rol autenticado**
+</Note>
 
 Devuelve un reporte filtrado de citas médicas. Los parámetros de filtro son opcionales; si se omiten, devuelve todas las citas disponibles según el rol del usuario autenticado.
 
@@ -139,7 +147,9 @@ curl -X GET "https://tu-instancia.com/api/reports/appointments?fecha_inicio=2026
 
 ## GET /api/admin/reports/analytics
 
-<Note>Rol requerido: **Administrador**</Note>
+<Note>
+  Rol requerido: **Administrador**
+</Note>
 
 Devuelve el reporte completo de analítica de inteligencia de negocio (BI) de la plataforma. Agrupa cinco conjuntos de datos para análisis avanzado: embudo de conversión, desempeño por médico, demografía de pacientes, mapa de calor de demanda y evolución mensual.
 
@@ -213,7 +223,9 @@ Devuelve el reporte completo de analítica de inteligencia de negocio (BI) de la
 
 ## GET /api/admin/indicadores-calidad
 
-<Note>Rol requerido: **Administrador**</Note>
+<Note>
+  Rol requerido: **Administrador**
+</Note>
 
 Devuelve los indicadores clave de calidad clínica y operativa de la plataforma, agrupados en tres categorías de auditoría: seguridad del paciente, eficiencia operativa y relaciones con el paciente.
 
@@ -250,7 +262,9 @@ Devuelve los indicadores clave de calidad clínica y operativa de la plataforma,
 
 ## GET /api/admin/reportes/exportar
 
-<Note>Rol requerido: **Administrador**</Note>
+<Note>
+  Rol requerido: **Administrador**
+</Note>
 
 Exporta un reporte ejecutivo en formato PDF o JSON según el tipo seleccionado. Los reportes en PDF contienen visualizaciones, tablas de datos y análisis listos para presentaciones ejecutivas.
 
@@ -259,14 +273,14 @@ Exporta un reporte ejecutivo en formato PDF o JSON según el tipo seleccionado. 
 <ParamField query="tipo" type="string" required>
   Tipo de reporte a exportar. Valores permitidos:
 
-  | Valor          | Descripción                                                   | Formato   |
-  |----------------|---------------------------------------------------------------|-----------|
-  | `general`      | Reporte general de operaciones de la clínica.                 | PDF       |
-  | `seguridad`    | Reporte de indicadores de seguridad clínica.                  | PDF       |
-  | `eficiencia`   | Reporte de eficiencia operativa y tiempos de atención.        | PDF       |
-  | `paciente`     | Reporte de demografía y comportamiento de pacientes.          | PDF       |
-  | `saas-general` | Reporte general de uso de la plataforma SaaS.                 | JSON      |
-  | `saas-plan`    | Reporte de distribución y estado de planes de suscripción.    | JSON      |
+  | Valor | Descripción | Formato |
+  | --- | --- | --- |
+  | `general` | Reporte general de operaciones de la clínica. | PDF |
+  | `seguridad` | Reporte de indicadores de seguridad clínica. | PDF |
+  | `eficiencia` | Reporte de eficiencia operativa y tiempos de atención. | PDF |
+  | `paciente` | Reporte de demografía y comportamiento de pacientes. | PDF |
+  | `saas-general` | Reporte general de uso de la plataforma SaaS. | JSON |
+  | `saas-plan` | Reporte de distribución y estado de planes de suscripción. | JSON |
 </ParamField>
 
 ### Respuesta exitosa `200 OK`
@@ -296,7 +310,9 @@ curl -X GET "https://tu-instancia.com/api/admin/reportes/exportar?tipo=saas-gene
 
 ## GET /api/admin/saas/monitoreo
 
-<Note>Rol requerido: **Administrador**</Note>
+<Note>
+  Rol requerido: **Administrador**
+</Note>
 
 Devuelve los indicadores de monitoreo del modelo de negocio SaaS de la plataforma: ingresos recurrentes mensuales (MRR), suscriptores activos, contratos próximos a vencer y distribución de planes contratados.
 
