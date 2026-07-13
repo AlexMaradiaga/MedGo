@@ -1,7 +1,7 @@
 ---
-title: "API de Médicos en MedCore Global: Directorio y Perfil"
+title: "API de Médicos en MedGo+: Directorio y Perfil"
 sidebarTitle: "Médicos"
-description: "Endpoints para listar, filtrar y gestionar médicos en MedCore Global. Busca por especialidad o entidad, y obtén precios de consulta."
+description: "Endpoints para listar, filtrar y gestionar médicos en MedGo+. Busca por especialidad o entidad, y obtén precios de consulta."
 ---
 
 Los endpoints de médicos permiten consultar el directorio de profesionales activos, filtrarlos por especialidad, nombre o entidad, y gestionar sus perfiles desde el panel administrativo. También exponen el catálogo de precios de servicios para el médico autenticado. Todos los endpoints requieren autenticación con Bearer token; las operaciones de escritura están restringidas al rol **Administrador**.
@@ -106,7 +106,7 @@ curl --request GET \
 
 ---
 
-## GET /api/doctores/entidad/\{id\}
+## GET /api/doctores/entidad/{id}
 
 Devuelve todos los médicos activos adscritos a una entidad o clínica específica, incluyendo la información detallada de precios de consulta para cada especialidad disponible en dicha entidad.
 
@@ -243,7 +243,7 @@ curl --request POST \
 
 ---
 
-## PUT /api/doctores/\{id\}
+## PUT /api/doctores/{id}
 
 Actualiza los datos de perfil de un médico existente. Solo se modifican los campos incluidos en el cuerpo de la solicitud; los campos omitidos conservan su valor actual.
 
@@ -298,7 +298,7 @@ curl --request PUT \
 
 ---
 
-## DELETE /api/doctores/\{id\}
+## DELETE /api/doctores/{id}
 
 Realiza una **desactivación lógica** (soft delete) del médico. El registro permanece en la base de datos pero el médico deja de aparecer en los listados públicos y no puede iniciar sesión. Este proceso es reversible por un administrador.
 
