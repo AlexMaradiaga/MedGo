@@ -1,10 +1,10 @@
 ---
-title: "Cómo realizar una consulta médica en MedCore Global"
+title: "Cómo realizar una consulta médica en MedGo+"
 sidebarTitle: "Consulta"
 description: "Guía para médicos: inicia y finaliza consultas SOAP, registra signos vitales, diagnóstico CIE-11, medicamentos y genera recetas automáticamente."
 ---
 
-El módulo de consulta de MedCore Global está estructurado bajo la metodología **SOAP** (Subjetivo, Objetivo, Evaluación, Plan), el estándar clínico internacional para la documentación de encuentros médicos. Cada consulta queda registrada en el expediente del paciente, vinculada a la cita correspondiente, y al finalizarla el sistema genera automáticamente la receta médica en formato PDF con código QR de validación.
+El módulo de consulta de MedGo\+ está estructurado bajo la metodología **SOAP** (Subjetivo, Objetivo, Evaluación, Plan), el estándar clínico internacional para la documentación de encuentros médicos. Cada consulta queda registrada en el expediente del paciente, vinculada a la cita correspondiente, y al finalizarla el sistema genera automáticamente la receta médica en formato PDF con código QR de validación.
 
 ---
 
@@ -62,7 +62,7 @@ Define el tratamiento y las indicaciones que seguirá el paciente:
 El módulo de examen físico permite registrar hallazgos de forma estructurada por cada sistema corporal. Los sistemas disponibles son:
 
 | Sistema | Ejemplos de hallazgos registrables |
-|---|---|
+| --- | --- |
 | **General** | Estado de conciencia, hidratación, orientación, aspecto general |
 | **Cardiovascular** | Ritmo cardíaco, soplos, pulsos periféricos, llenado capilar |
 | **Respiratorio** | Tipo de respiración, murmullo vesicular, ruidos adventicios |
@@ -125,23 +125,23 @@ POST /api/doctor/consulta/finalizar
 }
 ```
 
-| Campo                   | Tipo      | Requerido | Descripción                                                                 |
-|-------------------------|-----------|-----------|-----------------------------------------------------------------------------|
-| `cita_id`               | `integer` | ✅        | Identificador de la cita que se está finalizando.                           |
-| `diagnostico`           | `string`  | ✅        | Diagnóstico principal de la consulta.                                       |
-| `notas_medicas`         | `string`  | ❌        | Resumen clínico en texto libre que quedará en el expediente del paciente.   |
-| `signos_vitales`        | `object`  | ✅        | Objeto con los signos vitales medidos durante la consulta.                  |
-| `examen_fisico_opciones`| `array`   | ✅        | IDs de los sistemas explorados durante el examen físico.                    |
-| `examen_fisico_notas`   | `object`  | ❌        | Notas adicionales por sistema, indexadas por ID de sistema.                 |
-| `detalle_medicamentos`  | `array`   | ✅        | Lista de medicamentos prescritos (ver estructura de cada ítem abajo).       |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `cita_id` | `integer` | ✅ | Identificador de la cita que se está finalizando. |
+| `diagnostico` | `string` | ✅ | Diagnóstico principal de la consulta. |
+| `notas_medicas` | `string` | ❌ | Resumen clínico en texto libre que quedará en el expediente del paciente. |
+| `signos_vitales` | `object` | ✅ | Objeto con los signos vitales medidos durante la consulta. |
+| `examen_fisico_opciones` | `array` | ✅ | IDs de los sistemas explorados durante el examen físico. |
+| `examen_fisico_notas` | `object` | ❌ | Notas adicionales por sistema, indexadas por ID de sistema. |
+| `detalle_medicamentos` | `array` | ✅ | Lista de medicamentos prescritos (ver estructura de cada ítem abajo). |
 
 Cada ítem de `detalle_medicamentos` debe incluir:
 
-| Campo              | Tipo     | Requerido | Descripción                              |
-|--------------------|----------|-----------|------------------------------------------|
-| `NombreMedicamento`| `string` | ✅        | Nombre genérico o comercial del fármaco. |
-| `Dosis`            | `string` | ✅        | Dosis indicada (p. ej. `"400mg"`).       |
-| `Indicaciones`     | `string` | ✅        | Instrucciones de uso para el paciente.   |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `NombreMedicamento` | `string` | ✅ | Nombre genérico o comercial del fármaco. |
+| `Dosis` | `string` | ✅ | Dosis indicada (p. ej. `"400mg"`). |
+| `Indicaciones` | `string` | ✅ | Instrucciones de uso para el paciente. |
 
 <Note>
   Al finalizar la consulta, MedCore Global genera automáticamente la **receta médica en formato PDF** con todos los medicamentos prescritos, el diagnóstico CIE-11, los datos del médico tratante y un **código QR de validación** que permite a farmacias y pacientes verificar la autenticidad del documento. La receta queda disponible para descarga tanto en el portal del médico como en el del paciente.
