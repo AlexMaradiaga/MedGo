@@ -1,16 +1,16 @@
 ---
-title: "Descripción General de la API REST de MedCore Global"
+title: "Descripción General de la API REST de MedGo+"
 sidebarTitle: "Descripción General"
-description: "Descripción general de la API REST de MedCore Global: URL base, cabeceras, códigos de respuesta y catálogos del sistema. Autenticación Bearer token."
+description: "Descripción general de la API REST de MedGo+: URL base, cabeceras, códigos de respuesta y catálogos del sistema. Autenticación Bearer token."
 ---
 
-La API REST de MedCore Global expone los recursos necesarios para integrar y automatizar la gestión médica de tu organización: administración de pacientes, agendamiento de citas, registro de consultas, emisión de recetas y resultados de laboratorio. Todas las solicitudes y respuestas se realizan en formato **JSON**, y el acceso está protegido mediante **Bearer token** en la cabecera de autorización.
+La API REST de MedGo\+ expone los recursos necesarios para integrar y automatizar la gestión médica de tu organización: administración de pacientes, agendamiento de citas, registro de consultas, emisión de recetas y resultados de laboratorio. Todas las solicitudes y respuestas se realizan en formato **JSON**, y el acceso está protegido mediante **Bearer token** en la cabecera de autorización.
 
 ## URL base
 
 Todas las rutas de la API parten de la siguiente URL base. Reemplaza `tu-instancia` con el subdominio asignado a tu organización:
 
-```
+```text
 https://tu-instancia.com/api
 ```
 
@@ -18,11 +18,11 @@ https://tu-instancia.com/api
 
 Cada solicitud debe incluir las siguientes cabeceras HTTP:
 
-| Cabecera        | Valor                          | Descripción                              |
-|-----------------|--------------------------------|------------------------------------------|
-| `Content-Type`  | `application/json`             | Indica que el cuerpo está en JSON        |
-| `Authorization` | `Bearer {token}`               | Token de acceso obtenido en el login     |
-| `Accept`        | `application/json`             | Solicita respuesta en formato JSON       |
+| Cabecera | Valor | Descripción |
+| --- | --- | --- |
+| `Content-Type` | `application/json` | Indica que el cuerpo está en JSON |
+| `Authorization` | `Bearer {token}` | Token de acceso obtenido en el login |
+| `Accept` | `application/json` | Solicita respuesta en formato JSON |
 
 Ejemplo de cabeceras en una solicitud típica:
 
@@ -38,15 +38,15 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
 
 La API devuelve respuestas consistentes en formato JSON. A continuación se describen los códigos de estado HTTP utilizados:
 
-| Código | Estado                  | Descripción                                                                 |
-|--------|-------------------------|-----------------------------------------------------------------------------|
-| `200`  | OK                      | Solicitud procesada correctamente.                                          |
-| `201`  | Creado                  | Recurso creado exitosamente.                                                |
-| `401`  | No autorizado           | Token ausente, inválido o expirado.                                         |
-| `403`  | Prohibido               | El usuario no tiene el rol requerido o la cuenta se encuentra inactiva.     |
-| `404`  | No encontrado           | El recurso solicitado no existe.                                            |
-| `422`  | Error de validación     | Los datos enviados no superaron la validación. Revisa el campo `errors`.    |
-| `500`  | Error del servidor      | Error interno. Contacta al equipo de soporte si persiste.                  |
+| Código | Estado | Descripción |
+| --- | --- | --- |
+| `200` | OK | Solicitud procesada correctamente. |
+| `201` | Creado | Recurso creado exitosamente. |
+| `401` | No autorizado | Token ausente, inválido o expirado. |
+| `403` | Prohibido | El usuario no tiene el rol requerido o la cuenta se encuentra inactiva. |
+| `404` | No encontrado | El recurso solicitado no existe. |
+| `422` | Error de validación | Los datos enviados no superaron la validación. Revisa el campo `errors`. |
+| `500` | Error del servidor | Error interno. Contacta al equipo de soporte si persiste. |
 
 ## Ejemplo de error 422
 
@@ -67,14 +67,14 @@ El objeto `errors` puede contener múltiples claves, una por cada campo que haya
 
 Los siguientes endpoints de catálogo están disponibles para **todos los usuarios autenticados**, independientemente de su rol. Devuelven listas de valores de referencia utilizados en otras partes de la API:
 
-| Método | Endpoint                        | Descripción                                       |
-|--------|---------------------------------|---------------------------------------------------|
-| `GET`  | `/api/enfermedades-cronicas`    | Lista de enfermedades crónicas registradas        |
-| `GET`  | `/api/catalogo-medicamentos`    | Catálogo completo de medicamentos disponibles     |
-| `GET`  | `/api/catalogo-alergias`        | Tipos de alergias registradas en el sistema       |
-| `GET`  | `/api/especialidades`           | Especialidades médicas disponibles                |
-| `GET`  | `/api/entidades`                | Entidades o clínicas registradas en la plataforma |
-| `GET`  | `/api/laboratorio/catalogo`     | Exámenes y pruebas de laboratorio disponibles     |
+| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/enfermedades-cronicas` | Lista de enfermedades crónicas registradas |
+| `GET` | `/api/catalogo-medicamentos` | Catálogo completo de medicamentos disponibles |
+| `GET` | `/api/catalogo-alergias` | Tipos de alergias registradas en el sistema |
+| `GET` | `/api/especialidades` | Especialidades médicas disponibles |
+| `GET` | `/api/entidades` | Entidades o clínicas registradas en la plataforma |
+| `GET` | `/api/laboratorio/catalogo` | Exámenes y pruebas de laboratorio disponibles |
 
 Ejemplo de solicitud al catálogo de especialidades:
 
