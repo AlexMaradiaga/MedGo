@@ -1,13 +1,14 @@
 ---
-title: "Gestión de Clínicas y Especialidades en MedCore Global"
+title: "Gestión de Clínicas y Especialidades en MedGo+"
 sidebarTitle: "Clínicas"
-description: "Administra las clínicas registradas en MedCore Global: crea, edita y desactiva entidades clínicas. Gestiona las especialidades disponibles por clínica."
+description: "Administra las clínicas registradas en MedGo+: crea, edita y desactiva entidades clínicas. Gestiona las especialidades disponibles por clínica."
 ---
 
-La gestión de entidades clínicas es una de las funciones centrales del administrador de MedCore Global. Desde este módulo puedes registrar nuevas clínicas, laboratorios y farmacias en la plataforma, mantener actualizados sus datos de identificación y contacto, controlar su estado operativo y definir las especialidades médicas que cada entidad ofrece a sus pacientes. Todos los cambios se reflejan de inmediato en el directorio público y en los flujos de agendamiento de la plataforma.
+La gestión de entidades clínicas es una de las funciones centrales del administrador de MedGo\+. Desde este módulo puedes registrar nuevas clínicas, laboratorios y farmacias en la plataforma, mantener actualizados sus datos de identificación y contacto, controlar su estado operativo y definir las especialidades médicas que cada entidad ofrece a sus pacientes. Todos los cambios se reflejan de inmediato en el directorio público y en los flujos de agendamiento de la plataforma.
 
 <Note>
   El campo `TipoEntidad` determina el rol funcional de la entidad dentro de la plataforma y los módulos a los que tendrá acceso. Los valores válidos son:
+
   - **`Clinica`** — Habilita módulos de citas, expedientes, médicos y facturación clínica.
   - **`Laboratorio`** — Habilita módulos de órdenes, muestras, resultados y catálogo de pruebas.
   - **`Farmacia`** — Habilita módulos de inventario, dispensación y recetas electrónicas.
@@ -73,7 +74,7 @@ POST /api/clinicas
 ```
 
 | Campo | Tipo | Requerido | Descripción |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `NombreEntidad` | `string` | ✅ | Nombre comercial de la entidad. |
 | `TipoEntidad` | `string` | ✅ | Tipo de entidad: `Clinica`, `Laboratorio` o `Farmacia`. |
 | `RTN` | `string` | ✅ | Registro Tributario Nacional (14 dígitos). |
@@ -95,7 +96,7 @@ PUT /api/clinicas/{id}
 **Parámetros de ruta:**
 
 | Parámetro | Descripción |
-|---|---|
+| --- | --- |
 | `id` | `EntidadID` de la clínica a actualizar. |
 
 **Cuerpo de la solicitud (ejemplo parcial):**
@@ -122,7 +123,7 @@ PUT /api/clinicas/{id}/desactivar
 **Parámetros de ruta:**
 
 | Parámetro | Descripción |
-|---|---|
+| --- | --- |
 | `id` | `EntidadID` de la clínica a desactivar. |
 
 **Respuesta exitosa:** `200 OK` con el mensaje de confirmación y el nuevo estado de la entidad.
