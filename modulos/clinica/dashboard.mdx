@@ -1,13 +1,13 @@
 ---
-title: "Dashboard de Clínica — Gestión Operativa MedCore Global"
+title: "Dashboard de Clínica — Gestión Operativa MedGo+"
 sidebarTitle: "Dashboard Clínica"
 description: "El dashboard de clínica ofrece KPIs operativos, listado de citas recientes, gestión del personal médico y control de especialidades ofrecidas."
 ---
 
-El **Dashboard de Clínica** es el punto de entrada operativo para los gestores y administradores de cada entidad clínica registrada en MedCore Global. Ofrece una vista unificada del estado actual de la clínica: volumen de citas, médicos activos, ingresos del período y el detalle de las consultas más recientes. Desde aquí también se administra el equipo médico y las especialidades disponibles para los pacientes.
+El **Dashboard de Clínica** es el punto de entrada operativo para los gestores y administradores de cada entidad clínica registrada en MedGo\+. Ofrece una vista unificada del estado actual de la clínica: volumen de citas, médicos activos, ingresos del período y el detalle de las consultas más recientes. Desde aquí también se administra el equipo médico y las especialidades disponibles para los pacientes.
 
 <Note>
-  La interfaz web de MedCore Global incluye un **modo de tema oscuro** disponible para el dashboard de clínica. Puedes activarlo desde el ícono de configuración en la barra superior derecha. El tema seleccionado se guarda por usuario y persiste entre sesiones.
+  La interfaz web de MedGo\+ incluye un **modo de tema oscuro** disponible para el dashboard de clínica. Puedes activarlo desde el ícono de configuración en la barra superior derecha. El tema seleccionado se guarda por usuario y persiste entre sesiones.
 </Note>
 
 ---
@@ -17,7 +17,7 @@ El **Dashboard de Clínica** es el punto de entrada operativo para los gestores 
 La sección principal del dashboard presenta cuatro KPIs que reflejan el estado en tiempo real de la clínica:
 
 | Indicador | Descripción |
-|---|---|
+| --- | --- |
 | **Total Citas** | Número total de citas registradas en la clínica para el período seleccionado (día, semana o mes). |
 | **Citas Pendientes** | Citas agendadas que aún no han sido atendidas ni canceladas. Refleja la carga de trabajo próxima. |
 | **Médicos Activos** | Cantidad de médicos con cuenta activa y aprobada que pertenecen a la entidad. |
@@ -28,7 +28,7 @@ La sección principal del dashboard presenta cuatro KPIs que reflejan el estado 
 Bajo los KPIs, el dashboard despliega una tabla con las últimas citas registradas en la clínica, que incluye:
 
 | Columna | Descripción |
-|---|---|
+| --- | --- |
 | **Paciente** | Nombre completo del paciente y su número de identificación. |
 | **Médico** | Nombre del médico asignado a la cita. |
 | **Especialidad** | Especialidad médica correspondiente a la consulta. |
@@ -75,7 +75,7 @@ GET /api/clinica/dashboard?entidad_id={id}
 **Parámetros de consulta:**
 
 | Parámetro | Tipo | Descripción |
-|---|---|---|
+| --- | --- | --- |
 | `entidad_id` | `integer` | Identificador único de la entidad clínica. Si se omite, el sistema utiliza la entidad asociada al usuario autenticado. |
 
 **Respuesta de ejemplo:**
