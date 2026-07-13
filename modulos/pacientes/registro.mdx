@@ -1,10 +1,10 @@
 ---
-title: "Cómo crear tu cuenta de paciente en MedCore Global"
+title: "Cómo crear tu cuenta de paciente en MedGo+"
 sidebarTitle: "Registro"
 description: "Crea tu cuenta de paciente en MedCore Global. Aprende a registrarte como adulto, como tutor de un menor o como dependiente en el sistema."
 ---
 
-Bienvenido a MedCore Global. Antes de agendar citas, acceder a tu historial clínico o descargar recetas, necesitas crear tu cuenta de paciente. El proceso tarda menos de cinco minutos y solo requiere tu documento de identidad, un correo electrónico válido y tu información básica de contacto. Esta guía cubre los tres escenarios de registro: paciente adulto autónomo, tutor que registra su propio perfil clínico y registro de un menor como dependiente.
+Bienvenido a MedGo\+. Antes de agendar citas, acceder a tu historial clínico o descargar recetas, necesitas crear tu cuenta de paciente. El proceso tarda menos de cinco minutos y solo requiere tu documento de identidad, un correo electrónico válido y tu información básica de contacto. Esta guía cubre los tres escenarios de registro: paciente adulto autónomo, tutor que registra su propio perfil clínico y registro de un menor como dependiente.
 
 ---
 
@@ -12,7 +12,7 @@ Bienvenido a MedCore Global. Antes de agendar citas, acceder a tu historial clí
 
 Si eres mayor de edad y deseas crear tu propia cuenta, realiza una solicitud `POST` al siguiente endpoint:
 
-```
+```text
 POST /api/register-patient
 ```
 
@@ -30,15 +30,15 @@ POST /api/register-patient
 }
 ```
 
-| Campo        | Tipo      | Requerido | Descripción                                                    |
-|--------------|-----------|-----------|----------------------------------------------------------------|
-| `nombre`     | `string`  | ✅        | Primer nombre del paciente.                                    |
-| `apellido`   | `string`  | ✅        | Apellido del paciente.                                         |
-| `email`      | `string`  | ✅        | Correo electrónico único para inicio de sesión.                |
-| `password`   | `string`  | ✅        | Contraseña (mínimo 6 caracteres).                              |
-| `dni`        | `string`  | ✅        | Documento Nacional de Identidad. Debe ser único en el sistema. |
-| `telefono`   | `string`  | ❌        | Número de teléfono con código de país.                         |
-| `entidad_id` | `integer` | ✅        | ID de la clínica u hospital al que pertenecerá tu cuenta.      |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `nombre` | `string` | ✅ | Primer nombre del paciente. |
+| `apellido` | `string` | ✅ | Apellido del paciente. |
+| `email` | `string` | ✅ | Correo electrónico único para inicio de sesión. |
+| `password` | `string` | ✅ | Contraseña (mínimo 6 caracteres). |
+| `dni` | `string` | ✅ | Documento Nacional de Identidad. Debe ser único en el sistema. |
+| `telefono` | `string` | ❌ | Número de teléfono con código de país. |
+| `entidad_id` | `integer` | ✅ | ID de la clínica u hospital al que pertenecerá tu cuenta. |
 
 ### Respuesta exitosa
 
@@ -63,7 +63,7 @@ POST /api/register-patient
 
 Si eres el tutor legal de un menor y también deseas registrar tu propio perfil clínico en el sistema (por ejemplo, para tener acceso a tus propias consultas y recetas), utiliza el endpoint de auto-registro:
 
-```
+```text
 POST /api/pacientes/auto-registro
 ```
 
@@ -80,12 +80,12 @@ Este endpoint crea un perfil de paciente vinculado a tu cuenta de usuario existe
 }
 ```
 
-| Campo      | Tipo     | Requerido | Descripción                                    |
-|------------|----------|-----------|------------------------------------------------|
-| `DNI`      | `string` | ✅        | Documento de identidad del tutor.              |
-| `Nombre`   | `string` | ✅        | Primer nombre del tutor.                       |
-| `Apellido` | `string` | ✅        | Apellido del tutor.                            |
-| `Telefono` | `string` | ✅        | Número de teléfono de contacto.                |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `DNI` | `string` | ✅ | Documento de identidad del tutor. |
+| `Nombre` | `string` | ✅ | Primer nombre del tutor. |
+| `Apellido` | `string` | ✅ | Apellido del tutor. |
+| `Telefono` | `string` | ✅ | Número de teléfono de contacto. |
 
 ### Respuesta exitosa
 
@@ -119,18 +119,18 @@ Los menores de edad o personas bajo tutela legal pueden ser registrados dentro d
 }
 ```
 
-| Campo                    | Tipo     | Requerido | Descripción                                                  |
-|--------------------------|----------|-----------|--------------------------------------------------------------|
-| `nombre`                 | `string` | ✅        | Nombre del menor.                                            |
-| `apellido`               | `string` | ✅        | Apellido del menor.                                          |
-| `dni`                    | `string` | ✅        | Documento de identidad del menor.                            |
-| `entidad_id`             | `integer`| ✅        | ID de la clínica u hospital al que pertenecerá el perfil.    |
-| `es_dependiente`         | `boolean`| ✅        | Debe ser `true` para registrar al paciente como dependiente. |
-| `tutor_dni`              | `string` | ✅        | DNI del tutor legal.                                         |
-| `tutor_nombre`           | `string` | ✅        | Nombre del tutor legal.                                      |
-| `tutor_email`            | `string` | ✅        | Correo electrónico del tutor legal.                          |
-| `tutor_telefono`         | `string` | ✅        | Teléfono del tutor legal.                                    |
-| `documento_identidad_url`| `string` | ✅        | URL del documento de identidad del menor ya cargado.         |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `nombre` | `string` | ✅ | Nombre del menor. |
+| `apellido` | `string` | ✅ | Apellido del menor. |
+| `dni` | `string` | ✅ | Documento de identidad del menor. |
+| `entidad_id` | `integer` | ✅ | ID de la clínica u hospital al que pertenecerá el perfil. |
+| `es_dependiente` | `boolean` | ✅ | Debe ser `true` para registrar al paciente como dependiente. |
+| `tutor_dni` | `string` | ✅ | DNI del tutor legal. |
+| `tutor_nombre` | `string` | ✅ | Nombre del tutor legal. |
+| `tutor_email` | `string` | ✅ | Correo electrónico del tutor legal. |
+| `tutor_telefono` | `string` | ✅ | Teléfono del tutor legal. |
+| `documento_identidad_url` | `string` | ✅ | URL del documento de identidad del menor ya cargado. |
 
 Los dependientes **no tienen credenciales de acceso propias**. El tutor gestiona sus citas, historial, recetas y órdenes de laboratorio desde su propia sesión. En el portal web, encontrarás la sección **Mis dependientes** en el menú de tu perfil para añadir, editar o consultar la información de cada uno.
 
@@ -140,7 +140,7 @@ Los dependientes **no tienen credenciales de acceso propias**. El tutor gestiona
 
 Cuando un dependiente alcanza la mayoría de edad o adquiere capacidad legal para gestionar su propia salud, el tutor puede promoverlo a usuario autónomo mediante el siguiente endpoint:
 
-```
+```text
 POST /api/pacientes/{id}/emancipar
 ```
 
@@ -155,10 +155,10 @@ Reemplaza `{id}` con el identificador del dependiente que deseas emancipar.
 }
 ```
 
-| Campo      | Tipo     | Requerido | Descripción                                       |
-|------------|----------|-----------|---------------------------------------------------|
-| `email`    | `string` | ✅        | Correo electrónico único para la nueva cuenta.    |
-| `password` | `string` | ✅        | Contraseña para la nueva cuenta (mínimo 6 caracteres). |
+| Campo | Tipo | Requerido | Descripción |
+| --- | --- | --- | --- |
+| `email` | `string` | ✅ | Correo electrónico único para la nueva cuenta. |
+| `password` | `string` | ✅ | Contraseña para la nueva cuenta (mínimo 6 caracteres). |
 
 ### Respuesta exitosa
 
