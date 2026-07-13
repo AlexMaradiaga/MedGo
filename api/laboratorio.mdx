@@ -1,7 +1,7 @@
 ---
-title: "API de Laboratorio en MedCore Global: Exámenes y Resultados"
+title: "API de Laboratorio en MedGo+: Exámenes y Resultados"
 sidebarTitle: "Laboratorio"
-description: "Endpoints de laboratorio en MedCore Global: catálogo de exámenes, órdenes por paciente y resultados. Accesible para todos los roles autenticados."
+description: "Endpoints de laboratorio en MedGo+: catálogo de exámenes, órdenes por paciente y resultados. Accesible para todos los roles autenticados."
 ---
 
 Los endpoints de laboratorio permiten consultar el catálogo de exámenes disponibles, revisar las órdenes de laboratorio de un paciente y obtener los resultados de estudios realizados, incluyendo archivos PDF adjuntos. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization` y son accesibles para todos los roles autenticados en la plataforma, salvo el dashboard de métricas que requiere rol de **Administrador**.
@@ -59,12 +59,15 @@ Devuelve el catálogo completo de exámenes de laboratorio disponibles en la pla
     <ResponseField name="ExamenID" type="integer">
       Identificador único del examen en el catálogo de laboratorio.
     </ResponseField>
+
     <ResponseField name="NombreEstudio" type="string">
       Nombre del examen o estudio de laboratorio.
     </ResponseField>
+
     <ResponseField name="Categoria" type="string">
       Categoría clínica a la que pertenece el examen (p. ej., Hematología, Química Sanguínea, Microbiología).
     </ResponseField>
+
     <ResponseField name="Precio" type="number">
       Precio referencial del examen en la moneda configurada para la instancia.
     </ResponseField>
@@ -80,7 +83,7 @@ curl -X GET https://tu-instancia.com/api/laboratorio/catalogo \
 
 ---
 
-## GET /api/laboratorio/paciente/\{pacienteId\}/ordenes
+## GET /api/laboratorio/paciente/{pacienteId}/ordenes
 
 Devuelve todas las órdenes de laboratorio emitidas para un paciente específico, junto con el listado de exámenes incluidos en cada orden y su estado de procesamiento.
 
@@ -92,11 +95,11 @@ Devuelve todas las órdenes de laboratorio emitidas para un paciente específico
 
 ### Estados de una orden de laboratorio
 
-| Estado        | Descripción                                                       |
-|---------------|-------------------------------------------------------------------|
-| `Pendiente`   | La orden fue emitida pero aún no ha sido procesada por el laboratorio. |
-| `En Proceso`  | El laboratorio está procesando las muestras.                      |
-| `Completado`  | Los resultados están disponibles y pueden consultarse.            |
+| Estado | Descripción |
+| --- | --- |
+| `Pendiente` | La orden fue emitida pero aún no ha sido procesada por el laboratorio. |
+| `En Proceso` | El laboratorio está procesando las muestras. |
+| `Completado` | Los resultados están disponibles y pueden consultarse. |
 
 ### Respuesta exitosa `200 OK`
 
@@ -149,15 +152,19 @@ Devuelve todas las órdenes de laboratorio emitidas para un paciente específico
     <ResponseField name="OrdenID" type="integer">
       Identificador único de la orden de laboratorio.
     </ResponseField>
+
     <ResponseField name="FechaOrden" type="string">
       Fecha y hora en que se emitió la orden, en formato ISO 8601.
     </ResponseField>
+
     <ResponseField name="Estado" type="string">
       Estado actual de la orden: `Pendiente`, `En Proceso` o `Completado`.
     </ResponseField>
+
     <ResponseField name="NotasClinicas" type="string">
       Notas del médico que emitió la orden, con contexto clínico relevante para el laboratorio.
     </ResponseField>
+
     <ResponseField name="examenes" type="array">
       Lista de exámenes incluidos en la orden, con su ID y nombre.
     </ResponseField>
@@ -166,7 +173,7 @@ Devuelve todas las órdenes de laboratorio emitidas para un paciente específico
 
 ---
 
-## GET /api/laboratorio/orden/\{ordenId\}/resultados
+## GET /api/laboratorio/orden/{ordenId}/resultados
 
 Devuelve los resultados completos de una orden de laboratorio específica. Incluye los valores obtenidos por examen y los enlaces a los archivos PDF de resultados adjuntos.
 
@@ -221,15 +228,19 @@ Devuelve los resultados completos de una orden de laboratorio específica. Inclu
     <ResponseField name="OrdenID" type="integer">
       Identificador único de la orden de laboratorio.
     </ResponseField>
+
     <ResponseField name="FechaOrden" type="string">
       Fecha y hora de emisión de la orden.
     </ResponseField>
+
     <ResponseField name="Estado" type="string">
       Estado de la orden. Para este endpoint, se esperan órdenes en estado `Completado`.
     </ResponseField>
+
     <ResponseField name="NotasClinicas" type="string">
       Notas clínicas asociadas a la orden por el médico emisor.
     </ResponseField>
+
     <ResponseField name="resultados" type="array">
       Lista de resultados por examen.
 
@@ -237,18 +248,23 @@ Devuelve los resultados completos de una orden de laboratorio específica. Inclu
         <ResponseField name="ExamenID" type="integer">
           ID del examen en el catálogo.
         </ResponseField>
+
         <ResponseField name="NombreEstudio" type="string">
           Nombre del examen realizado.
         </ResponseField>
+
         <ResponseField name="Valor" type="string">
           Resultado obtenido para este examen.
         </ResponseField>
+
         <ResponseField name="RangoReferencia" type="string">
           Valores de referencia normales para este examen.
         </ResponseField>
+
         <ResponseField name="EsAnormal" type="boolean">
           Indica si el resultado está fuera del rango de referencia.
         </ResponseField>
+
         <ResponseField name="RutaArchivo" type="string">
           URL al archivo PDF con el reporte oficial del resultado. Requiere token de acceso válido.
         </ResponseField>
@@ -268,7 +284,9 @@ curl -X GET https://tu-instancia.com/api/laboratorio/orden/201/resultados \
 
 ## GET /api/laboratorio/dashboard-metrics
 
-<Note>Rol requerido: **Administrador**</Note>
+<Note>
+  Rol requerido: **Administrador**
+</Note>
 
 Devuelve los indicadores clave de rendimiento (KPIs) del módulo de laboratorio para el período de tiempo configurado en la instancia. Utilizado por el panel de administración del laboratorio.
 
@@ -308,12 +326,15 @@ Devuelve los indicadores clave de rendimiento (KPIs) del módulo de laboratorio 
     <ResponseField name="total_ordenes" type="integer">
       Número total de órdenes de laboratorio registradas en el período actual.
     </ResponseField>
+
     <ResponseField name="en_proceso" type="integer">
       Cantidad de órdenes que se encuentran actualmente en estado `En Proceso`.
     </ResponseField>
+
     <ResponseField name="reactivos_criticos" type="integer">
       Número de reactivos de laboratorio cuyo nivel de inventario está por debajo del umbral crítico configurado.
     </ResponseField>
+
     <ResponseField name="ingresos_periodo" type="number">
       Total de ingresos generados por servicios de laboratorio en el período actual.
     </ResponseField>

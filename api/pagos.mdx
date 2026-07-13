@@ -1,5 +1,5 @@
 ---
-title: "API de Pagos y Facturación en MedCore Global: Cobros"
+title: "API de Pagos y Facturación en MedGo+: Cobros"
 sidebarTitle: "Pagos"
 description: "Procesa pagos de consultas médicas en MedCore Global. Registra pagos por app o en clínica y consulta el catálogo de precios del médico."
 ---
@@ -10,7 +10,9 @@ Los endpoints de pagos permiten al médico consultar su catálogo de precios de 
 
 ## GET /api/doctor/catalogo-precios
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Devuelve el catálogo de servicios médicos y sus precios configurados para el médico autenticado. Este catálogo se usa como referencia al registrar los servicios prestados durante una consulta.
 
@@ -74,7 +76,9 @@ curl -X GET https://tu-instancia.com/api/doctor/catalogo-precios \
 
 ## POST /api/pagos/procesar
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Registra el pago de una consulta médica finalizada. Asocia el servicio prestado al pago y genera el registro de facturación correspondiente.
 
@@ -138,7 +142,9 @@ curl -X POST https://tu-instancia.com/api/pagos/procesar \
 
 ## GET /api/doctor/consulta/facturacion-detalle
 
-<Note>Rol requerido: **Médico**</Note>
+<Note>
+  Rol requerido: **Médico**
+</Note>
 
 Devuelve el desglose completo de facturación de una consulta antes de procesar el pago. Permite al médico revisar los servicios, montos y datos del paciente antes de confirmar el cobro.
 
@@ -205,7 +211,7 @@ Este método es ideal para clínicas que desean reducir el manejo de efectivo y 
 
 El paciente cancela el valor de la consulta directamente en la clínica, ya sea en efectivo, tarjeta u otro medio físico aceptado por la institución. El médico o personal administrativo registra el pago en el sistema indicando `metodo: "Clinica"`. En este caso, el campo `referencia` no es requerido.
 
-| Método    | `referencia`    | Procesamiento         |
-|-----------|------------------|-----------------------|
-| `App`     | Requerida        | Pasarela digital      |
-| `Clinica` | No aplica        | Manual / presencial   |
+| Método | `referencia` | Procesamiento |
+| --- | --- | --- |
+| `App` | Requerida | Pasarela digital |
+| `Clinica` | No aplica | Manual / presencial |
