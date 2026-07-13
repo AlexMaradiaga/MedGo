@@ -1,10 +1,10 @@
 ---
-title: "Autenticación en la API REST de MedCore Global: Tokens"
+title: "Autenticación en la API REST de MedGo+: Tokens"
 sidebarTitle: "Autenticación"
 description: "Referencia de los endpoints de autenticación de MedCore Global: login, logout, registro y cambio de contraseña. Obtén y gestiona tu Bearer token."
 ---
 
-La API de MedCore Global utiliza **Bearer tokens** para autenticar todas las solicitudes protegidas. El flujo estándar consiste en obtener un token a través del endpoint de login e incluirlo en la cabecera `Authorization` de cada solicitud subsiguiente. Los tokens se revocan explícitamente mediante el endpoint de logout o cuando el administrador desactiva la cuenta.
+La API de MedGo\+ utiliza **Bearer tokens** para autenticar todas las solicitudes protegidas. El flujo estándar consiste en obtener un token a través del endpoint de login e incluirlo en la cabecera `Authorization` de cada solicitud subsiguiente. Los tokens se revocan explícitamente mediante el endpoint de logout o cuando el administrador desactiva la cuenta.
 
 ---
 
@@ -15,7 +15,7 @@ Autentica a un usuario registrado y devuelve un **Bearer token** válido para la
 ### Parámetros del cuerpo
 
 <ParamField body="Email" type="string" required>
-  Dirección de correo electrónico del usuario registrado en MedCore Global.
+  Dirección de correo electrónico del usuario registrado en MedGo\+.
 </ParamField>
 
 <ParamField body="Password" type="string" required>
@@ -56,10 +56,10 @@ Guarda el valor del campo `token` y úsalo en la cabecera `Authorization: Bearer
 
 ### Respuestas de error
 
-| Código | Causa                                                              |
-|--------|--------------------------------------------------------------------|
-| `401`  | Credenciales inválidas: el correo o la contraseña no coinciden.   |
-| `403`  | Cuenta inactiva, o médico pendiente de verificación por el administrador. |
+| Código | Causa |
+| --- | --- |
+| `401` | Credenciales inválidas: el correo o la contraseña no coinciden. |
+| `403` | Cuenta inactiva, o médico pendiente de verificación por el administrador. |
 
 ---
 
@@ -69,8 +69,8 @@ Revoca el token Bearer activo del usuario autenticado. Después de llamar a este
 
 ### Cabeceras requeridas
 
-| Cabecera        | Valor            |
-|-----------------|------------------|
+| Cabecera | Valor |
+| --- | --- |
 | `Authorization` | `Bearer {token}` |
 
 ### Ejemplo de solicitud
