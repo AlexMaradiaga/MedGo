@@ -1,5 +1,5 @@
 ---
-title: "API de Pagos en MedCore Global"
+title: "API de Pagos y Facturación en MedCore Global: Cobros"
 sidebarTitle: "Pagos"
 description: "Procesa pagos de consultas médicas en MedCore Global. Registra pagos por app o en clínica y consulta el catálogo de precios del médico."
 ---
@@ -76,7 +76,7 @@ curl -X GET https://tu-instancia.com/api/doctor/catalogo-precios \
 
 <Note>Rol requerido: **Médico**</Note>
 
-Registra y procesa el pago de una consulta médica finalizada. Asocia los servicios prestados al pago y genera los registros de facturación correspondientes.
+Registra el pago de una consulta médica finalizada. Asocia el servicio prestado al pago y genera el registro de facturación correspondiente.
 
 <Note>
   El procesamiento de pagos es **definitivo e irreversible** a través de la API. Una vez registrado un pago, no puede anularse ni modificarse por esta vía. Si se requiere una corrección, debe gestionarse directamente con el equipo de administración de la instancia.
@@ -84,64 +84,40 @@ Registra y procesa el pago de una consulta médica finalizada. Asocia los servic
 
 ### Parámetros del cuerpo
 
-<ParamField body="ConsultaID" type="integer" required>
-  ID de la consulta médica finalizada a la que corresponde el pago.
+<ParamField body="cita_id" type="integer" required>
+  ID de la cita médica finalizada a la que corresponde el pago.
 </ParamField>
 
-<ParamField body="MontoTotal" type="number" required>
-  Monto total cobrado al paciente. Debe coincidir con la suma de los servicios declarados en el campo `Servicios`.
-
-  Ejemplo: `95.00`
+<ParamField body="servicio_id" type="integer" required>
+  ID del servicio cobrado. Debe corresponder a un servicio del catálogo del médico (`GET /api/doctor/catalogo-precios`).
 </ParamField>
 
-<ParamField body="MetodoPago" type="string" required>
+<ParamField body="monto" type="number" required>
+  Monto total cobrado al paciente por el servicio.
+
+  Ejemplo: `65.00`
+</ParamField>
+
+<ParamField body="metodo" type="string" required>
   Método de pago utilizado. Valores permitidos:
 
   - `"App"` — Pago digital procesado a través de la aplicación (QR o enlace de pago).
   - `"Clinica"` — Pago recibido físicamente en la clínica.
 </ParamField>
 
-<ParamField body="ReferenciaPasarela" type="string">
-  Código de referencia o token generado por la pasarela de pago externa. Solo aplica para pagos con `MetodoPago: "App"`.
+<ParamField body="referencia" type="string">
+  Código de referencia o token generado por la pasarela de pago externa. Solo aplica para pagos con `metodo: "App"`.
 
   Ejemplo: `"TXN-20260315-00492"`
-</ParamField>
-
-<ParamField body="Servicios" type="array">
-  Lista de servicios cobrados en esta consulta. Cada ítem debe corresponder a un `ServicioID` del catálogo de precios del médico.
-
-  <Expandable title="Campos de cada servicio">
-    <ParamField body="ServicioID" type="integer" required>
-      ID del servicio prestado, obtenido del catálogo de precios.
-    </ParamField>
-    <ParamField body="Monto" type="number" required>
-      Monto cobrado por este servicio específico.
-    </ParamField>
-  </Expandable>
 </ParamField>
 
 ### Respuesta exitosa `200 OK`
 
 ```json
 {
-  "message": "Pago procesado exitosamente.",
-  "PagoID": 730,
-  "DetalleID": 1045,
-  "ConsultaID": 305,
-  "MontoTotal": 95.00,
-  "MetodoPago": "App"
+  "status": "success"
 }
 ```
-
-### Campos de respuesta
-
-<ResponseField name="PagoID" type="integer">
-  Identificador único del registro de pago generado.
-</ResponseField>
-
-<ResponseField name="DetalleID" type="integer">
-  Identificador del detalle de facturación asociado al pago.
-</ResponseField>
 
 ### Ejemplo de solicitud
 
@@ -150,20 +126,11 @@ curl -X POST https://tu-instancia.com/api/pagos/procesar \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
-    "ConsultaID": 305,
-    "MontoTotal": 95.00,
-    "MetodoPago": "App",
-    "ReferenciaPasarela": "TXN-20260315-00492",
-    "Servicios": [
-      {
-        "ServicioID": 2,
-        "Monto": 65.00
-      },
-      {
-        "ServicioID": 3,
-        "Monto": 30.00
-      }
-    ]
+    "cita_id": 487,
+    "servicio_id": 2,
+    "monto": 65.00,
+    "metodo": "App",
+    "referencia": "TXN-20260315-00492"
   }'
 ```
 
@@ -177,8 +144,8 @@ Devuelve el desglose completo de facturación de una consulta antes de procesar 
 
 ### Parámetros de consulta
 
-<ParamField query="consultaId" type="integer" required>
-  ID de la consulta cuyo detalle de facturación se desea obtener.
+<ParamField query="cita_id" type="integer" required>
+  ID de la cita cuyo detalle de facturación se desea obtener.
 </ParamField>
 
 ### Respuesta exitosa `200 OK`
@@ -218,7 +185,7 @@ Devuelve el desglose completo de facturación de una consulta antes de procesar 
 ### Ejemplo de solicitud
 
 ```bash
-curl -X GET "https://tu-instancia.com/api/doctor/consulta/facturacion-detalle?consultaId=305" \
+curl -X GET "https://tu-instancia.com/api/doctor/consulta/facturacion-detalle?cita_id=487" \
   -H "Authorization: Bearer {token}"
 ```
 
@@ -230,15 +197,15 @@ MedCore Global soporta dos métodos de pago para el registro de consultas, adapt
 
 ### App — Pago digital
 
-El paciente realiza el pago de forma remota o presencial a través de un **código QR** o un **enlace de pago** generado directamente en la aplicación MedCore. La pasarela de pago procesa la transacción y devuelve una `ReferenciaPasarela` que debe incluirse al llamar a `POST /api/pagos/procesar`.
+El paciente realiza el pago de forma remota o presencial a través de un **código QR** o un **enlace de pago** generado directamente en la aplicación MedCore. La pasarela de pago procesa la transacción y devuelve un código de referencia que debe incluirse en el campo `referencia` al llamar a `POST /api/pagos/procesar`.
 
 Este método es ideal para clínicas que desean reducir el manejo de efectivo y ofrecer una experiencia de pago digital al paciente.
 
 ### Clínica — Pago presencial
 
-El paciente cancela el valor de la consulta directamente en la clínica, ya sea en efectivo, tarjeta u otro medio físico aceptado por la institución. El médico o personal administrativo registra el pago en el sistema indicando `MetodoPago: "Clinica"`. En este caso, la `ReferenciaPasarela` no es requerida.
+El paciente cancela el valor de la consulta directamente en la clínica, ya sea en efectivo, tarjeta u otro medio físico aceptado por la institución. El médico o personal administrativo registra el pago en el sistema indicando `metodo: "Clinica"`. En este caso, el campo `referencia` no es requerido.
 
-| Método    | `ReferenciaPasarela` | Procesamiento         |
-|-----------|----------------------|-----------------------|
-| `App`     | Requerida            | Pasarela digital      |
-| `Clinica` | No aplica            | Manual / presencial   |
+| Método    | `referencia`    | Procesamiento         |
+|-----------|------------------|-----------------------|
+| `App`     | Requerida        | Pasarela digital      |
+| `Clinica` | No aplica        | Manual / presencial   |

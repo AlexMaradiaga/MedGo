@@ -1,7 +1,7 @@
 ---
 title: "API de Consultas Médicas y Diagnósticos en MedCore Global"
 sidebarTitle: "Consultas"
-description: "Endpoints para finalizar consultas, registrar signos vitales, diagnósticos CIE-11, prescripciones y acceder al historial clínico completo del paciente."
+description: "Endpoints para finalizar consultas, registrar signos vitales, diagnósticos CIE-11 y prescripciones. Accede al historial clínico completo del paciente."
 ---
 
 Los endpoints de consultas médicas permiten a los médicos registrar el resultado completo de una consulta siguiendo la metodología SOAP, incluyendo signos vitales, examen por sistemas, diagnósticos codificados en CIE-11 y prescripciones farmacológicas. También ofrecen acceso al historial clínico completo del paciente con control de autorización. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization`.
@@ -16,60 +16,31 @@ Finaliza una consulta médica asociada a una cita `Confirmada`. Registra de form
 
 ### Parámetros del cuerpo
 
-<ParamField body="CitaID" type="integer" required>
+<ParamField body="cita_id" type="integer" required>
   ID de la cita médica confirmada que se está finalizando.
 </ParamField>
 
-<ParamField body="Diagnostico" type="string" required>
+<ParamField body="diagnostico" type="string" required>
   Diagnóstico principal de la consulta en texto libre. Se recomienda complementar con códigos CIE-11 obtenidos del endpoint de búsqueda.
 </ParamField>
 
-<ParamField body="NotasMedicas" type="string">
+<ParamField body="notas_medicas" type="string">
   Notas adicionales del médico: plan de tratamiento, recomendaciones, observaciones clínicas.
 </ParamField>
 
-<ParamField body="SignosVitales" type="object">
-  Objeto con los signos vitales registrados durante la consulta.
-
-  <Expandable title="Campos de SignosVitales">
-    <ParamField body="PresionArterial" type="string">
-      Presión arterial en formato `sistólica/diastólica`. Ejemplo: `"120/80"`.
-    </ParamField>
-    <ParamField body="FrecuenciaCardiaca" type="integer">
-      Frecuencia cardíaca en latidos por minuto (lpm).
-    </ParamField>
-    <ParamField body="FrecuenciaRespiratoria" type="integer">
-      Frecuencia respiratoria en respiraciones por minuto (rpm).
-    </ParamField>
-    <ParamField body="Temperatura" type="number">
-      Temperatura corporal en grados Celsius (°C). Ejemplo: `37.2`.
-    </ParamField>
-    <ParamField body="SaturacionOxigeno" type="integer">
-      Saturación de oxígeno en sangre (SpO₂) expresada como porcentaje. Ejemplo: `98`.
-    </ParamField>
-  </Expandable>
+<ParamField body="signos_vitales" type="object" required>
+  Objeto con los signos vitales registrados durante la consulta. Los campos internos dependen del catálogo de signos vitales configurado para la instancia.
 </ParamField>
 
-<ParamField body="ExamenSistemas" type="array">
-  Lista de resultados del examen físico por sistemas corporales.
-
-  <Expandable title="Campos de cada elemento">
-    <ParamField body="SistemaID" type="integer" required>
-      ID del sistema corporal examinado (catálogo interno de MedCore).
-    </ParamField>
-    <ParamField body="EsNormal" type="boolean" required>
-      Indica si el sistema se encuentra dentro de parámetros normales.
-    </ParamField>
-    <ParamField body="NotasAdicionales" type="string">
-      Notas del médico sobre el estado del sistema examinado.
-    </ParamField>
-    <ParamField body="Hallazgos" type="array of integers">
-      Lista de IDs de hallazgos clínicos predefinidos detectados en este sistema.
-    </ParamField>
-  </Expandable>
+<ParamField body="examen_fisico_opciones" type="array" required>
+  Lista de IDs de opciones del examen físico por sistemas corporales seleccionadas durante la consulta. Consulta el catálogo en `GET /api/doctor/catalogo-examen-fisico`.
 </ParamField>
 
-<ParamField body="Medicamentos" type="array">
+<ParamField body="examen_fisico_notas" type="array">
+  Notas adicionales por sistema corporal examinado, indexadas de forma paralela a `examen_fisico_opciones`.
+</ParamField>
+
+<ParamField body="detalle_medicamentos" type="array" required>
   Lista de medicamentos prescritos al paciente en esta consulta.
 
   <Expandable title="Campos de cada medicamento">
@@ -85,22 +56,25 @@ Finaliza una consulta médica asociada a una cita `Confirmada`. Registra de form
   </Expandable>
 </ParamField>
 
+<ParamField body="presupuesto_total" type="number">
+  Presupuesto total estimado del tratamiento indicado. Opcional.
+</ParamField>
+
 ### Respuesta exitosa `200 OK`
 
 ```json
 {
-  "message": "Consulta finalizada exitosamente.",
-  "ConsultaID": 305,
-  "RecetaID": 88
+  "status": "success",
+  "message": "Consulta finalizada y receta generada con éxito"
 }
 ```
 
-<ResponseField name="ConsultaID" type="integer">
-  ID de la consulta médica registrada.
+<ResponseField name="status" type="string">
+  Estado de la operación. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="RecetaID" type="integer">
-  ID de la receta generada. Solo está presente si se incluyeron medicamentos en la solicitud.
+<ResponseField name="message" type="string">
+  Mensaje de confirmación de la operación.
 </ResponseField>
 
 ### Ejemplo de solicitud
@@ -110,31 +84,19 @@ curl -X POST https://tu-instancia.com/api/doctor/consulta/finalizar \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
-    "CitaID": 487,
-    "Diagnostico": "Cefalea tensional episódica (CIE-11: MG30.10)",
-    "NotasMedicas": "Paciente refiere estrés laboral. Se indica manejo analgésico y técnicas de relajación.",
-    "SignosVitales": {
+    "cita_id": 487,
+    "diagnostico": "Cefalea tensional episódica (CIE-11: MG30.10)",
+    "notas_medicas": "Paciente refiere estrés laboral. Se indica manejo analgésico y técnicas de relajación.",
+    "signos_vitales": {
       "PresionArterial": "118/76",
       "FrecuenciaCardiaca": 72,
       "FrecuenciaRespiratoria": 16,
       "Temperatura": 36.8,
       "SaturacionOxigeno": 98
     },
-    "ExamenSistemas": [
-      {
-        "SistemaID": 1,
-        "EsNormal": true,
-        "NotasAdicionales": "Sin hallazgos relevantes",
-        "Hallazgos": []
-      },
-      {
-        "SistemaID": 4,
-        "EsNormal": false,
-        "NotasAdicionales": "Tensión muscular en región cervical",
-        "Hallazgos": [12, 15]
-      }
-    ],
-    "Medicamentos": [
+    "examen_fisico_opciones": [1, 4, 7],
+    "examen_fisico_notas": ["Sin hallazgos relevantes", "Tensión muscular en región cervical", ""],
+    "detalle_medicamentos": [
       {
         "NombreMedicamento": "Ibuprofeno",
         "Dosis": "400mg cada 8 horas por 5 días",
@@ -235,7 +197,7 @@ Devuelve el detalle completo de una consulta específica para visualización en 
 
 ### Parámetros de consulta
 
-<ParamField query="consultaId" type="integer" required>
+<ParamField query="consulta_id" type="integer" required>
   ID de la consulta cuyo detalle se desea obtener.
 </ParamField>
 
@@ -243,25 +205,28 @@ Devuelve el detalle completo de una consulta específica para visualización en 
 
 ```json
 {
-  "ConsultaID": 305,
-  "CitaID": 487,
-  "Diagnostico": "Cefalea tensional episódica (CIE-11: MG30.10)",
-  "NotasMedicas": "Paciente mejora con tratamiento indicado.",
-  "SignosVitales": {
-    "PresionArterial": "118/76",
-    "FrecuenciaCardiaca": 72,
-    "FrecuenciaRespiratoria": 16,
-    "Temperatura": 36.8,
-    "SaturacionOxigeno": 98
-  },
-  "ExamenSistemas": [
-    {
-      "SistemaNombre": "Sistema Nervioso",
-      "EsNormal": false,
-      "NotasAdicionales": "Tensión cervical",
-      "Hallazgos": ["Rigidez nucal leve"]
-    }
-  ]
+  "estado": "success",
+  "datos": {
+    "consultaID": 305,
+    "citaID": 487,
+    "diagnostico": "Cefalea tensional episódica (CIE-11: MG30.10)",
+    "notasEvolucionSubjetiva": "Paciente mejora con tratamiento indicado.",
+    "estado": "Completada",
+    "examenFisico": [
+      {
+        "examenSistemaID": 4,
+        "sistema": "Sistema Nervioso",
+        "condicion": "Anormal",
+        "detalle": "Tensión cervical",
+        "hallazgos": [
+          {
+            "hallazgo": "Rigidez nucal leve",
+            "estadoHallazgo": "Presente"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -275,39 +240,55 @@ Obtiene la receta médica asociada a una consulta específica. Devuelve la lista
 
 ### Parámetros de consulta
 
-<ParamField query="consultaId" type="integer" required>
+<ParamField query="consulta_id" type="integer" required>
   ID de la consulta cuya receta se desea obtener.
 </ParamField>
 
 ### Respuesta exitosa `200 OK`
 
 ```json
-[
-  {
-    "NombreMedicamento": "Ibuprofeno",
-    "Dosis": "400mg cada 8 horas por 5 días",
-    "Indicaciones": "Tomar con alimentos. Evitar en ayunas."
-  },
-  {
-    "NombreMedicamento": "Ciclobenzaprina",
-    "Dosis": "5mg cada 12 horas por 3 días",
-    "Indicaciones": "Puede causar somnolencia. No conducir."
-  }
-]
+{
+  "estado": "success",
+  "datos": [
+    {
+      "NombreMedicamento": "Ibuprofeno",
+      "Dosis": "400mg cada 8 horas por 5 días",
+      "Indicaciones": "Tomar con alimentos. Evitar en ayunas.",
+      "CodigoCanje": "RX-2026-00088"
+    },
+    {
+      "NombreMedicamento": "Ciclobenzaprina",
+      "Dosis": "5mg cada 12 horas por 3 días",
+      "Indicaciones": "Puede causar somnolencia. No conducir.",
+      "CodigoCanje": "RX-2026-00089"
+    }
+  ]
+}
 ```
 
 ### Campos de respuesta
 
-<ResponseField name="NombreMedicamento" type="string">
-  Nombre comercial o genérico del medicamento prescrito.
+<ResponseField name="estado" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="Dosis" type="string">
-  Dosis y frecuencia de administración indicada por el médico.
-</ResponseField>
+<ResponseField name="datos" type="array">
+  Lista de medicamentos prescritos en la receta.
 
-<ResponseField name="Indicaciones" type="string">
-  Instrucciones adicionales para el paciente sobre el uso correcto del medicamento.
+  <Expandable title="Campos de cada medicamento">
+    <ResponseField name="NombreMedicamento" type="string">
+      Nombre comercial o genérico del medicamento prescrito.
+    </ResponseField>
+    <ResponseField name="Dosis" type="string">
+      Dosis y frecuencia de administración indicada por el médico.
+    </ResponseField>
+    <ResponseField name="Indicaciones" type="string">
+      Instrucciones adicionales para el paciente sobre el uso correcto del medicamento.
+    </ResponseField>
+    <ResponseField name="CodigoCanje" type="string">
+      Código único de canje de la receta, utilizado para verificación en farmacia.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ---
@@ -370,22 +351,16 @@ Registra en el sistema que un paciente otorgó autorización a un médico espec�
 
 ### Parámetros del cuerpo
 
-<ParamField body="PacienteID" type="integer" required>
+<ParamField body="paciente_id" type="integer" required>
   ID del paciente que otorga la autorización.
-</ParamField>
-
-<ParamField body="DoctorID" type="integer" required>
-  ID del médico al que se le concede acceso al historial clínico del paciente.
 </ParamField>
 
 ### Respuesta exitosa `200 OK`
 
 ```json
 {
-  "message": "Autorización concedida exitosamente.",
-  "PacienteID": 102,
-  "DoctorID": 14,
-  "fecha_expiracion": "2027-03-15"
+  "estado": "success",
+  "mensaje": "¡Autorización clínica global concedida por el paciente con éxito!"
 }
 ```
 
@@ -396,7 +371,6 @@ curl -X POST https://tu-instancia.com/api/doctor/paciente/conceder-autorizacion 
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
-    "PacienteID": 102,
-    "DoctorID": 14
+    "paciente_id": 102
   }'
 ```

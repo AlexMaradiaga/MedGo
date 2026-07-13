@@ -1,5 +1,5 @@
 ---
-title: "Recetas Médicas Digitales en MedCore Global"
+title: "Descarga y canjea tus recetas médicas en MedCore Global"
 sidebarTitle: "Recetas"
 description: "Descarga tus recetas médicas en PDF con código QR de canje. Compártelas fácilmente con farmacias o guárdalas para futuras referencias."
 ---
@@ -13,7 +13,7 @@ MedCore Global elimina la receta en papel. Al finalizar tu consulta, el médico 
 El proceso es completamente automático y ocurre en cuatro pasos:
 
 1. **El médico finaliza la consulta** y emite la prescripción desde su panel en MedCore Global, indicando el medicamento, la dosis, la posología y la duración del tratamiento.
-2. **El sistema genera un PDF firmado digitalmente** que incluye los datos del médico, del paciente, los medicamentos recetados y un código QR de canje único e intransferible.
+2. **El sistema genera un PDF** que incluye los datos del médico, del paciente, los medicamentos recetados y un código QR de canje único e intransferible.
 3. **Recibes una notificación** por correo electrónico y dentro de la plataforma con el enlace directo para descargar tu receta.
 4. **Presentas el PDF o el código QR** en la farmacia de tu elección. El farmacéutico escanea el código QR para verificar la receta y registrar el canje en el sistema.
 
@@ -27,7 +27,7 @@ Para descargar una receta en formato PDF, realiza la siguiente solicitud:
 GET /api/recetas/pdf/{recetaId}
 ```
 
-Reemplaza `{recetaId}` con el ID de la receta que deseas descargar. El servidor responde con el archivo PDF listo para guardar o imprimir.
+Reemplaza `{recetaId}` con el ID de la receta que deseas descargar. El servidor responde directamente con el archivo PDF listo para guardar o imprimir.
 
 ### Ejemplo con cURL
 
@@ -49,16 +49,16 @@ Cada receta digital generada por MedCore Global incluye la siguiente informació
 
 <CardGroup cols={2}>
   <Card title="Datos del médico" icon="user-doctor">
-    Nombre completo, número de colegiación médica, especialidad y firma digital del profesional que emite la prescripción.
+    Nombre completo, número de colegiación médica, especialidad y firma del profesional que emite la prescripción.
   </Card>
   <Card title="Datos del paciente" icon="user">
-    Nombre completo, DNI, edad, alergias conocidas y enfermedades crónicas relevantes registradas en el expediente.
+    Nombre completo, DNI y edad del paciente.
   </Card>
   <Card title="Prescripción" icon="pills">
-    Nombre genérico y comercial del medicamento, dosis, forma farmacéutica (tableta, jarabe, inyección, etc.), frecuencia e instrucciones de administración.
+    Nombre del medicamento, dosis, forma farmacéutica (tableta, jarabe, inyección, etc.), frecuencia e instrucciones de administración.
   </Card>
   <Card title="Validez y seguridad" icon="qrcode">
-    Fecha de emisión, fecha de vencimiento de la receta, código QR único de canje y sello digital de autenticidad de MedCore Global.
+    Fecha de emisión, código QR único de canje y sello de autenticidad de MedCore Global.
   </Card>
 </CardGroup>
 
@@ -76,7 +76,7 @@ El código QR impreso en cada receta contiene un **código de canje único** gen
 Este mecanismo garantiza que cada receta solo pueda utilizarse una vez, previniendo el uso indebido de prescripciones médicas. Si necesitas un reabastecimiento, deberás solicitar una nueva receta a tu médico.
 
 <Note>
-  Si tu receta incluye más de un medicamento, el código QR cubre todos los medicamentos listados en esa prescripción. El canje se registra de forma completa; no es posible canjear medicamentos individuales de una misma receta en farmacéuticos distintos.
+  Si tu receta incluye más de un medicamento, el código QR cubre todos los medicamentos listados en esa prescripción. El canje se registra de forma completa; no es posible canjear medicamentos individuales de una misma receta en farmacias distintas.
 </Note>
 
 ---
@@ -89,30 +89,31 @@ Para consultar el listado completo de recetas asociadas a tu expediente:
 GET /api/historial/recetas/{usuarioId}
 ```
 
-Reemplaza `{usuarioId}` con tu `user_id`. La respuesta incluye, para cada receta, el `receta_id`, la fecha de emisión, el nombre del médico, los medicamentos prescritos y el estado actual (`Pendiente`, `Canjeada` o `Vencida`).
+Reemplaza `{usuarioId}` con tu identificador de usuario. La respuesta incluye, para cada receta, el `receta_id`, la fecha de emisión, el nombre del médico, los medicamentos prescritos y el estado actual (`Pendiente`, `Canjeada` o `Vencida`).
 
 ### Ejemplo de respuesta
 
 ```json
-{
-  "status": "success",
-  "data": [
-    {
-      "receta_id": 15,
-      "fecha_emision": "2025-11-03",
-      "medico": "Dr. Roberto Amaya",
-      "medicamentos": ["Losartán 50mg", "Amlodipino 5mg"],
-      "estado": "Canjeada"
-    },
-    {
-      "receta_id": 18,
-      "fecha_emision": "2025-12-10",
-      "medico": "Dra. Karla Mendoza",
-      "medicamentos": ["Amoxicilina 500mg"],
-      "estado": "Pendiente"
-    }
-  ]
-}
+[
+  {
+    "RecetaID": 15,
+    "FechaEmision": "2025-11-03",
+    "Doctor": "Dr. Roberto Amaya",
+    "NombreMedicamento": "Losartán 50mg",
+    "Dosis": "1 tableta diaria",
+    "Indicaciones": "Tomar en la mañana con agua",
+    "YaCanjeada": true
+  },
+  {
+    "RecetaID": 18,
+    "FechaEmision": "2025-12-10",
+    "Doctor": "Dra. Karla Mendoza",
+    "NombreMedicamento": "Amoxicilina 500mg",
+    "Dosis": "1 cápsula cada 8 horas",
+    "Indicaciones": "Tomar por 7 días completos",
+    "YaCanjeada": false
+  }
+]
 ```
 
 <Tip>

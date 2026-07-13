@@ -360,7 +360,7 @@ La respuesta es un archivo binario en formato **PDF**. La cabecera `Content-Type
 
 Promueve a un paciente **dependiente** (vinculado a un tutor) a la condición de paciente **autónomo**, creando una cuenta de usuario independiente para él. Este proceso es irreversible y se utiliza cuando un paciente menor de edad alcanza la mayoría de edad o cuando un tutor ya no ejerce la tutela.
 
-**Autenticación:** Bearer token — Rol `administrador` exclusivamente
+**Autenticación:** Bearer token — Rol `paciente` (tutor del dependiente)
 
 ### Parámetros de ruta
 
@@ -370,12 +370,12 @@ Promueve a un paciente **dependiente** (vinculado a un tutor) a la condición de
 
 ### Parámetros del cuerpo
 
-<ParamField body="Email" type="string" required>
+<ParamField body="email" type="string" required>
   Correo electrónico para la nueva cuenta autónoma del paciente. Debe ser único en el sistema.
 </ParamField>
 
-<ParamField body="Password" type="string" required>
-  Contraseña inicial para la nueva cuenta. El paciente podrá cambiarla en su primer inicio de sesión.
+<ParamField body="password" type="string" required>
+  Contraseña inicial para la nueva cuenta. Mínimo 6 caracteres. El paciente podrá cambiarla en su primer inicio de sesión.
 </ParamField>
 
 ### Ejemplo de solicitud
@@ -387,8 +387,8 @@ curl --request POST \
   --header "Content-Type: application/json" \
   --header "Accept: application/json" \
   --data '{
-    "Email": "carlos.mendoza.nuevo@email.com",
-    "Password": "Autonomo2024!"
+    "email": "carlos.mendoza.nuevo@email.com",
+    "password": "Autonomo2024!"
   }'
 ```
 
@@ -396,29 +396,17 @@ curl --request POST \
 
 ```json
 {
-  "message": "Paciente emancipado exitosamente. Se ha creado una cuenta autónoma.",
-  "nuevo_usuario": {
-    "user_id": 210,
-    "Email": "carlos.mendoza.nuevo@email.com",
-    "es_dependiente": false
-  }
+  "status": "success",
+  "message": "El paciente ha sido promovido a usuario independiente con éxito."
 }
 ```
 
 ### Campos de la respuesta
 
+<ResponseField name="status" type="string">
+  Estado de la operación. Valor: `"success"`.
+</ResponseField>
+
 <ResponseField name="message" type="string">
-  Mensaje de confirmación de la operación.
-</ResponseField>
-
-<ResponseField name="nuevo_usuario.user_id" type="integer">
-  ID del nuevo usuario autónomo creado en el sistema.
-</ResponseField>
-
-<ResponseField name="nuevo_usuario.Email" type="string">
-  Correo electrónico asociado a la nueva cuenta autónoma.
-</ResponseField>
-
-<ResponseField name="nuevo_usuario.es_dependiente" type="boolean">
-  Siempre `false` tras la emancipación, confirmando el nuevo estado del paciente.
+  Mensaje de confirmación de la emancipación del paciente.
 </ResponseField>

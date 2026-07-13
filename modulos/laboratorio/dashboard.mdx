@@ -1,5 +1,5 @@
 ---
-title: "Dashboard de Laboratorio en MedCore Global"
+title: "Dashboard de Laboratorio — Métricas MedCore Global"
 sidebarTitle: "Dashboard Lab"
 description: "Gestiona tu laboratorio en MedCore Global: monitorea órdenes activas, muestras en procesamiento, KPIs de ingresos y el catálogo de pruebas disponibles."
 ---
@@ -10,7 +10,7 @@ El **Dashboard de Laboratorio** proporciona al personal y gestores del laborator
 
 ## KPIs del laboratorio
 
-El resumen superior del dashboard presenta cuatro indicadores clave actualizados en tiempo real:
+El resumen superior del dashboard presenta cuatro indicadores clave actualizados en tiempo real. El endpoint del dashboard de laboratorio devuelve los KPIs operativos y las órdenes recientes de la entidad en una sola respuesta.
 
 ```http
 GET /api/laboratorio/dashboard-metrics
@@ -20,10 +20,16 @@ GET /api/laboratorio/dashboard-metrics
 
 ```json
 {
-  "TotalOrdenes": 342,
-  "EnProcesamiento": 27,
-  "ReactivosCriticos": 3,
-  "Ingresos": 52800.00
+  "status": "success",
+  "data": {
+    "kpis": {
+      "TotalOrdenes": 342,
+      "EnProcesamiento": 27,
+      "ReactivosCriticos": 3,
+      "Ingresos": 52800.00
+    },
+    "ordenes_recientes": []
+  }
 }
 ```
 

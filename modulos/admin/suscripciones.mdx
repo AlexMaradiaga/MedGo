@@ -1,5 +1,5 @@
 ---
-title: "Planes SaaS y Suscripciones en MedCore Global"
+title: "Planes SaaS y Suscripciones — MedCore Global Admin"
 sidebarTitle: "Suscripciones"
 description: "Administra los planes de suscripción SaaS de MedCore Global. Revisa el MRR, activa y actualiza planes por entidad, y exporta reportes de facturación."
 ---
@@ -7,7 +7,7 @@ description: "Administra los planes de suscripción SaaS de MedCore Global. Revi
 MedCore Global opera bajo un modelo de Software as a Service (SaaS) en el que cada entidad —clínica, laboratorio o farmacia— contrata un plan de acceso que define los límites y capacidades de la plataforma para su operación. Como administrador, tienes visibilidad completa sobre el estado de todas las suscripciones activas, las entidades próximas a vencer y los ingresos recurrentes mensuales generados por la plataforma.
 
 <Info>
-  El **Plan Gratuito** impone un límite estricto de **10 pacientes activos** a nivel de plataforma para la entidad suscrita. Una vez alcanzado este límite, el sistema bloqueará el registro de nuevos pacientes hasta que la entidad actualice su plan o elimine registros existentes. Esta restricción aplica de forma global y no puede ser sobrepasada mediante ninguna configuración manual.
+  El **Plan Gratuito** impone un límite de **10 pacientes activos** para la entidad suscrita. Una vez alcanzado este límite, el sistema bloqueará el registro de nuevos pacientes hasta que la entidad actualice su plan. Para eliminar esta restricción, actualiza la entidad al Plan Premium.
 </Info>
 
 ---
@@ -49,30 +49,41 @@ GET /api/admin/saas/monitoreo
 
 ```json
 {
-  "MRR": 4850.00,
-  "SuscriptoresActivos": 49,
-  "ProximasAVencer": [
-    {
-      "EntidadID": 7,
-      "NombreEntidad": "Clínica del Valle",
-      "FechaVencimiento": "2026-02-05",
-      "Plan": "Premium"
+  "status": "success",
+  "data": {
+    "kpis": {
+      "MRR": 4850.00,
+      "PremiumActivos": 38,
+      "PlanesGratis": 11,
+      "PorVencer": 4
     },
-    {
-      "EntidadID": 12,
-      "NombreEntidad": "Lab Diagnóstico Norte",
-      "FechaVencimiento": "2026-02-10",
-      "Plan": "Premium"
-    }
-  ]
+    "suscripciones": [
+      {
+        "EntidadID": 7,
+        "NombreEntidad": "Clínica del Valle",
+        "FechaVencimiento": "2026-02-05",
+        "Plan": "Premium"
+      },
+      {
+        "EntidadID": 12,
+        "NombreEntidad": "Lab Diagnóstico Norte",
+        "FechaVencimiento": "2026-02-10",
+        "Plan": "Premium"
+      }
+    ],
+    "transacciones": []
+  }
 }
 ```
 
 | Campo | Descripción |
 |---|---|
 | `MRR` | Monthly Recurring Revenue: ingreso recurrente mensual total generado por todos los planes activos. |
-| `SuscriptoresActivos` | Número de entidades con suscripción vigente en el período actual. |
-| `ProximasAVencer` | Lista de entidades cuya suscripción vence en los próximos 30 días, ordenada por fecha de vencimiento. |
+| `PremiumActivos` | Número de entidades con plan Premium vigente. |
+| `PlanesGratis` | Número de entidades activas en el plan gratuito. |
+| `PorVencer` | Número de suscripciones que vencen en los próximos 30 días. |
+| `suscripciones` | Listado de entidades con suscripción próxima a vencer, ordenado por fecha de vencimiento. |
+| `transacciones` | Historial de los pagos de suscripción más recientes registrados en la plataforma. |
 
 ---
 
@@ -88,27 +99,25 @@ POST /api/admin/saas/actualizar-plan
 
 ```json
 {
-  "EntidadID": 3,
-  "PlanID": 2,
-  "MetodoPago": "Transferencia",
-  "Monto": 99.00
+  "tipo_plan": "Premium",
+  "dias_vigencia": 30,
+  "token_pasarela": "tok_visa_abc123xyz"
 }
 ```
 
 | Campo | Tipo | Requerido | Descripción |
 |---|---|---|---|
-| `EntidadID` | `integer` | ✅ | Identificador de la entidad cuyo plan se actualiza. |
-| `PlanID` | `integer` | ✅ | Identificador del plan a asignar. `1` = Gratuito, `2` = Premium. |
-| `MetodoPago` | `string` | ✅ | Método de pago registrado. Valores aceptados: `Transferencia`, `TarjetaCredito`, `TarjetaDebito`, `Efectivo`. |
-| `Monto` | `decimal` | ✅ | Monto cobrado en la transacción. Debe coincidir con el precio del plan seleccionado. |
+| `tipo_plan` | `string` | ✅ | Nombre del plan a asignar. Valores aceptados: `Gratuito`, `Premium`. |
+| `dias_vigencia` | `integer` | ✅ | Duración de la suscripción en días a partir de la fecha de activación. |
+| `token_pasarela` | `string` | ✅ | Token de transacción emitido por la pasarela de pago al procesar el cobro. |
 
-**Respuesta exitosa:** `200 OK` con la confirmación del plan activado, fecha de inicio y fecha de próximo vencimiento.
+**Respuesta exitosa:** `200 OK` con confirmación de que el plan fue modificado y el historial de pago registrado.
 
 ---
 
 ## Gestionar precios de servicios
 
-Define o actualiza el precio de servicios específicos para una entidad determinada. Esto permite personalizar tarifas según acuerdos comerciales, ubicación geográfica o tipo de entidad.
+Define o actualiza el precio de servicios médicos específicos para un doctor determinado. Esto permite personalizar tarifas de consulta y procedimientos según los acuerdos comerciales de cada profesional dentro de la plataforma.
 
 ```http
 POST /api/admin/servicios/tarifa
@@ -118,40 +127,49 @@ POST /api/admin/servicios/tarifa
 
 ```json
 {
-  "EntidadID": 3,
-  "ServicioID": 15,
-  "Precio": 450.00,
-  "Moneda": "HNL"
+  "servicio_id": 15,
+  "doctor_id": 8,
+  "nombre_servicio": "Consulta General",
+  "precio": 450.00,
+  "estado": true
 }
 ```
 
-| Campo | Descripción |
-|---|---|
-| `EntidadID` | Entidad a la que aplica la tarifa personalizada. |
-| `ServicioID` | Identificador del servicio o tipo de consulta en el catálogo. |
-| `Precio` | Precio base del servicio para esta entidad. |
-| `Moneda` | Código de moneda ISO 4217. Por defecto: `HNL` (Lempira hondureño). |
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `servicio_id` | `integer` | ❌ | Identificador del servicio existente a actualizar. Omitir para crear un nuevo servicio. |
+| `doctor_id` | `integer` | ✅ | Identificador del doctor al que aplica la tarifa. |
+| `nombre_servicio` | `string` | ✅ | Nombre descriptivo del servicio o tipo de consulta (máximo 100 caracteres). |
+| `precio` | `decimal` | ✅ | Precio base del servicio para este doctor. |
+| `estado` | `boolean` | ✅ | `true` para activar el servicio; `false` para desactivarlo del catálogo. |
+
+**Respuesta exitosa:** `200 OK` con confirmación de que la tarifa fue guardada.
 
 ---
 
 ## Exportar reportes de suscripción
 
-Genera y descarga el reporte detallado de facturación y estado de planes activos para análisis externo o presentación a directivos.
+Genera y descarga reportes de facturación y estado de planes activos para análisis externo o presentación a directivos.
 
 ```http
-GET /api/admin/reportes/exportar?tipo=saas-plan
+GET /api/admin/reportes/exportar?tipo={tipo}
 ```
 
-El reporte `saas-plan` incluye:
+Los tipos de reporte disponibles son:
 
-- Listado de todas las entidades y su plan actual
-- Fecha de inicio y vencimiento de cada suscripción
-- Monto facturado y método de pago registrado
-- MRR desglosado por tipo de plan
-- Proyección de renovaciones para los próximos 60 días
+| Tipo (`tipo`) | Descripción |
+|---|---|
+| `general` | Resumen integral de actividad de todas las entidades: citas, pacientes, ingresos y personal. |
+| `por-plan` | Desglose de entidades agrupadas por plan de suscripción, con MRR y detalle de facturación por categoría de plan. |
 
-Para un reporte de mayor alcance que incluya métricas generales de todas las suscripciones sin desglose por plan, utiliza `tipo=saas-general`.
+**Ejemplo para el reporte general:**
 
 ```http
-GET /api/admin/reportes/exportar?tipo=saas-general
+GET /api/admin/reportes/exportar?tipo=general
+```
+
+**Ejemplo para el reporte desglosado por plan:**
+
+```http
+GET /api/admin/reportes/exportar?tipo=por-plan
 ```

@@ -1,10 +1,10 @@
 ---
-title: "API de Laboratorio en MedCore Global"
+title: "API de Laboratorio en MedCore Global: Exámenes y Resultados"
 sidebarTitle: "Laboratorio"
 description: "Endpoints de laboratorio en MedCore Global: catálogo de exámenes, órdenes por paciente y resultados. Accesible para todos los roles autenticados."
 ---
 
-Los endpoints de laboratorio permiten consultar el catálogo de exámenes disponibles, revisar las órdenes de laboratorio de un paciente y obtener los resultados de estudios realizados, incluyendo archivos PDF adjuntos. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization` y son accesibles para todos los roles autenticados en la plataforma, salvo el dashboard de métricas que requiere rol de **Administrador o Laboratorio**.
+Los endpoints de laboratorio permiten consultar el catálogo de exámenes disponibles, revisar las órdenes de laboratorio de un paciente y obtener los resultados de estudios realizados, incluyendo archivos PDF adjuntos. Todos los endpoints requieren autenticación mediante **Bearer token** en el header `Authorization` y son accesibles para todos los roles autenticados en la plataforma, salvo el dashboard de métricas que requiere rol de **Administrador**.
 
 ---
 
@@ -15,50 +15,60 @@ Devuelve el catálogo completo de exámenes de laboratorio disponibles en la pla
 ### Respuesta exitosa `200 OK`
 
 ```json
-[
-  {
-    "ExamenID": 1,
-    "NombreEstudio": "Hemograma Completo",
-    "Categoria": "Hematología",
-    "Precio": 25.00
-  },
-  {
-    "ExamenID": 2,
-    "NombreEstudio": "Glucosa en Ayunas",
-    "Categoria": "Química Sanguínea",
-    "Precio": 12.50
-  },
-  {
-    "ExamenID": 3,
-    "NombreEstudio": "Perfil Lipídico",
-    "Categoria": "Química Sanguínea",
-    "Precio": 35.00
-  },
-  {
-    "ExamenID": 4,
-    "NombreEstudio": "Uroanálisis",
-    "Categoria": "Urología",
-    "Precio": 15.00
-  }
-]
+{
+  "estado": "success",
+  "datos": [
+    {
+      "ExamenID": 1,
+      "NombreEstudio": "Hemograma Completo",
+      "Categoria": "Hematología",
+      "Precio": 25.00
+    },
+    {
+      "ExamenID": 2,
+      "NombreEstudio": "Glucosa en Ayunas",
+      "Categoria": "Química Sanguínea",
+      "Precio": 12.50
+    },
+    {
+      "ExamenID": 3,
+      "NombreEstudio": "Perfil Lipídico",
+      "Categoria": "Química Sanguínea",
+      "Precio": 35.00
+    },
+    {
+      "ExamenID": 4,
+      "NombreEstudio": "Uroanálisis",
+      "Categoria": "Urología",
+      "Precio": 15.00
+    }
+  ]
+}
 ```
 
 ### Campos de respuesta
 
-<ResponseField name="ExamenID" type="integer">
-  Identificador único del examen en el catálogo de laboratorio.
+<ResponseField name="estado" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="NombreEstudio" type="string">
-  Nombre del examen o estudio de laboratorio.
-</ResponseField>
+<ResponseField name="datos" type="array">
+  Lista de exámenes disponibles en el catálogo.
 
-<ResponseField name="Categoria" type="string">
-  Categoría clínica a la que pertenece el examen (p. ej., Hematología, Química Sanguínea, Microbiología).
-</ResponseField>
-
-<ResponseField name="Precio" type="number">
-  Precio referencial del examen en la moneda configurada para la instancia.
+  <Expandable title="Campos de cada examen">
+    <ResponseField name="ExamenID" type="integer">
+      Identificador único del examen en el catálogo de laboratorio.
+    </ResponseField>
+    <ResponseField name="NombreEstudio" type="string">
+      Nombre del examen o estudio de laboratorio.
+    </ResponseField>
+    <ResponseField name="Categoria" type="string">
+      Categoría clínica a la que pertenece el examen (p. ej., Hematología, Química Sanguínea, Microbiología).
+    </ResponseField>
+    <ResponseField name="Precio" type="number">
+      Precio referencial del examen en la moneda configurada para la instancia.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ### Ejemplo de solicitud
@@ -91,58 +101,67 @@ Devuelve todas las órdenes de laboratorio emitidas para un paciente específico
 ### Respuesta exitosa `200 OK`
 
 ```json
-[
-  {
-    "OrdenID": 201,
-    "FechaOrden": "2026-02-10T08:30:00",
-    "Estado": "Completado",
-    "NotasClinicas": "Control metabólico en paciente con diabetes tipo 2.",
-    "examenes": [
-      {
-        "ExamenID": 2,
-        "NombreEstudio": "Glucosa en Ayunas"
-      },
-      {
-        "ExamenID": 3,
-        "NombreEstudio": "Perfil Lipídico"
-      }
-    ]
-  },
-  {
-    "OrdenID": 215,
-    "FechaOrden": "2026-03-01T09:00:00",
-    "Estado": "Pendiente",
-    "NotasClinicas": "Evaluación preoperatoria.",
-    "examenes": [
-      {
-        "ExamenID": 1,
-        "NombreEstudio": "Hemograma Completo"
-      }
-    ]
-  }
-]
+{
+  "estado": "success",
+  "datos": [
+    {
+      "OrdenID": 201,
+      "FechaOrden": "2026-02-10T08:30:00",
+      "Estado": "Completado",
+      "NotasClinicas": "Control metabólico en paciente con diabetes tipo 2.",
+      "examenes": [
+        {
+          "ExamenID": 2,
+          "NombreEstudio": "Glucosa en Ayunas"
+        },
+        {
+          "ExamenID": 3,
+          "NombreEstudio": "Perfil Lipídico"
+        }
+      ]
+    },
+    {
+      "OrdenID": 215,
+      "FechaOrden": "2026-03-01T09:00:00",
+      "Estado": "Pendiente",
+      "NotasClinicas": "Evaluación preoperatoria.",
+      "examenes": [
+        {
+          "ExamenID": 1,
+          "NombreEstudio": "Hemograma Completo"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ### Campos de respuesta
 
-<ResponseField name="OrdenID" type="integer">
-  Identificador único de la orden de laboratorio.
+<ResponseField name="estado" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="FechaOrden" type="string">
-  Fecha y hora en que se emitió la orden, en formato ISO 8601.
-</ResponseField>
+<ResponseField name="datos" type="array">
+  Lista de órdenes de laboratorio del paciente.
 
-<ResponseField name="Estado" type="string">
-  Estado actual de la orden: `Pendiente`, `En Proceso` o `Completado`.
-</ResponseField>
-
-<ResponseField name="NotasClinicas" type="string">
-  Notas del médico que emitió la orden, con contexto clínico relevante para el laboratorio.
-</ResponseField>
-
-<ResponseField name="examenes" type="array">
-  Lista de exámenes incluidos en la orden, con su ID y nombre.
+  <Expandable title="Campos de cada orden">
+    <ResponseField name="OrdenID" type="integer">
+      Identificador único de la orden de laboratorio.
+    </ResponseField>
+    <ResponseField name="FechaOrden" type="string">
+      Fecha y hora en que se emitió la orden, en formato ISO 8601.
+    </ResponseField>
+    <ResponseField name="Estado" type="string">
+      Estado actual de la orden: `Pendiente`, `En Proceso` o `Completado`.
+    </ResponseField>
+    <ResponseField name="NotasClinicas" type="string">
+      Notas del médico que emitió la orden, con contexto clínico relevante para el laboratorio.
+    </ResponseField>
+    <ResponseField name="examenes" type="array">
+      Lista de exámenes incluidos en la orden, con su ID y nombre.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ---
@@ -161,70 +180,79 @@ Devuelve los resultados completos de una orden de laboratorio específica. Inclu
 
 ```json
 {
-  "OrdenID": 201,
-  "FechaOrden": "2026-02-10T08:30:00",
-  "Estado": "Completado",
-  "NotasClinicas": "Control metabólico en paciente con diabetes tipo 2.",
-  "resultados": [
-    {
-      "ExamenID": 2,
-      "NombreEstudio": "Glucosa en Ayunas",
-      "Valor": "95 mg/dL",
-      "RangoReferencia": "70 - 100 mg/dL",
-      "EsAnormal": false,
-      "RutaArchivo": "https://tu-instancia.com/storage/resultados/orden-201-glucosa.pdf"
-    },
-    {
-      "ExamenID": 3,
-      "NombreEstudio": "Perfil Lipídico",
-      "Valor": "LDL: 145 mg/dL | HDL: 38 mg/dL | TG: 210 mg/dL",
-      "RangoReferencia": "LDL < 130 | HDL > 40 | TG < 150",
-      "EsAnormal": true,
-      "RutaArchivo": "https://tu-instancia.com/storage/resultados/orden-201-lipidos.pdf"
-    }
-  ]
+  "estado": "success",
+  "datos": {
+    "OrdenID": 201,
+    "FechaOrden": "2026-02-10T08:30:00",
+    "Estado": "Completado",
+    "NotasClinicas": "Control metabólico en paciente con diabetes tipo 2.",
+    "resultados": [
+      {
+        "ExamenID": 2,
+        "NombreEstudio": "Glucosa en Ayunas",
+        "Valor": "95 mg/dL",
+        "RangoReferencia": "70 - 100 mg/dL",
+        "EsAnormal": false,
+        "RutaArchivo": "https://tu-instancia.com/storage/resultados/orden-201-glucosa.pdf"
+      },
+      {
+        "ExamenID": 3,
+        "NombreEstudio": "Perfil Lipídico",
+        "Valor": "LDL: 145 mg/dL | HDL: 38 mg/dL | TG: 210 mg/dL",
+        "RangoReferencia": "LDL < 130 | HDL > 40 | TG < 150",
+        "EsAnormal": true,
+        "RutaArchivo": "https://tu-instancia.com/storage/resultados/orden-201-lipidos.pdf"
+      }
+    ]
+  }
 }
 ```
 
 ### Campos de respuesta
 
-<ResponseField name="OrdenID" type="integer">
-  Identificador único de la orden de laboratorio.
+<ResponseField name="estado" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="FechaOrden" type="string">
-  Fecha y hora de emisión de la orden.
-</ResponseField>
+<ResponseField name="datos" type="object">
+  Objeto con los datos completos de la orden y sus resultados.
 
-<ResponseField name="Estado" type="string">
-  Estado de la orden. Para este endpoint, se esperan órdenes en estado `Completado`.
-</ResponseField>
+  <Expandable title="Campos del objeto datos">
+    <ResponseField name="OrdenID" type="integer">
+      Identificador único de la orden de laboratorio.
+    </ResponseField>
+    <ResponseField name="FechaOrden" type="string">
+      Fecha y hora de emisión de la orden.
+    </ResponseField>
+    <ResponseField name="Estado" type="string">
+      Estado de la orden. Para este endpoint, se esperan órdenes en estado `Completado`.
+    </ResponseField>
+    <ResponseField name="NotasClinicas" type="string">
+      Notas clínicas asociadas a la orden por el médico emisor.
+    </ResponseField>
+    <ResponseField name="resultados" type="array">
+      Lista de resultados por examen.
 
-<ResponseField name="NotasClinicas" type="string">
-  Notas clínicas asociadas a la orden por el médico emisor.
-</ResponseField>
-
-<ResponseField name="resultados" type="array">
-  Lista de resultados por examen.
-
-  <Expandable title="Campos de cada resultado">
-    <ResponseField name="ExamenID" type="integer">
-      ID del examen en el catálogo.
-    </ResponseField>
-    <ResponseField name="NombreEstudio" type="string">
-      Nombre del examen realizado.
-    </ResponseField>
-    <ResponseField name="Valor" type="string">
-      Resultado obtenido para este examen.
-    </ResponseField>
-    <ResponseField name="RangoReferencia" type="string">
-      Valores de referencia normales para este examen.
-    </ResponseField>
-    <ResponseField name="EsAnormal" type="boolean">
-      Indica si el resultado está fuera del rango de referencia.
-    </ResponseField>
-    <ResponseField name="RutaArchivo" type="string">
-      URL al archivo PDF con el reporte oficial del resultado. Requiere token de acceso válido.
+      <Expandable title="Campos de cada resultado">
+        <ResponseField name="ExamenID" type="integer">
+          ID del examen en el catálogo.
+        </ResponseField>
+        <ResponseField name="NombreEstudio" type="string">
+          Nombre del examen realizado.
+        </ResponseField>
+        <ResponseField name="Valor" type="string">
+          Resultado obtenido para este examen.
+        </ResponseField>
+        <ResponseField name="RangoReferencia" type="string">
+          Valores de referencia normales para este examen.
+        </ResponseField>
+        <ResponseField name="EsAnormal" type="boolean">
+          Indica si el resultado está fuera del rango de referencia.
+        </ResponseField>
+        <ResponseField name="RutaArchivo" type="string">
+          URL al archivo PDF con el reporte oficial del resultado. Requiere token de acceso válido.
+        </ResponseField>
+      </Expandable>
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -240,7 +268,7 @@ curl -X GET https://tu-instancia.com/api/laboratorio/orden/201/resultados \
 
 ## GET /api/laboratorio/dashboard-metrics
 
-<Note>Rol requerido: **Administrador** o **Laboratorio**</Note>
+<Note>Rol requerido: **Administrador**</Note>
 
 Devuelve los indicadores clave de rendimiento (KPIs) del módulo de laboratorio para el período de tiempo configurado en la instancia. Utilizado por el panel de administración del laboratorio.
 
@@ -248,29 +276,52 @@ Devuelve los indicadores clave de rendimiento (KPIs) del módulo de laboratorio 
 
 ```json
 {
-  "total_ordenes": 348,
-  "en_proceso": 12,
-  "reactivos_criticos": 3,
-  "ingresos_periodo": 4250.75
+  "status": "success",
+  "data": {
+    "kpis": {
+      "total_ordenes": 348,
+      "en_proceso": 12,
+      "reactivos_criticos": 3,
+      "ingresos_periodo": 4250.75
+    },
+    "ordenes_recientes": [
+      {
+        "OrdenID": 215,
+        "FechaOrden": "2026-03-01T09:00:00",
+        "Estado": "En Proceso"
+      }
+    ]
+  }
 }
 ```
 
 ### Campos de respuesta
 
-<ResponseField name="total_ordenes" type="integer">
-  Número total de órdenes de laboratorio registradas en el período actual.
+<ResponseField name="status" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="en_proceso" type="integer">
-  Cantidad de órdenes que se encuentran actualmente en estado `En Proceso`.
+<ResponseField name="data.kpis" type="object">
+  Indicadores clave de rendimiento del módulo de laboratorio.
+
+  <Expandable title="Campos de kpis">
+    <ResponseField name="total_ordenes" type="integer">
+      Número total de órdenes de laboratorio registradas en el período actual.
+    </ResponseField>
+    <ResponseField name="en_proceso" type="integer">
+      Cantidad de órdenes que se encuentran actualmente en estado `En Proceso`.
+    </ResponseField>
+    <ResponseField name="reactivos_criticos" type="integer">
+      Número de reactivos de laboratorio cuyo nivel de inventario está por debajo del umbral crítico configurado.
+    </ResponseField>
+    <ResponseField name="ingresos_periodo" type="number">
+      Total de ingresos generados por servicios de laboratorio en el período actual.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
-<ResponseField name="reactivos_criticos" type="integer">
-  Número de reactivos de laboratorio cuyo nivel de inventario está por debajo del umbral crítico configurado.
-</ResponseField>
-
-<ResponseField name="ingresos_periodo" type="number">
-  Total de ingresos generados por servicios de laboratorio en el período actual.
+<ResponseField name="data.ordenes_recientes" type="array">
+  Lista de las órdenes de laboratorio más recientes registradas en la instancia.
 </ResponseField>
 
 ### Ejemplo de solicitud

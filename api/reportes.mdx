@@ -1,5 +1,5 @@
 ---
-title: "API de Reportes y Dashboards en MedCore Global"
+title: "API de Reportes y Analítica en MedCore Global: Dashboard"
 sidebarTitle: "Reportes"
 description: "Endpoints de reportes y analítica en MedCore Global: dashboard global, indicadores de calidad y exportación de reportes ejecutivos en PDF."
 ---
@@ -18,45 +18,54 @@ Devuelve las estadísticas globales de la plataforma para el dashboard principal
 
 ```json
 {
-  "total_pacientes": 1248,
-  "total_citas": 3872,
-  "tasa_cancelacion": 8.4,
-  "ingresos_estimados": 142600.00,
-  "no_shows_por_medico": [
-    {
-      "DoctorID": 14,
-      "doctor_nombre": "Dr. Carlos Méndez",
-      "no_shows": 5
-    },
-    {
-      "DoctorID": 22,
-      "doctor_nombre": "Dra. Ana Torres",
-      "no_shows": 2
-    }
-  ]
+  "status": "success",
+  "data": {
+    "total_pacientes": 1248,
+    "total_citas": 3872,
+    "tasa_cancelacion": 8.4,
+    "ingresos_estimados": 142600.00,
+    "no_shows_por_medico": [
+      {
+        "DoctorID": 14,
+        "doctor_nombre": "Dr. Carlos Méndez",
+        "no_shows": 5
+      },
+      {
+        "DoctorID": 22,
+        "doctor_nombre": "Dra. Ana Torres",
+        "no_shows": 2
+      }
+    ]
+  }
 }
 ```
 
 ### Campos de respuesta
 
-<ResponseField name="total_pacientes" type="integer">
-  Número total de pacientes registrados en la plataforma.
+<ResponseField name="status" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="total_citas" type="integer">
-  Número total de citas médicas registradas en el período activo.
-</ResponseField>
+<ResponseField name="data" type="object">
+  Objeto con las estadísticas del dashboard.
 
-<ResponseField name="tasa_cancelacion" type="number">
-  Porcentaje de citas canceladas sobre el total de citas registradas en el período.
-</ResponseField>
-
-<ResponseField name="ingresos_estimados" type="number">
-  Suma estimada de ingresos generados por consultas pagadas en el período.
-</ResponseField>
-
-<ResponseField name="no_shows_por_medico" type="array">
-  Lista de médicos con el número de citas en las que el paciente no se presentó (no-show) en el período.
+  <Expandable title="Campos de data">
+    <ResponseField name="total_pacientes" type="integer">
+      Número total de pacientes registrados en la plataforma.
+    </ResponseField>
+    <ResponseField name="total_citas" type="integer">
+      Número total de citas médicas registradas en el período activo.
+    </ResponseField>
+    <ResponseField name="tasa_cancelacion" type="number">
+      Porcentaje de citas canceladas sobre el total de citas registradas en el período.
+    </ResponseField>
+    <ResponseField name="ingresos_estimados" type="number">
+      Suma estimada de ingresos generados por consultas pagadas en el período.
+    </ResponseField>
+    <ResponseField name="no_shows_por_medico" type="array">
+      Lista de médicos con el número de citas en las que el paciente no se presentó (no-show) en el período.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ### Ejemplo de solicitud
@@ -95,24 +104,28 @@ Devuelve un reporte filtrado de citas médicas. Los parámetros de filtro son op
 ### Respuesta exitosa `200 OK`
 
 ```json
-[
-  {
-    "CitaID": 487,
-    "FechaHora": "2026-03-15T09:30:00",
-    "EstadoCita": "Completada",
-    "entidad_nombre": "Clínica Central MedCore",
-    "doctor_nombre": "Dr. Carlos Méndez",
-    "paciente_nombre": "María López"
-  },
-  {
-    "CitaID": 491,
-    "FechaHora": "2026-03-15T11:00:00",
-    "EstadoCita": "Cancelada",
-    "entidad_nombre": "Sucursal Norte",
-    "doctor_nombre": "Dra. Ana Torres",
-    "paciente_nombre": "Juan Pérez"
-  }
-]
+{
+  "status": "success",
+  "count": 2,
+  "data": [
+    {
+      "CitaID": 487,
+      "FechaHora": "2026-03-15T09:30:00",
+      "EstadoCita": "Completada",
+      "entidad_nombre": "Clínica Central MedCore",
+      "doctor_nombre": "Dr. Carlos Méndez",
+      "paciente_nombre": "María López"
+    },
+    {
+      "CitaID": 491,
+      "FechaHora": "2026-03-15T11:00:00",
+      "EstadoCita": "Cancelada",
+      "entidad_nombre": "Sucursal Norte",
+      "doctor_nombre": "Dra. Ana Torres",
+      "paciente_nombre": "Juan Pérez"
+    }
+  ]
+}
 ```
 
 ### Ejemplo de solicitud
@@ -134,41 +147,43 @@ Devuelve el reporte completo de analítica de inteligencia de negocio (BI) de la
 
 ```json
 {
-  "funnel": {
-    "agendadas": 420,
-    "confirmadas": 389,
-    "completadas": 350,
-    "canceladas": 35,
-    "no_shows": 14
-  },
-  "profesionales": [
-    {
-      "DoctorID": 14,
-      "doctor_nombre": "Dr. Carlos Méndez",
-      "total_consultas": 128,
-      "ingresos_generados": 8320.00,
-      "tasa_satisfaccion": 94.5
-    }
-  ],
-  "pacientes": {
-    "nuevos_mes": 42,
-    "recurrentes": 308,
-    "distribucion_edad": {
-      "18-30": 120,
-      "31-50": 210,
-      "51+": 88
-    }
-  },
-  "heatmap": [
-    {"dia": "Lunes", "hora": "09:00", "demanda": 32},
-    {"dia": "Lunes", "hora": "10:00", "demanda": 45},
-    {"dia": "Viernes", "hora": "17:00", "demanda": 8}
-  ],
-  "evolucion": [
-    {"mes": "2026-01", "citas": 310, "ingresos": 20150.00},
-    {"mes": "2026-02", "citas": 348, "ingresos": 22620.00},
-    {"mes": "2026-03", "citas": 372, "ingresos": 24180.00}
-  ]
+  "status": "success",
+  "data": {
+    "funnel": [
+      {
+        "agendadas": 420,
+        "confirmadas": 389,
+        "completadas": 350,
+        "canceladas": 35,
+        "no_shows": 14
+      }
+    ],
+    "profesionales": [
+      {
+        "DoctorID": 14,
+        "doctor_nombre": "Dr. Carlos Méndez",
+        "total_consultas": 128,
+        "ingresos_generados": 8320.00,
+        "tasa_satisfaccion": 94.5
+      }
+    ],
+    "pacientes": [
+      {
+        "nuevos_mes": 42,
+        "recurrentes": 308
+      }
+    ],
+    "heatmap": [
+      {"dia": "Lunes", "hora": "09:00", "demanda": 32},
+      {"dia": "Lunes", "hora": "10:00", "demanda": 45},
+      {"dia": "Viernes", "hora": "17:00", "demanda": 8}
+    ],
+    "evolucion": [
+      {"mes": "2026-01", "citas": 310, "ingresos": 20150.00},
+      {"mes": "2026-02", "citas": 348, "ingresos": 22620.00},
+      {"mes": "2026-03", "citas": 372, "ingresos": 24180.00}
+    ]
+  }
 }
 ```
 
@@ -206,17 +221,14 @@ Devuelve los indicadores clave de calidad clínica y operativa de la plataforma,
 
 ```json
 {
-  "seguridad": {
+  "status": "success",
+  "data": {
     "eventos_adversos": 2,
     "tasa_readmision": 1.8,
-    "alertas_alergias_activas": 5
-  },
-  "eficiencia": {
+    "alertas_alergias_activas": 5,
     "tiempo_promedio_consulta_min": 22,
     "tasa_ocupacion_agenda": 87.4,
-    "tiempo_espera_promedio_min": 11
-  },
-  "relaciones_pacientes": {
+    "tiempo_espera_promedio_min": 11,
     "nps": 72,
     "quejas_registradas": 3,
     "tasa_retencion": 91.2
@@ -226,16 +238,12 @@ Devuelve los indicadores clave de calidad clínica y operativa de la plataforma,
 
 ### Campos de respuesta
 
-<ResponseField name="seguridad" type="object">
-  Indicadores de seguridad clínica: eventos adversos reportados, tasa de readmisión y alertas de alergias activas.
+<ResponseField name="status" type="string">
+  Estado de la respuesta. Valor: `"success"`.
 </ResponseField>
 
-<ResponseField name="eficiencia" type="object">
-  Indicadores de eficiencia operativa: tiempo promedio de consulta, porcentaje de ocupación de la agenda y tiempo de espera promedio del paciente.
-</ResponseField>
-
-<ResponseField name="relaciones_pacientes" type="object">
-  Indicadores de satisfacción y fidelización: NPS (Net Promoter Score), quejas formales registradas y tasa de retención de pacientes.
+<ResponseField name="data" type="object">
+  Objeto con los indicadores clave de calidad clínica y operativa, devueltos como un conjunto plano de métricas. Los campos exactos disponibles dependen de la configuración de auditoría de la instancia e incluyen, entre otros, indicadores de seguridad del paciente, eficiencia operativa y satisfacción del paciente.
 </ResponseField>
 
 ---

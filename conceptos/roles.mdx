@@ -1,14 +1,14 @@
 ---
-title: "Roles y Permisos en MedCore Global"
+title: "Roles, Permisos y Control de Acceso en MedCore Global"
 sidebarTitle: "Roles"
-description: "MedCore Global tiene tres roles principales: Paciente, Médico y Administrador. Cada rol tiene acceso a diferentes funciones y endpoints de la API."
+description: "MedCore Global define cuatro roles: Paciente, Médico, Administrador y Laboratorista. Cada rol accede a diferentes funciones y endpoints de la API."
 ---
 
-MedCore Global utiliza un sistema de roles para garantizar que cada usuario acceda únicamente a las funciones que le corresponden. Al crear una cuenta o ser registrado en la plataforma, se te asigna un rol que determina qué puedes ver, hacer y gestionar dentro del sistema.
+MedCore Global utiliza un sistema de control de acceso basado en roles (RBAC) para garantizar que cada usuario acceda únicamente a las funciones que le corresponden. Al crear una cuenta o ser registrado en la plataforma, se te asigna un rol que determina qué puedes ver, hacer y gestionar dentro del sistema.
 
 ## Roles principales
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
   <Card title="Paciente" icon="user">
     **rol\_id: 3**
 
@@ -23,6 +23,11 @@ MedCore Global utiliza un sistema de roles para garantizar que cada usuario acce
     **rol\_id: 1**
 
     Acceso total a la plataforma. El administrador gestiona usuarios, clínicas, planes SaaS y tiene visibilidad sobre todos los reportes del sistema.
+  </Card>
+  <Card title="Laboratorista" icon="flask">
+    **rol\_id: 5**
+
+    Acceso al módulo de laboratorio. El laboratorista gestiona órdenes de análisis, carga resultados y administra el estado de los estudios solicitados por los médicos.
   </Card>
 </CardGroup>
 
@@ -60,27 +65,40 @@ El administrador tiene control total sobre la plataforma. Sus capacidades incluy
 - **Gestionar planes SaaS**: asignar y modificar los planes de suscripción de cada entidad.
 - **Configurar especialidades** y parámetros generales del sistema.
 
+### Laboratorista (rol_id: 5)
+
+El laboratorista opera dentro de una entidad de tipo laboratorio. Sus capacidades incluyen:
+
+- **Recibir órdenes de análisis** enviadas por médicos durante una consulta.
+- **Cargar resultados** de estudios clínicos directamente en el perfil del paciente.
+- **Gestionar el estado** de cada estudio (pendiente, en proceso, completado).
+- **Notificar al médico y al paciente** cuando los resultados están disponibles.
+
+Este rol es asignado directamente por el Administrador de la entidad de tipo laboratorio.
+
 ---
 
 ## Permisos por módulo
 
 La siguiente tabla muestra qué rol tiene acceso a cada función principal de la plataforma:
 
-| Función                        | Paciente | Médico | Administrador |
-|-------------------------------|:--------:|:------:|:-------------:|
-| Agendar cita                  | ✓        |        |               |
-| Ver historial propio           | ✓        |        |               |
-| Descargar receta en PDF        | ✓        |        |               |
-| Ver resultados de laboratorio  | ✓        |        |               |
-| Iniciar consulta               |          | ✓      |               |
-| Emitir receta                  |          | ✓      |               |
-| Solicitar orden de laboratorio |          | ✓      |               |
-| Ver historial de pacientes     |          | ✓      |               |
-| Aprobar médico                 |          |        | ✓             |
-| Gestionar clínicas             |          |        | ✓             |
-| Ver dashboard global           |          |        | ✓             |
-| Gestionar planes SaaS          |          |        | ✓             |
-| Crear y editar especialidades  |          |        | ✓             |
+| Función                        | Paciente | Médico | Administrador | Laboratorista |
+|-------------------------------|:--------:|:------:|:-------------:|:-------------:|
+| Agendar cita                  | ✓        |        |               |               |
+| Ver historial propio           | ✓        |        |               |               |
+| Descargar receta en PDF        | ✓        |        |               |               |
+| Ver resultados de laboratorio  | ✓        |        |               |               |
+| Iniciar consulta               |          | ✓      |               |               |
+| Emitir receta                  |          | ✓      |               |               |
+| Solicitar orden de laboratorio |          | ✓      |               |               |
+| Ver historial de pacientes     |          | ✓      |               |               |
+| Cargar resultados de estudios  |          |        |               | ✓             |
+| Gestionar órdenes de análisis  |          |        |               | ✓             |
+| Aprobar médico                 |          |        | ✓             |               |
+| Gestionar clínicas             |          |        | ✓             |               |
+| Ver dashboard global           |          |        | ✓             |               |
+| Gestionar planes SaaS          |          |        | ✓             |               |
+| Crear y editar especialidades  |          |        | ✓             |               |
 
 ---
 
@@ -94,6 +112,4 @@ Cuando un médico completa su registro en MedCore Global, su cuenta queda en est
 
 Este proceso de verificación garantiza que todos los profesionales de la salud en la plataforma hayan sido validados por la entidad a la que pertenecen.
 
-<Info>
-  Existe un rol adicional para el personal de laboratorio: **Laboratorista** (`rol_id: 5`). Este rol permite al personal de un laboratorio afiliado recibir órdenes de análisis, cargar resultados y gestionar el estado de los estudios solicitados. Este rol es asignado directamente por el Administrador de la entidad de tipo laboratorio.
-</Info>
+

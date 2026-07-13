@@ -1,5 +1,5 @@
 ---
-title: "Dashboard de Clínica en MedCore Global"
+title: "Dashboard de Clínica — Gestión Operativa MedCore Global"
 sidebarTitle: "Dashboard Clínica"
 description: "El dashboard de clínica ofrece KPIs operativos, listado de citas recientes, gestión del personal médico y control de especialidades ofrecidas."
 ---
@@ -66,47 +66,50 @@ La gestión técnica de las especialidades —creación y desactivación a nivel
 
 ## API del dashboard
 
-El dashboard consume los siguientes datos a través de un endpoint dedicado que ejecuta el procedimiento almacenado `sp_ObtenerDashboardClinica` en la base de datos.
+El dashboard de clínica expone un endpoint dedicado que devuelve los KPIs operativos y las citas recientes de la entidad en una sola llamada.
 
 ```http
-GET /api/clinica/dashboard?EntidadID={id}
+GET /api/clinica/dashboard?entidad_id={id}
 ```
 
 **Parámetros de consulta:**
 
 | Parámetro | Tipo | Descripción |
 |---|---|---|
-| `EntidadID` | `integer` | Identificador único de la entidad clínica. |
+| `entidad_id` | `integer` | Identificador único de la entidad clínica. Si se omite, el sistema utiliza la entidad asociada al usuario autenticado. |
 
 **Respuesta de ejemplo:**
 
 ```json
 {
-  "KPIs": {
-    "TotalCitas": 214,
-    "CitasPendientes": 38,
-    "MedicosActivos": 12,
-    "Ingresos": 87500.00
-  },
-  "CitasRecientes": [
-    {
-      "CitaID": 320,
-      "Paciente": "Luis Hernández",
-      "Medico": "Dra. Ana Martínez",
-      "Especialidad": "Cardiología",
-      "FechaCita": "2026-01-22T10:00:00Z",
-      "Estado": "Pendiente"
+  "status": "success",
+  "data": {
+    "kpis": {
+      "TotalCitas": 214,
+      "CitasPendientes": 38,
+      "MedicosActivos": 12,
+      "Ingresos": 87500.00
     },
-    {
-      "CitaID": 318,
-      "Paciente": "María Estrada",
-      "Medico": "Dr. Jorge Padilla",
-      "Especialidad": "Medicina General",
-      "FechaCita": "2026-01-21T09:30:00Z",
-      "Estado": "Completada"
-    }
-  ]
+    "citas_recientes": [
+      {
+        "CitaID": 320,
+        "Paciente": "Luis Hernández",
+        "Medico": "Dra. Ana Martínez",
+        "Especialidad": "Cardiología",
+        "FechaCita": "2026-01-22T10:00:00Z",
+        "Estado": "Pendiente"
+      },
+      {
+        "CitaID": 318,
+        "Paciente": "María Estrada",
+        "Medico": "Dr. Jorge Padilla",
+        "Especialidad": "Medicina General",
+        "FechaCita": "2026-01-21T09:30:00Z",
+        "Estado": "Completada"
+      }
+    ]
+  }
 }
 ```
 
-El procedimiento `sp_ObtenerDashboardClinica` calcula los KPIs en el servidor y devuelve los datos de citas recientes ordenados por fecha descendente. El número de citas recientes retornadas por defecto es **10**, configurable mediante el parámetro opcional `Limite`.
+La API del dashboard calcula los KPIs en el servidor y devuelve las citas recientes ordenadas por fecha descendente. Por defecto se retornan las últimas **10** citas, configurable mediante el parámetro opcional `Limite`.

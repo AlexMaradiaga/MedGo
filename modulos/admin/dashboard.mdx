@@ -1,7 +1,7 @@
 ---
-title: "Dashboard Administrativo Global de MedCore Global"
+title: "Dashboard Administrativo Global — MedCore Global"
 sidebarTitle: "Dashboard Admin"
-description: "El dashboard administrativo centraliza KPIs operativos, auditoría de calidad, gestión de usuarios y reportes ejecutivos para el control total de la plataforma."
+description: "El dashboard administrativo centraliza KPIs operativos, auditoría de calidad, gestión de usuarios y reportes ejecutivos para la toma de decisiones."
 ---
 
 El **Dashboard Administrativo Global** es el centro de comando de MedCore Global. Desde aquí, los administradores de la plataforma obtienen visibilidad completa sobre el estado operativo de todas las entidades registradas —clínicas, laboratorios y farmacias— en tiempo real. Consolida indicadores clave de rendimiento, herramientas de auditoría, aprobación de personal médico y la generación de reportes ejecutivos para la toma de decisiones estratégicas.
@@ -19,11 +19,23 @@ La sección superior del dashboard presenta cuatro tarjetas de KPI que ofrecen u
 | **Tasa de Cancelación** | Porcentaje de citas canceladas sobre el total agendado. Un valor elevado puede indicar problemas operativos en una entidad específica. |
 | **Ingresos Estimados** | Proyección de ingresos consolidados basada en los servicios facturados en el período activo. |
 
-### Visualizaciones incluidas
+### Visualizaciones analíticas
 
-- **Gráfico de embudo / dona:** Distribución de pacientes por estado de atención (activos, en espera, dados de alta), útil para identificar cuellos de botella en el flujo de atención.
-- **Gráfico de área / línea evolutiva:** Evolución temporal de citas e ingresos. Permite comparar períodos anteriores e identificar tendencias de crecimiento o contracción.
-- **Mapa de calor de demanda:** Representación geográfica o por franja horaria de la concentración de citas y solicitudes de servicio, facilitando la planificación de recursos.
+El dashboard BI carga un conjunto de datos analíticos a través del siguiente endpoint:
+
+```http
+GET /api/admin/reports/analytics
+```
+
+La respuesta incluye cinco conjuntos de datos que alimentan las visualizaciones del panel:
+
+| Conjunto | Descripción |
+|---|---|
+| `funnel` | Distribución de pacientes por estado de atención (activos, en espera, dados de alta). Alimenta el gráfico de embudo o dona, útil para identificar cuellos de botella en el flujo de atención. |
+| `profesionales` | Métricas de actividad del personal médico por entidad: citas atendidas, tasa de ocupación y especialidades más demandadas. |
+| `pacientes` | Perfil agregado de la base de pacientes: distribución demográfica, frecuencia de visitas y patologías más recurrentes. |
+| `heatmap` | Concentración de citas y solicitudes de servicio por franja horaria o zona geográfica, facilitando la planificación de recursos. |
+| `evolucion` | Evolución temporal de citas e ingresos. Permite comparar períodos anteriores e identificar tendencias de crecimiento o contracción. |
 
 ---
 
@@ -55,16 +67,12 @@ Devuelve el conjunto completo de indicadores de las tres categorías, filtrable 
 
 ## Reportes ejecutivos
 
-MedCore Global permite exportar reportes en formato PDF o Excel para análisis fuera de la plataforma, auditorías externas o presentaciones a directivos. Los seis tipos de reporte disponibles son:
+MedCore Global permite exportar reportes para análisis fuera de la plataforma, auditorías externas o presentaciones a directivos. Los tipos de reporte disponibles son:
 
 | Tipo (`tipo`) | Descripción |
 |---|---|
 | `general` | Resumen integral de actividad: citas, pacientes, ingresos y personal en todas las entidades. |
-| `seguridad` | Detalle de incidentes de seguridad, accesos no autorizados y alertas de cumplimiento normativo. |
-| `eficiencia` | Análisis de tiempos operativos, tasas de resolución y comparativa de rendimiento entre entidades. |
-| `paciente` | Perfil agregado de la base de pacientes: demografía, frecuencia de visitas y patologías más recurrentes. |
-| `saas-general` | Estado global de las suscripciones SaaS: entidades activas, planes contratados y métricas de retención. |
-| `saas-plan` | Desglose de ingresos por plan de suscripción, incluyendo MRR y proyecciones de renovación. |
+| `por-plan` | Desglose de ingresos por plan de suscripción, incluyendo MRR y proyecciones de renovación. |
 
 **Endpoint de exportación:**
 
@@ -72,7 +80,7 @@ MedCore Global permite exportar reportes en formato PDF o Excel para análisis f
 GET /api/admin/reportes/exportar?tipo={tipo}
 ```
 
-Reemplaza `{tipo}` con uno de los valores de la tabla anterior. La respuesta devuelve un archivo descargable en el formato configurado para la entidad.
+Reemplaza `{tipo}` con uno de los valores de la tabla anterior. La respuesta devuelve los datos del reporte en formato JSON.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Gestiona tus Pacientes Atendidos en MedCore Global"
 sidebarTitle: "Mis Pacientes"
-description: "Consulta el listado de todos los pacientes que has atendido, busca por nombre, y accede al historial clínico completo de cada paciente desde tu portal médico."
+description: "Consulta el listado de pacientes atendidos, busca por nombre y accede al historial clínico completo de cada paciente desde tu portal médico."
 ---
 
 El módulo **Mis Pacientes** centraliza el registro de todos los individuos que has atendido a lo largo de tu actividad en MedCore Global. Desde este espacio puedes buscar un paciente por nombre, revisar cuántas veces lo has atendido y acceder a su historial clínico completo, siempre dentro del marco de privacidad y autorización que la plataforma establece.
@@ -58,13 +58,17 @@ POST /api/doctor/paciente/conceder-autorizacion
 
 ```json
 {
-  "PacienteID": 142,
-  "DoctorID": 18,
-  "Autorizado": true
+  "paciente_id": 142,
+  "pin_autorizacion": "CÓDIGO-DICTADO-POR-EL-PACIENTE"
 }
 ```
 
-Este registro queda guardado en el expediente y puede ser revocado por el paciente en cualquier momento desde su propio portal. Te recomendamos solicitar esta autorización durante la primera consulta, una vez que el paciente haya firmado el consentimiento informado correspondiente.
+| Campo              | Tipo      | Requerido | Descripción                                                                 |
+|--------------------|-----------|-----------|-----------------------------------------------------------------------------|
+| `paciente_id`      | `integer` | ✅        | Identificador del paciente que otorga la autorización.                      |
+| `pin_autorizacion` | `string`  | ✅        | Código de autorización que el paciente te dicta en el momento de la consulta. |
+
+El paciente genera o consulta su código de autorización desde la sección **Mi Perfil → Privacidad y Accesos** en su propio portal. Este registro queda guardado en el expediente y puede ser revocado por el paciente en cualquier momento desde esa misma sección. Te recomendamos solicitar esta autorización durante la primera consulta, una vez que el paciente haya dado su consentimiento verbal.
 
 ---
 
@@ -90,7 +94,7 @@ Esta vista está disponible antes de iniciar una consulta para que puedas prepar
 Para revisar el contenido completo de una consulta específica dentro del historial:
 
 ```http
-GET /api/doctor/consulta/detalle?consultaId={id}
+GET /api/doctor/consulta/detalle?consulta_id={id}
 ```
 
 Este endpoint devuelve todos los datos registrados durante ese encuentro clínico: motivo de consulta, signos vitales, hallazgos del examen físico por sistema, diagnóstico CIE-11, medicamentos prescritos y notas médicas. El resultado se presenta en un **modal de detalle** dentro del historial del paciente, sin necesidad de abandonar la pantalla de gestión.

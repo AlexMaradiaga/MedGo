@@ -1,5 +1,5 @@
 ---
-title: "Autenticarse en la API de MedCore Global"
+title: "Autenticación con Token Bearer en MedCore Global API"
 sidebarTitle: "Autenticación"
 description: "MedCore Global usa tokens Bearer para autenticar solicitudes. Aprende a obtener tu token, enviarlo en cada petición y manejar errores de acceso."
 ---
@@ -14,8 +14,8 @@ Para obtener un token de acceso, envía tus credenciales al endpoint de inicio d
 curl -X POST https://api.medcoreglobal.com/api/login \
   -H "Content-Type: application/json" \
   -d '{
-    "Email": "maria@ejemplo.com",
-    "Password": "TuContraseña123"
+    "email": "maria@ejemplo.com",
+    "password": "TuContraseña123"
   }'
 ```
 
@@ -23,16 +23,21 @@ curl -X POST https://api.medcoreglobal.com/api/login \
 
 ```json
 {
-  "token": "1|abc123...",
-  "user": {
-    "UsuarioID": 42,
-    "Email": "maria@ejemplo.com",
-    "rol_id": 3
-  }
+  "success": true,
+  "status": "success",
+  "data": {
+    "id": 42,
+    "email": "maria@ejemplo.com",
+    "rol_id": 3,
+    "entidad_id": 1,
+    "tipo_entidad": "clinica"
+  },
+  "access_token": "1|abc123...",
+  "token_type": "Bearer"
 }
 ```
 
-El valor del campo `token` es tu token de acceso personal. Úsalo en todas las solicitudes subsiguientes. El campo `rol_id` indica el rol asignado al usuario: `1` para Administrador, `2` para Médico y `3` para Paciente.
+El valor del campo `access_token` es tu token de acceso personal. Úsalo en todas las solicitudes subsiguientes. El campo `rol_id` indica el rol asignado al usuario: `1` para Administrador, `2` para Médico y `3` para Paciente.
 
 <Note>
   Las cuentas de **médicos** deben ser aprobadas por un administrador de clínica antes de poder iniciar sesión. Si recibes un error `403` al intentar autenticarte con una cuenta médica recién creada, contacta al administrador de tu clínica para que active tu perfil.
@@ -101,7 +106,8 @@ curl -X POST https://api.medcoreglobal.com/api/logout \
 
 ```json
 {
-  "message": "Sesión cerrada correctamente."
+  "status": "success",
+  "message": "Sesión cerrada exitosamente y token eliminado."
 }
 ```
 
@@ -114,7 +120,8 @@ curl -X PUT https://api.medcoreglobal.com/api/auth/password \
   -H "Authorization: Bearer 1|abc123..." \
   -H "Content-Type: application/json" \
   -d '{
-    "current_password": "TuContraseña123",
+    "usuario_id": 42,
+    "old_password": "TuContraseña123",
     "new_password": "NuevaContraseña456",
     "new_password_confirmation": "NuevaContraseña456"
   }'
@@ -122,7 +129,8 @@ curl -X PUT https://api.medcoreglobal.com/api/auth/password \
 
 | Campo | Tipo | Descripción |
 |---|---|---|
-| `current_password` | string | Contraseña actualmente en uso |
+| `usuario_id` | integer | ID del usuario autenticado (campo `data.id` devuelto al iniciar sesión) |
+| `old_password` | string | Contraseña actualmente en uso |
 | `new_password` | string | Nueva contraseña deseada (mínimo 8 caracteres) |
 | `new_password_confirmation` | string | Debe coincidir exactamente con `new_password` |
 
@@ -130,7 +138,8 @@ curl -X PUT https://api.medcoreglobal.com/api/auth/password \
 
 ```json
 {
-  "message": "Contraseña actualizada correctamente."
+  "status": "success",
+  "message": "Contraseña actualizada con éxito."
 }
 ```
 

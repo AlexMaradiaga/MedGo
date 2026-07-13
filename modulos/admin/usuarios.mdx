@@ -1,5 +1,5 @@
 ---
-title: "Gestión de Usuarios y Aprobación de Médicos en MedCore Global"
+title: "Gestión de Usuarios y Aprobación de Médicos — MedCore"
 sidebarTitle: "Usuarios"
 description: "Gestiona todos los usuarios de MedCore Global: visualiza pacientes y médicos, aprueba credenciales de doctores pendientes y activa o suspende cuentas."
 ---
@@ -7,7 +7,7 @@ description: "Gestiona todos los usuarios de MedCore Global: visualiza pacientes
 El módulo de Usuarios centraliza la administración de todas las cuentas registradas en MedCore Global, sin importar su rol o la entidad a la que pertenezcan. Desde aquí, el administrador de la plataforma puede consultar el directorio completo de pacientes y médicos, procesar solicitudes de verificación de credenciales para nuevos doctores y controlar el estado operativo de cualquier cuenta. Este control garantiza que únicamente usuarios verificados y autorizados operen dentro de la plataforma.
 
 <Warning>
-  Suspender una cuenta de usuario invalida de forma **inmediata e irrevocable** todos los tokens de sesión activos del usuario. Cualquier sesión abierta —incluyendo las de aplicaciones móviles o integraciones de terceros— se cerrará sin previo aviso. Utiliza esta acción con precaución y documenta siempre el motivo de la suspensión.
+  Suspender una cuenta de usuario invalida de forma **inmediata** todos los tokens de sesión activos del usuario. Cualquier sesión abierta —incluyendo las de aplicaciones móviles o integraciones de terceros— se cerrará sin previo aviso. Utiliza esta acción con precaución y documenta siempre el motivo de la suspensión.
 </Warning>
 
 ---
@@ -85,21 +85,22 @@ GET /api/admin/doctores-pendientes
 ```json
 [
   {
+    "DoctorID": 22,
     "UsuarioID": 58,
     "Nombre": "Dr. Roberto Ayala",
     "Especialidad": "Medicina General",
     "EntidadID": 3,
     "FechaRegistro": "2026-01-20T14:32:00Z",
-    "DocumentosFotografia": "/storage/docs/doc_58_foto.jpg",
-    "TituloMedico": "/storage/docs/doc_58_titulo.pdf",
-    "TituloEspecialista": null,
-    "CertificadoCMH": "/storage/docs/doc_58_cmh.pdf",
-    "DNI": "/storage/docs/doc_58_dni.pdf"
+    "RutaFoto": "/storage/doctores/fotos/doc_58_foto.jpg",
+    "RutaTituloMedico": "/storage/doctores/titulos_medicos/doc_58_titulo.pdf",
+    "RutaTituloEspecialista": null,
+    "RutaConstanciaColegio": "/storage/doctores/constancias/doc_58_cmh.pdf",
+    "RutaDni": "/storage/doctores/documentos_identidad/doc_58_dni.pdf"
   }
 ]
 ```
 
-Cada entrada incluye enlaces directos a los documentos adjuntos por el médico durante su registro. El administrador debe revisar todos los documentos disponibles antes de emitir una decisión de aprobación.
+Cada entrada incluye rutas a los documentos adjuntos por el médico durante su registro. El administrador debe revisar todos los documentos disponibles antes de emitir una decisión de aprobación.
 
 ---
 
@@ -115,7 +116,7 @@ PUT /api/admin/doctores/{id}/aprobar
 
 | Parámetro | Descripción |
 |---|---|
-| `id` | `UsuarioID` del médico a aprobar. |
+| `id` | `DoctorID` del médico a aprobar. |
 
 ### Proceso de revisión de credenciales
 
@@ -131,15 +132,15 @@ El dashboard presenta cada documento adjunto en una vista de revisión estructur
   <Step title="Título de especialista">
     Si aplica, valida el título de especialización. Este campo puede estar vacío para médicos de medicina general.
   </Step>
-  <Step title="Certificado CMH">
-    Verifica el certificado vigente emitido por el Colegio Médico de Honduras (CMH) que acredita al médico para ejercer en el país.
+  <Step title="Constancia del Colegio Médico">
+    Verifica la constancia vigente emitida por el Colegio Médico de Honduras (CMH) que acredita al médico para ejercer en el país.
   </Step>
   <Step title="Documento de identidad (DNI)">
     Confirma que el número de identidad coincida con los datos de registro y que el documento no esté vencido.
   </Step>
 </Steps>
 
-Una vez aprobado, el médico recibirá una notificación por correo electrónico y podrá iniciar sesión en la plataforma de forma inmediata.
+Una vez aprobado, el médico podrá iniciar sesión en la plataforma de forma inmediata.
 
 **Respuesta exitosa:** `200 OK` con confirmación del cambio de estado.
 
@@ -164,18 +165,18 @@ PUT /api/admin/usuarios/{id}/estado
 <CodeGroup>
   ```json Activar cuenta
   {
-    "Estado": 1
+    "estado": 1
   }
   ```
 
   ```json Suspender cuenta
   {
-    "Estado": 0
+    "estado": 0
   }
   ```
 </CodeGroup>
 
-| Valor de `Estado` | Efecto |
+| Valor de `estado` | Efecto |
 |---|---|
 | `1` | La cuenta queda activa. El usuario puede iniciar sesión normalmente. |
 | `0` | La cuenta queda suspendida. Todos los tokens activos se invalidan de inmediato. |
@@ -189,14 +190,14 @@ PUT /api/admin/usuarios/{id}/estado
 Filtra el listado de médicos registrados que pertenecen a una entidad clínica específica. Útil para auditorías por clínica o para asignar médicos a entidades.
 
 ```http
-GET /api/admin/doctores/entidad?EntidadID={id}
+GET /api/admin/doctores/entidad?entidad_id={id}
 ```
 
 **Parámetros de consulta:**
 
 | Parámetro | Descripción |
 |---|---|
-| `EntidadID` | Identificador de la entidad clínica cuyo personal médico se desea consultar. |
+| `entidad_id` | Identificador de la entidad clínica cuyo personal médico se desea consultar. |
 
 **Respuesta de ejemplo:**
 
@@ -204,11 +205,10 @@ GET /api/admin/doctores/entidad?EntidadID={id}
 [
   {
     "UsuarioID": 14,
-    "Nombre": "Dra. Ana Martínez",
+    "NombreCompleto": "Dra. Ana Martínez",
     "Especialidad": "Cardiología",
     "Estado": 1,
-    "Aprobado": true,
-    "TotalCitas": 128
+    "NumeroColegiado": "CM-00892"
   }
 ]
 ```

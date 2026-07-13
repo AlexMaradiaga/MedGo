@@ -1,7 +1,7 @@
 ---
-title: "Inicio Rápido con MedCore Global en 5 minutos"
+title: "Inicio Rápido: Tu Primera Llamada a la API de MedCore"
 sidebarTitle: "Inicio Rápido"
-description: "Aprende a registrarte, obtener tu token de acceso y realizar tu primera llamada a la API de MedCore Global en menos de 5 minutos."
+description: "Aprende a registrarte, obtener tu token de acceso y realizar tu primera llamada a la API de MedCore Global en menos de cinco minutos."
 ---
 
 Esta guía te lleva desde cero hasta tu primera cita agendada a través de la API de MedCore Global. Sigue los pasos en orden: en menos de 5 minutos tendrás una cuenta activa, un token de acceso válido y una cita médica registrada en el sistema.
@@ -46,8 +46,8 @@ Esta guía te lleva desde cero hasta tu primera cita agendada a través de la AP
     curl -X POST https://api.medcoreglobal.com/api/login \
       -H "Content-Type: application/json" \
       -d '{
-        "Email": "maria@ejemplo.com",
-        "Password": "TuContraseña123"
+        "email": "maria@ejemplo.com",
+        "password": "TuContraseña123"
       }'
     ```
 
@@ -55,19 +55,24 @@ Esta guía te lleva desde cero hasta tu primera cita agendada a través de la AP
 
     ```json
     {
-      "token": "1|abc123...",
-      "user": {
-        "UsuarioID": 42,
-        "Email": "maria@ejemplo.com",
-        "rol_id": 3
-      }
+      "success": true,
+      "status": "success",
+      "data": {
+        "id": 42,
+        "email": "maria@ejemplo.com",
+        "rol_id": 3,
+        "entidad_id": 1,
+        "tipo_entidad": "clinica"
+      },
+      "access_token": "1|abc123...",
+      "token_type": "Bearer"
     }
     ```
 
-    El campo `token` contiene tu token de acceso personal. El campo `rol_id` identifica tu rol en la plataforma: `1` Administrador, `2` Médico, `3` Paciente.
+    El campo `access_token` contiene tu token de acceso personal. El campo `rol_id` identifica tu rol en la plataforma: `1` Administrador, `2` Médico, `3` Paciente.
 
     <Tip>
-      Guarda el token en un lugar seguro, como una variable de entorno o un gestor de secretos. **Nunca lo incluyas directamente en el código fuente** ni lo compartas en repositorios públicos. El token es equivalente a tu contraseña para todos los efectos de la API.
+      Guarda el `access_token` en un lugar seguro, como una variable de entorno o un gestor de secretos. **Nunca lo incluyas directamente en el código fuente** ni lo compartas en repositorios públicos. El token es equivalente a tu contraseña para todos los efectos de la API.
     </Tip>
   </Step>
 

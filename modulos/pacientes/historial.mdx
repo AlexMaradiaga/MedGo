@@ -1,5 +1,5 @@
 ---
-title: "Tu historial médico en MedCore Global"
+title: "Accede a tu historial clínico completo en MedCore Global"
 sidebarTitle: "Historial"
 description: "Accede a tu historial clínico completo: consultas, diagnósticos, exámenes físicos, recetas y estudios de laboratorio, todo en un solo lugar."
 ---
@@ -16,7 +16,7 @@ Para obtener la lista completa de consultas médicas registradas en tu expedient
 GET /api/historial/consultas/{usuarioId}
 ```
 
-Reemplaza `{usuarioId}` con tu `user_id`. La respuesta incluye, para cada consulta:
+Reemplaza `{usuarioId}` con tu identificador de usuario. La respuesta incluye, para cada consulta:
 
 - **Fecha y hora** de la consulta.
 - **Nombre y especialidad** del médico que te atendió.
@@ -55,7 +55,7 @@ Para ver todas las recetas médicas asociadas a tu expediente:
 GET /api/historial/recetas/{usuarioId}
 ```
 
-Reemplaza `{usuarioId}` con tu `user_id`. El listado incluye la fecha de emisión, el médico que la emitió, los medicamentos recetados y el estado de canje de cada receta (`Pendiente`, `Canjeada`, `Vencida`). Desde esta vista también puedes acceder directamente a la descarga del PDF de cada receta. Para más detalles sobre cómo descargar y canjear recetas, consulta la sección [Recetas Médicas Digitales](/modulos/pacientes/recetas).
+Reemplaza `{usuarioId}` con tu identificador de usuario. El listado incluye la fecha de emisión, el médico que la emitió, los medicamentos recetados y el estado de canje de cada receta (`Pendiente`, `Canjeada`, `Vencida`). Desde esta vista también puedes acceder directamente a la descarga del PDF de cada receta. Para más detalles sobre cómo descargar y canjear recetas, consulta la sección [Recetas Médicas Digitales](/modulos/pacientes/recetas).
 
 ---
 
@@ -67,7 +67,7 @@ Los resultados de los exámenes físicos realizados durante tus consultas (peso,
 GET /api/historial/examenes/{usuarioId}
 ```
 
-Reemplaza `{usuarioId}` con tu `user_id`. Cada registro incluye la fecha del examen, el médico que lo realizó y los valores medidos. Esto te permite llevar un seguimiento cronológico de tus indicadores de salud a lo largo del tiempo.
+Reemplaza `{usuarioId}` con tu identificador de usuario. Cada registro incluye la fecha del examen, el médico que lo realizó y los valores medidos. Esto te permite llevar un seguimiento cronológico de tus indicadores de salud a lo largo del tiempo.
 
 ---
 
@@ -82,7 +82,7 @@ Por defecto, tu historial clínico completo solo es visible para ti y para los m
 Para otorgar acceso, dirígete a **Mi Perfil → Privacidad y Accesos → Autorizar Médico** en el portal web, e ingresa el nombre o código del médico que deseas autorizar. También puedes revocar el acceso en cualquier momento desde esa misma sección.
 
 <Note>
-  El historial clínico completo —incluyendo diagnósticos, notas clínicas detalladas y resultados de laboratorio— **solo es accesible para los médicos que hayas autorizado expresamente** o que te hayan atendido previamente en la plataforma. Ningún otro usuario de MedCore Global puede ver tu información clínica sin tu consentimiento.
+  Tu historial clínico completo —incluyendo diagnósticos, notas clínicas detalladas y resultados de laboratorio— **solo es accesible para los médicos que hayas autorizado expresamente** o que te hayan atendido previamente en la plataforma. Ningún otro usuario de MedCore Global puede ver tu información clínica sin tu consentimiento.
 </Note>
 
 ---
@@ -95,7 +95,7 @@ Para obtener la información completa de tu perfil de paciente, incluyendo tus d
 GET /api/pacientes/usuario/{id}
 ```
 
-Reemplaza `{id}` con tu `user_id`.
+Reemplaza `{id}` con tu identificador de usuario.
 
 ### Ejemplo de respuesta
 
@@ -103,21 +103,15 @@ Reemplaza `{id}` con tu `user_id`.
 {
   "status": "success",
   "data": {
-    "patient_id": 31,
     "nombre": "María González",
     "DNI": "0501-1985-67890",
-    "tipo_sangre": "A+",
-    "aseguradora": "Salud Total",
-    "numero_poliza": "ST-00456",
-    "dependientes": [
+    "es_tutor": true,
+    "todos_los_dependientes": [
       {
-        "patient_id": 55,
         "nombre": "Sofía González",
-        "edad": 7,
-        "relacion": "Hija"
+        "es_dependiente": true
       }
-    ],
-    "tutor": null
+    ]
   }
 }
 ```
