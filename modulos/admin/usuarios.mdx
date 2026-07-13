@@ -1,10 +1,10 @@
 ---
-title: "Gestión de Usuarios y Aprobación de Médicos — MedCore"
+title: "Gestión de Usuarios y Aprobación de Médicos — MedGo+"
 sidebarTitle: "Usuarios"
-description: "Gestiona todos los usuarios de MedCore Global: visualiza pacientes y médicos, aprueba credenciales de doctores pendientes y activa o suspende cuentas."
+description: "Gestiona todos los usuarios de MedGo+: visualiza pacientes y médicos, aprueba credenciales de doctores pendientes y activa o suspende cuentas."
 ---
 
-El módulo de Usuarios centraliza la administración de todas las cuentas registradas en MedCore Global, sin importar su rol o la entidad a la que pertenezcan. Desde aquí, el administrador de la plataforma puede consultar el directorio completo de pacientes y médicos, procesar solicitudes de verificación de credenciales para nuevos doctores y controlar el estado operativo de cualquier cuenta. Este control garantiza que únicamente usuarios verificados y autorizados operen dentro de la plataforma.
+El módulo de Usuarios centraliza la administración de todas las cuentas registradas en MedGo\+, sin importar su rol o la entidad a la que pertenezcan. Desde aquí, el administrador de la plataforma puede consultar el directorio completo de pacientes y médicos, procesar solicitudes de verificación de credenciales para nuevos doctores y controlar el estado operativo de cualquier cuenta. Este control garantiza que únicamente usuarios verificados y autorizados operen dentro de la plataforma.
 
 <Warning>
   Suspender una cuenta de usuario invalida de forma **inmediata** todos los tokens de sesión activos del usuario. Cualquier sesión abierta —incluyendo las de aplicaciones móviles o integraciones de terceros— se cerrará sin previo aviso. Utiliza esta acción con precaución y documenta siempre el motivo de la suspensión.
@@ -115,7 +115,7 @@ PUT /api/admin/doctores/{id}/aprobar
 **Parámetros de ruta:**
 
 | Parámetro | Descripción |
-|---|---|
+| --- | --- |
 | `id` | `DoctorID` del médico a aprobar. |
 
 ### Proceso de revisión de credenciales
@@ -157,27 +157,29 @@ PUT /api/admin/usuarios/{id}/estado
 **Parámetros de ruta:**
 
 | Parámetro | Descripción |
-|---|---|
+| --- | --- |
 | `id` | `UsuarioID` del usuario cuyo estado se desea modificar. |
 
 **Cuerpo de la solicitud:**
 
 <CodeGroup>
-  ```json Activar cuenta
-  {
-    "estado": 1
-  }
-  ```
 
-  ```json Suspender cuenta
-  {
-    "estado": 0
-  }
-  ```
+```json Activar cuenta
+{
+  "estado": 1
+}
+```
+
+```json Suspender cuenta
+{
+  "estado": 0
+}
+```
+
 </CodeGroup>
 
 | Valor de `estado` | Efecto |
-|---|---|
+| --- | --- |
 | `1` | La cuenta queda activa. El usuario puede iniciar sesión normalmente. |
 | `0` | La cuenta queda suspendida. Todos los tokens activos se invalidan de inmediato. |
 
@@ -196,7 +198,7 @@ GET /api/admin/doctores/entidad?entidad_id={id}
 **Parámetros de consulta:**
 
 | Parámetro | Descripción |
-|---|---|
+| --- | --- |
 | `entidad_id` | Identificador de la entidad clínica cuyo personal médico se desea consultar. |
 
 **Respuesta de ejemplo:**
