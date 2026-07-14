@@ -1,7 +1,7 @@
 ---
 title: "Autenticación con Token Bearer en MedGo+ API"
 sidebarTitle: "Autenticación"
-description: "Medgo+ usa tokens Bearer para autenticar solicitudes. Aprende a obtener tu token, enviarlo en cada petición y manejar errores de acceso."
+description: "MedGo+ usa tokens Bearer para autenticar solicitudes. Aprende a obtener tu token, enviarlo en cada petición y manejar errores de acceso."
 ---
 
 La API de Medgo\+ utiliza autenticación basada en **tokens Bearer** gestionados por [Laravel Sanctum](https://laravel.com/docs/sanctum). Cada vez que un usuario inicia sesión, el sistema genera un token personal de acceso que debe incluirse en el encabezado `Authorization` de todas las solicitudes que requieran autenticación. Los tokens no tienen una fecha de expiración fija, pero pueden ser revocados explícitamente al cerrar sesión.
